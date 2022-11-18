@@ -6,14 +6,14 @@ const Sidebar = () => {
       {/* Main Sidebar Container */}
       <aside className="main-sidebar sidebar-dark-primary elevation-4">
         {/* Brand Logo */}
-        <a href="index3.html" className="brand-link">
+        <a href="index.html" className="brand-link" >
           <img
-            src="dist/img/AdminLTELogo.png"
-            alt="AdminLTE Logo"
-            className="brand-image img-circle elevation-3"
-            style={{ opacity: ".8" }}
+            src="dist/img/powergrid-logo.png"
+            alt="POWERGRID Logo"
+            className="brand-image img-square elevation-3"
+            style={{ opacity: ".9", top: "10px", position: "relative" }}
           />
-          <span className="brand-text font-weight-light">AdminLTE 3</span>
+          <span className="brand-text font-weight-light">WR-II RHQ Contracts</span>
         </a>
         {/* Sidebar */}
         <div className="sidebar">
@@ -80,7 +80,7 @@ const Sidebar = () => {
                     </a>
                   </li>
                   <li className="nav-item">
-                    <a href="./index3.html" className="nav-link active">
+                    <a href="./index.html" className="nav-link active">
                       <i className="far fa-circle nav-icon" />
                       <p>Dashboard v3</p>
                     </a>
