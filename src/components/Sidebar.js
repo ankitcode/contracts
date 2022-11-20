@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Sidebar = () => {
   return (
@@ -6,15 +7,17 @@ const Sidebar = () => {
       {/* Main Sidebar Container */}
       <aside className="main-sidebar sidebar-dark-primary elevation-4">
         {/* Brand Logo */}
-        <a href="index.html" className="brand-link" >
+        <Link to="/home" className="brand-link">
           <img
             src="dist/img/powergrid-logo.png"
             alt="POWERGRID Logo"
             className="brand-image img-square elevation-3"
-            style={{ opacity: ".9", top: "10px", position: "relative" }}
+            style={{ opacity: ".8", top: "10px", position: "relative" }}
           />
-          <span className="brand-text font-weight-light">WR-II RHQ Contracts</span>
-        </a>
+          <span className="brand-text font-weight-light">
+            WR-II RHQ Contracts
+          </span>
+        </Link>
         {/* Sidebar */}
         <div className="sidebar">
           {/* Sidebar user panel (optional) */}
@@ -23,12 +26,11 @@ const Sidebar = () => {
               <img
                 src="dist/img/user2-160x160.jpg"
                 className="img-circle elevation-2"
-                alt="User Image"
               />
             </div>
             <div className="info">
               <a href="#" className="d-block">
-                Alexander Pierce
+                Ankit
               </a>
             </div>
           </div>
@@ -68,26 +70,99 @@ const Sidebar = () => {
                 </a>
                 <ul className="nav nav-treeview">
                   <li className="nav-item">
-                    <a href="./index.html" className="nav-link">
-                      <i className="far fa-circle nav-icon" />
-                      <p>Dashboard v1</p>
-                    </a>
+                    <Link to="/home" className="nav-link">
+                      {/*Added home icon from font awesome */}
+                      <i className="fa fa-home nav-icon" />
+                      <p>Home</p>
+                    </Link>
                   </li>
-                  <li className="nav-item">
+                  {/*   <li className="nav-item">
                     <a href="./index2.html" className="nav-link">
                       <i className="far fa-circle nav-icon" />
                       <p>Dashboard v2</p>
                     </a>
-                  </li>
-                  <li className="nav-item">
+                  </li>*/}
+                  {/*<li className="nav-item">
                     <a href="./index.html" className="nav-link active">
                       <i className="far fa-circle nav-icon" />
                       <p>Dashboard v3</p>
                     </a>
+        </li>*/}
+                </ul>
+              </li>
+
+              <li className="nav-item">
+                <a href="#" className="nav-link">
+                  <i className="nav-icon fas fa-file-contract" />
+                  <p>
+                    Contracts
+                    <i className="fas fa-angle-left right" />
+                    {/*<span className="badge badge-info right">6</span>*/}
+                  </p>
+                </a>
+                <ul className="nav nav-treeview">
+                  {/*Added two list items for adding contract and 
+                  viewing added contracts and icons */}
+                  <li className="nav-item">
+                    <Link to="/addNew" className="nav-link">
+                      <i className="fas fa-edit nav-icon" />
+                      <p>Add New</p>
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="/viewContracts" className="nav-link">
+                      <i className="fa fa-eye nav-icon" />
+                      <p>View</p>
+                    </Link>
                   </li>
                 </ul>
               </li>
+
+              {/*Added for Admin */}
               <li className="nav-item">
+                <a href="#" className="nav-link">
+                  <i className="nav-icon fas fa-solid fa-lock" />
+                  <p>
+                    Admin
+                    <i className="fas fa-angle-left right" />
+                    {/*<span className="badge badge-info right">6</span>*/}
+                  </p>
+                </a>
+                <ul className="nav nav-treeview">
+                  {/*Added two list items for adding contract and 
+                  viewing added contracts and icons */}
+                  <li className="nav-item">
+                    <a href="#" className="nav-link">
+                      <i className="fas fa-solid fa-user nav-icon" />
+                      <p>Users</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+
+              {/*Added for Reports */}
+              <li className="nav-item">
+                <a href="#" className="nav-link">
+                <i className="fas fa-file nav-icon" />
+                  <p>
+                    Report
+                    <i className="fas fa-angle-left right" />
+                    {/*<span className="badge badge-info right">6</span>*/}
+                  </p>
+                </a>
+                <ul className="nav nav-treeview">
+                  {/*Added two list items for adding contract and 
+                  viewing added contracts and icons */}
+                  {/*<li className="nav-item">
+                    <a href="#" className="nav-link">
+                      <i className="fas fa-edit nav-icon" />
+                      <p>Users</p>
+                    </a>
+                </li>*/}
+                </ul>
+              </li>
+
+              {/*  <li className="nav-item">
                 <a href="pages/widgets.html" className="nav-link">
                   <i className="nav-icon fas fa-th" />
                   <p>
@@ -752,7 +827,7 @@ const Sidebar = () => {
                   <i className="nav-icon far fa-circle text-info" />
                   <p>Informational</p>
                 </a>
-              </li>
+              </li>*/}
             </ul>
           </nav>
           {/* /.sidebar-menu */}

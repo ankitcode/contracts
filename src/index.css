@@ -1,0 +1,49 @@
+.table {
+  overflow: auto;
+  table-layout: auto !important;
+}
+
+.caret {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 2px;
+  vertical-align: middle;
+  border-top: 4px dashed;
+  border-top: 4px solid \9;
+  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
+}
+
+.dropup .caret,
+.navbar-fixed-bottom .dropdown .caret {
+  border-top: 0;
+  border-bottom: 4px dashed;
+  border-bottom: 4px solid \9;
+  content: "";
+}
+
+.pagination {
+  display: -ms-flexbox;
+  display: flex;
+  padding-left: 0;
+  list-style: none;
+  border-radius: 0.25rem;
+  justify-content: flex-end;
+}
+
+.row.react-bootstrap-table-pagination {
+  margin-top: 10px;
+}
+
+.sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link.active,
+.sidebar-light-primary .nav-sidebar > .nav-item > .nav-link.active {
+  background-color: #1e78b3;
+  color: #fff;
+}
+
+.react-bs-table-csv-btn.btn.btn-default.btn.btn-secondary.buttons-csv.buttons-html5 {
+  background-color: #f8f9fa;
+  border-color: rgb(255 255 255);
+  color: #3498db;
+}
