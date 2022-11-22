@@ -1,21 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/powergrid-logo.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/powergrid-logo.png" />
-    <!--
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="%PUBLIC_URL%/powergrid-logo.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="Web site created using create-react-app" />
+  <link rel="apple-touch-icon" href="%PUBLIC_URL%/powergrid-logo.png" />
+  <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
+  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+  <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
       Only files inside the `public` folder can be referenced from the HTML.
@@ -25,34 +23,25 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
 
-    <!-- Google Font: Source Sans Pro -->
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback"
-    />
-    <!-- Font Awesome Icons -->
-    <link
-      rel="stylesheet"
-      href="%PUBLIC_URL%/plugins/fontawesome-free/css/all.min.css"
-    />
-    <!-- IonIcons -->
-    <link
-      rel="stylesheet"
-      href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"
-    />
-    <!-- Theme style -->
-    <link rel="stylesheet" href="%PUBLIC_URL%/dist/css/adminlte.min.css" />
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback" />
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="%PUBLIC_URL%/plugins/fontawesome-free/css/all.min.css" />
+  <!-- IonIcons -->
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" />
+  <!-- Theme style -->
+  <link rel="stylesheet" href="%PUBLIC_URL%/dist/css/adminlte.min.css" />
 
-    <title>WR-II RHQ Contracts</title>
-  </head>
+  <title>WR-II RHQ Contracts</title>
+</head>
 
-  <!--Added classes for fix footer and navbar-->
-  <body
-    class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed"
-  >
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-    <!--
+<!--Added classes for fix footer and navbar-->
+
+<body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+  <div id="root"></div>
+  <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
 
@@ -63,31 +52,24 @@
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
 
-    <!-- REQUIRED SCRIPTS -->
+  <!-- REQUIRED SCRIPTS -->
 
-    <!-- jQuery -->
-    <script src="%PUBLIC_URL%/plugins/jquery/jquery.min.js"></script>
+  <!-- jQuery -->
+  <script src="%PUBLIC_URL%/plugins/jquery/jquery.min.js"></script>
 
-    <!-- Added jquery function for full length of main sidebar-->
-    <script type="text/javascript">
-      jQuery(document).ready(function ($) {
-        $(".main-sidebar").height($(document).outerHeight());
-      });
-    </script>
+  <!-- Bootstrap -->
+  <script src="%PUBLIC_URL%/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- AdminLTE -->
+  <script src="%PUBLIC_URL%/dist/js/adminlte.js"></script>
 
-    <!-- Bootstrap -->
-    <script src="%PUBLIC_URL%/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <!-- AdminLTE -->
-    <script src="%PUBLIC_URL%/dist/js/adminlte.js"></script>
+  <!-- OPTIONAL SCRIPTS -->
+  <script src="%PUBLIC_URL%/plugins/chart.js/Chart.min.js"></script>
 
-    <!-- OPTIONAL SCRIPTS -->
-    <script src="%PUBLIC_URL%/plugins/chart.js/Chart.min.js"></script>
+  <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+  <!--<script src="%PUBLIC_URL%/dist/js/pages/dashboard3.js"></script>-->
 
-    <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-    <!--<script src="%PUBLIC_URL%/dist/js/pages/dashboard3.js"></script>-->
-
-    <!-- DataTables  & Plugins -->
-<!--    <script src="%PUBLIC_URL%/plugins/datatables/jquery.dataTables.min.js"></script>
+  <!-- DataTables  & Plugins -->
+  <!--    <script src="%PUBLIC_URL%/plugins/datatables/jquery.dataTables.min.js"></script>
     <script src="%PUBLIC_URL%/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
     <script src="%PUBLIC_URL%/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
     <script src="%PUBLIC_URL%/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
@@ -117,5 +99,31 @@
         });
       });
     </script>-->
-  </body>
+</body>
+
+<!-- Added jquery function for full length of main sidebar-->
+<script type="text/javascript">
+  jQuery(document).ready(function ($) {
+    $(".sidebar").height($(document).outerHeight());
+  });
+</script>
+
+<!--Added for sidebar menu navigation-->
+<script>
+  $(document).ready(function () {
+    $('.nav-item ').click(function () {
+
+      if ($(this).hasClass('menu-open')) {
+        $(this).removeClass("menu-open");
+        $(this).children().removeClass("active");
+      } else {
+        $(this).addClass("menu-open");
+        $(this).children().addClass("active");
+      }
+      $('.nav-item').children().removeClass('active').not(this);
+      $(this).children().addClass("active");
+    });
+  }); 
+</script>
+
 </html>
