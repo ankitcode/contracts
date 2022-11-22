@@ -1,7 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Formik, Form, useField } from 'formik';
-import * as Yup from 'yup';
+import { Formik, Form, useField } from "formik";
+import * as Yup from "yup";
+import Select from "react-select";
+import Card from 'react-bootstrap/Card';
 
 const MyTextInput = ({ label, ...props }) => {
   // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
@@ -24,7 +26,7 @@ const MyCheckbox = ({ children, ...props }) => {
   // Formik does this too! When you specify `type` to useField(), it will
   // return the correct bag of props for you -- a `checked` prop will be included
   // in `field` alongside `name`, `value`, `onChange`, and `onBlur`
-  const [field, meta] = useField({ ...props, type: 'checkbox' });
+  const [field, meta] = useField({ ...props, type: "checkbox" });
   return (
     <div>
       <label className="checkbox-input">
@@ -51,8 +53,25 @@ const MySelect = ({ label, ...props }) => {
   );
 };
 
-
 const AddNew = () => {
+  // Options for select box
+  const procurementNatureOptions = [
+    { value: "worksCivil", label: "Works or Civil" },
+    { value: "goods", label: "Goods" },
+    { value: "services", label: "Services" },
+  ];
+
+  const throughGeMOptions = [
+    { value: "yes", label: "Yes" },
+    { value: "no", label: "No" },
+  ];
+
+  const gemModeOptions = [
+    { value: "gemCategories", label: "Categories Available on GeM" },
+    { value: "custom", label: "Through Custom Bidding" },
+    { value: "boq", label: "BoQ Based Bidding" },
+  ];
+
   return (
     <>
       <div className="content-wrapper">
@@ -78,9 +97,107 @@ const AddNew = () => {
           <div className="container-fluid">
             <div className="row">
               <div className="col-12">
-                <div className="card">
-                  <div className="card-header">
-                    <h3 className="card-title"></h3>
+                <Card>
+                  <Card.Header>
+                    <Card.Title></Card.Title>
+                  </Card.Header>
+
+                  <div className="card card-info shadow bg-white pt-1 pb-1 pl-1 pr-1 rounded">
+                    <Card.Header>
+                      <Card.Title>Add Contract Data</Card.Title>
+                    </Card.Header>
+
+                    <form className="form-horizontal">
+                      <div className="card-body">
+                        <div className="form-group row">
+                          <label
+                            for="packageName"
+                            className="col-2 col-form-label"
+                          >
+                            Package Name
+                          </label>
+                          <div className="col-10">
+                            <textarea
+                              type="textarea"
+                              className="form-control"
+                              id="packageName"
+                              row={2}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="form-group row">
+                          <label for="loaCopy" className="col-2 col-form-label">
+                            LOA
+                          </label>
+                          <div className="col-2">
+                            <input
+                              type="text"
+                              className="form-control"
+                              id="loaCopy"
+                            />
+                          </div>
+                          <label for="date" className="col-2 col-form-label">
+                            Awarded On
+                          </label>
+                          <div className="col-2">
+                            <input
+                              type="date"
+                              className="form-control"
+                              id="date"
+                            />
+                          </div>
+                          <label for="amount" className="col-1 col-form-label">
+                            Value <span>&#8377;</span>
+                          </label>
+                          <div className="col-3">
+                            <input
+                              type="text"
+                              className="form-control"
+                              id="amount"
+                            />
+                          </div>
+                        </div>
+                        <div className="form-group row">
+                          <label
+                            for="natureOfProcurement"
+                            className="col-2 col-form-label"
+                          >
+                            Procurement Nature
+                          </label>
+                          <div className="col-2">
+                            <Select options={procurementNatureOptions} />
+                          </div>
+                          <label
+                            for="throughGeM"
+                            className="col-2 col-form-label"
+                          >
+                            Through GeM
+                          </label>
+                          <div className="col-2">
+                            <Select options={throughGeMOptions} />
+                          </div>
+                          <label for="gemMode" className="col-1 col-form-label">
+                            GeM Mode
+                          </label>
+                          <div className="col-3">
+                            <Select options={gemModeOptions} />
+                          </div>
+                        </div>
+                      </div>
+
+                      <Card.Footer>
+                        <button type="submit" className="btn btn-info">
+                          Save
+                        </button>
+                        <button
+                          type="submit"
+                          className="btn btn-default float-right"
+                        >
+                          Reset
+                        </button>
+                      </Card.Footer>
+                    </form>
                   </div>
 
                   <div className="card">
@@ -166,7 +283,7 @@ const AddNew = () => {
                       </Formik>
                     </div>
                   </div>
-                </div>
+                </Card>
               </div>
             </div>
           </div>
