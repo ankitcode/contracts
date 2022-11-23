@@ -7,8 +7,13 @@ import Home from "./components/Contents/Home";
 //Import for router, routes and route
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AddNew from "./components/Contents/AddNew";
+import { useEffect } from 'react';
 
 function App() {
+  useEffect(() => {
+    const trees = window.$('[data-widget="treeview"]');
+    trees.Treeview("init");
+  }, []);
   return (
     <div className="wrapper">
       {/* Add components on page */}

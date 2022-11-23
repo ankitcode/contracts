@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const Sidebar = () => {
+  
   return (
     <>
       {/* Main Sidebar Container */}
@@ -143,7 +144,7 @@ const Sidebar = () => {
               {/*Added for Reports */}
               <li className="nav-item">
                 <a href="#" className="nav-link">
-                <i className="fas fa-file nav-icon" />
+                  <i className="fas fa-file nav-icon" />
                   <p>
                     Report
                     <i className="fas fa-angle-left right" />
