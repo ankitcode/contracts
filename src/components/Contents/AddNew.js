@@ -1,4 +1,5 @@
 import React from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Field, Formik, Form, useField, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -65,12 +66,14 @@ const AddNew = () => {
   ];
 
   const gemModeOptions = [
+    { value: "notApplicable", label: "Not Applicable" },
     { value: "gemCategories", label: "Categories Available on GeM" },
     { value: "custom", label: "Through Custom Bidding" },
     { value: "boq", label: "BoQ Based Bidding" },
   ];
 
   const reasonNotThroughGeM = [
+    { value: "notApplicable", label: "Not Applicable" },
     { value: "urgent", label: "Urgent" },
     { value: "rateContract", label: "Rate Contract" },
     { value: "pac", label: "PAC/OEM Category" },
@@ -84,14 +87,56 @@ const AddNew = () => {
   ];
 
   const availonGeM = [
+    { value: "notApplicable", label: "Not Applicable" },
     { value: "yes", label: "Yes" },
     { value: "no", label: "No" },
   ];
 
   const availabilityReportCreated = [
+    { value: "notApplicable", label: "Not Applicable" },
     { value: "yes", label: "Yes" },
     { value: "no", label: "No" },
   ];
+
+  const [fileName, setFileName] = useState("");
+  const FILE_SIZE = 2048 * 1024;
+  const SUPPORTED_FORMATS = ["application/pdf"];
+  const validationSchema = Yup.object({
+    packageName: Yup.string()
+      .matches(
+        /^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/,
+        "Enter Valid Package Name!"
+      )
+      .required("Required!"),
+    loaCopy: Yup.mixed()
+      .required("File is Required!")
+      .test(
+        "fileFormat",
+        "Only pdf Allowed!",
+        (value) => value && SUPPORTED_FORMATS.includes(value.type)
+      )
+      .test(
+        "fileSize",
+        "Max file size Allowed is 2 MB !",
+        (value) => value && value.size <= FILE_SIZE
+      ),
+    dateAwarded: Yup.string().required("Required!"),
+    amount: Yup.string()
+      .matches(/^\d+$/, "Enter only digits!")
+      .required("Required!"),
+    natureOfProcurement: Yup.object().required("Required!"),
+    throughGeM: Yup.object().required("Required!"),
+    gemMode: Yup.object().required("Required!"),
+    reasonNotGeM: Yup.object().required("Required!"),
+    availableOnGeM: Yup.object().required("Required!"),
+    approvingOfficer: Yup.string()
+      .matches(
+        /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/gi,
+        "Enter a Valid Name!"
+      )
+      .required("Required!"),
+    availabilityReport: Yup.object().required("Required!"),
+  });
 
   return (
     <>
@@ -118,14 +163,14 @@ const AddNew = () => {
           <div className="container-fluid">
             <div className="row">
               <div className="col-12">
-                <Card style={{ width: "75rem" }}>
+                <Card style={{ width: "60rem" }}>
                   <Card.Header>
                     <Card.Title></Card.Title>
                   </Card.Header>
 
                   <div
                     className="card card-info shadow bg-white pt-1 pb-1 pl-1 pr-1 rounded"
-                    style={{ width: "75rem" }}
+                    style={{ width: "60rem" }}
                   >
                     <Card.Header>
                       <Card.Title>Add Contract Data</Card.Title>
@@ -134,10 +179,10 @@ const AddNew = () => {
                     <Formik
                       initialValues={{
                         packageName: "",
-                        loaCopy: "",
+                        loaCopy: null,
                         dateAwarded: "",
                         amount: "",
-                        natureOfProcurement: null,
+                        natureOfProcurement: "",
                         throughGeM: "",
                         gemMode: "",
                         reasonNotGeM: "",
@@ -145,43 +190,7 @@ const AddNew = () => {
                         approvingOfficer: "",
                         availabilityReport: "",
                       }}
-                      validate={(values) => {
-                        const errors = {};
-                        if (!values.packageName) {
-                          errors.packageName = "Required";
-                        }
-                        if (!values.loaCopy) {
-                          errors.loaCopy = "Required";
-                        }
-                        if (!values.dateAwarded) {
-                          errors.dateAwarded = "Required";
-                        }
-                        if (!values.amount) {
-                          errors.amount = "Required";
-                        }
-                        if (!values.natureOfProcurement) {
-                          errors.natureOfProcurement = "Required";
-                        }
-                        if (!values.throughGeM) {
-                          errors.throughGeM = "Required";
-                        }
-                        if (!values.gemMode) {
-                          errors.gemMode = "Required";
-                        }
-                        if (!values.reasonNotGeM) {
-                          errors.reasonNotGeM = "Required";
-                        }
-                        if (!values.availableOnGeM) {
-                          errors.availableOnGeM = "Required";
-                        }
-                        if (!values.approvingOfficer) {
-                          errors.approvingOfficer = "Required";
-                        }
-                        if (!values.availabilityReport) {
-                          errors.availabilityReport = "Required";
-                        }
-                        return errors;
-                      }}
+                      validationSchema={validationSchema}
                       onSubmit={(values, { setSubmitting }) => {
                         setTimeout(() => {
                           alert(JSON.stringify(values, null, 2));
@@ -225,19 +234,53 @@ const AddNew = () => {
                                   onBlur={handleBlur}
                                   value={values.packageName}
                                 />
-                                <ErrorMessage name="packageName" />
+                                <ErrorMessage name="packageName">
+                                  {(msg) => (
+                                    <div style={{ color: "red" }}>{msg}</div>
+                                  )}
+                                </ErrorMessage>
                               </div>
                             </div>
 
                             <div className="form-group row">
-                              <label
-                                htmlFor="loaCopy"
-                                className="col-3 col-form-label"
-                              >
+                              <label className="col-3 col-form-label">
                                 LOA
                               </label>
                               <div className="col-3">
-                                <input
+                                <div className="input-group">
+                                  <div className="custom-file">
+                                    <input
+                                      name="loaCopy"
+                                      type="file"
+                                      onChange={(event) => {
+                                        console.log(
+                                          event.currentTarget.files[0]
+                                        );
+                                        setFieldValue(
+                                          "loaCopy",
+                                          event.currentTarget.files[0]
+                                        );
+                                        setFileName(
+                                          event.currentTarget.files[0].name
+                                        );
+                                        //setTouched(true);
+                                      }}
+                                      onBlur={handleBlur}
+                                      className="form-control"
+                                      id="loaCopy"
+                                    />
+                                    <label
+                                      className="custom-file-label"
+                                      htmlFor="loaCopy"
+                                    >
+                                      {fileName ? fileName : ""}
+                                    </label>
+                                  </div>
+                                  {/*<div className="input-group-append">
+                                    <span className="input-group-text">Upload</span>
+                                  </div>*/}
+                                </div>
+                                {/* <input
                                   name="loaCopy"
                                   type="file"
                                   onChange={(event) => {
@@ -251,8 +294,12 @@ const AddNew = () => {
                                   onBlur={handleBlur}
                                   //value={values.loaCopy}
                                   className="form-control"
-                                />
-                                <ErrorMessage name="loaCopy" />
+                                />*/}
+                                <ErrorMessage name="loaCopy">
+                                  {(msg) => (
+                                    <div style={{ color: "red" }}>{msg}</div>
+                                  )}
+                                </ErrorMessage>
                               </div>
                               <label
                                 htmlFor="dateAwarded"
@@ -275,7 +322,11 @@ const AddNew = () => {
                                   onBlur={handleBlur}
                                   value={values.dateAwarded}
                                 />
-                                <ErrorMessage name="dateAwarded" />
+                                <ErrorMessage name="dateAwarded">
+                                  {(msg) => (
+                                    <div style={{ color: "red" }}>{msg}</div>
+                                  )}
+                                </ErrorMessage>
                               </div>
                             </div>
                             <div className="form-group row">
@@ -297,7 +348,11 @@ const AddNew = () => {
                                   onBlur={handleBlur}
                                   value={values.amount}
                                 />
-                                <ErrorMessage name="amount" />
+                                <ErrorMessage name="amount">
+                                  {(msg) => (
+                                    <div style={{ color: "red" }}>{msg}</div>
+                                  )}
+                                </ErrorMessage>
                               </div>
                               <label
                                 htmlFor="natureOfProcurement"
@@ -310,16 +365,17 @@ const AddNew = () => {
                                   name="natureOfProcurement"
                                   options={procurementNatureOptions}
                                   onChange={(opt, e) => {
-                                    setFieldValue(
-                                      "natureOfProcurement",
-                                      opt
-                                    );
+                                    setFieldValue("natureOfProcurement", opt);
                                     //setTouched(true);
                                   }}
                                   onBlur={handleBlur}
                                   value={values.natureOfProcurement}
                                 />
-                                <ErrorMessage name="natureOfProcurement" />
+                                <ErrorMessage name="natureOfProcurement">
+                                  {(msg) => (
+                                    <div style={{ color: "red" }}>{msg}</div>
+                                  )}
+                                </ErrorMessage>
                               </div>
                             </div>
                             <div className="form-group row">
@@ -334,16 +390,17 @@ const AddNew = () => {
                                   name="throughGeM"
                                   options={throughGeMOptions}
                                   onChange={(opt, e) => {
-                                    setFieldValue(
-                                      "throughGeM",
-                                      opt
-                                    );
+                                    setFieldValue("throughGeM", opt);
                                     //setTouched(true);
                                   }}
                                   onBlur={handleBlur}
                                   value={values.throughGeM}
                                 />
-                                <ErrorMessage name="throughGeM" />
+                                <ErrorMessage name="throughGeM">
+                                  {(msg) => (
+                                    <div style={{ color: "red" }}>{msg}</div>
+                                  )}
+                                </ErrorMessage>
                               </div>
                               <label
                                 htmlFor="gemMode"
@@ -356,16 +413,17 @@ const AddNew = () => {
                                   name="gemMode"
                                   options={gemModeOptions}
                                   onChange={(opt, e) => {
-                                    setFieldValue(
-                                      "gemMode",
-                                      opt
-                                    );
+                                    setFieldValue("gemMode", opt);
                                     //setTouched(true);
                                   }}
                                   onBlur={handleBlur}
                                   value={values.gemMode}
                                 />
-                                <ErrorMessage name="gemMode" />
+                                <ErrorMessage name="gemMode">
+                                  {(msg) => (
+                                    <div style={{ color: "red" }}>{msg}</div>
+                                  )}
+                                </ErrorMessage>
                               </div>
                             </div>
                             <hr
@@ -373,99 +431,123 @@ const AddNew = () => {
                                 height: "10px",
                               }}
                             />
-                            <div className="form-group row">
-                              <label
-                                htmlFor="reasonNotGeM"
-                                className="col-3 col-form-label"
-                              >
-                                Reason for Not Through GeM
-                              </label>
-                              <div className="col-3">
-                                <Select
-                                  name="reasonNotGeM"
-                                  options={reasonNotThroughGeM}
-                                  onChange={(opt, e) => {
-                                    setFieldValue(
-                                      "reasonNotGeM",
-                                      opt
-                                    );
-                                    //setTouched(true);
-                                  }}
-                                  onBlur={handleBlur}
-                                  value={values.reasonNotGeM}
-                                />
-                                <ErrorMessage name="reasonNotGeM" />
-                              </div>
-                              <label
-                                htmlFor="availableOnGeM"
-                                className="col-3 col-form-label"
-                              >
-                                Available on GeM
-                              </label>
-                              <div className="col-3">
-                                <Select
-                                  name="availableOnGeM"
-                                  options={availonGeM}
-                                  onChange={(opt, e) => {
-                                    setFieldValue(
-                                      "availableOnGeM",
-                                      opt
-                                    );
-                                    //setTouched(true);
-                                  }}
-                                  onBlur={handleBlur}
-                                  value={values.availableOnGeM}
-                                />
-                                <ErrorMessage name="availableOnGeM" />
-                              </div>
-                            </div>
-                            <div className="form-group row">
-                              <label
-                                htmlFor="approvingOfficer"
-                                className="col-3 col-form-label"
-                              >
-                                Approving Officer
-                              </label>
-                              <div className="col-3">
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  name="approvingOfficer"
-                                  onChange={(event) => {
-                                    setFieldValue(
-                                      "approvingOfficer",
-                                      event.target.value
-                                    );
-                                    //setTouched(true);
-                                  }}
-                                  onBlur={handleBlur}
-                                  value={values.approvingOfficer}
-                                />
-                                <ErrorMessage name="approvingOfficer" />
-                              </div>
-                              <label
-                                htmlFor="availabilityReport"
-                                className="col-3 col-form-label"
-                              >
-                                Availability Report Created
-                              </label>
-                              <div className="col-3">
-                                <Select
-                                  name="availabilityReport"
-                                  options={availabilityReportCreated}
-                                  onChange={(opt, e) => {
-                                    setFieldValue(
-                                      "availabilityReport",
-                                      opt
-                                    );
-                                    //setTouched(true);
-                                  }}
-                                  onBlur={handleBlur}
-                                  value={values.availabilityReport}
-                                />
-                                <ErrorMessage name="availabilityReport" />
-                              </div>
-                            </div>
+                            {values.throughGeM.value === "no" ? (
+                              <>
+                                <div className="form-group row">
+                                  <label
+                                    htmlFor="reasonNotGeM"
+                                    className="col-3 col-form-label"
+                                  >
+                                    Reason for Not Through GeM
+                                  </label>
+                                  <div className="col-3">
+                                    <Select
+                                      name="reasonNotGeM"
+                                      options={reasonNotThroughGeM}
+                                      onChange={(opt, e) => {
+                                        setFieldValue("reasonNotGeM", opt);
+                                        //setTouched(true);
+                                      }}
+                                      onBlur={handleBlur}
+                                      value={values.reasonNotGeM}
+                                    />
+                                    <ErrorMessage name="reasonNotGeM">
+                                      {(msg) => (
+                                        <div style={{ color: "red" }}>
+                                          {msg}
+                                        </div>
+                                      )}
+                                    </ErrorMessage>
+                                  </div>
+                                  <label
+                                    htmlFor="availableOnGeM"
+                                    className="col-3 col-form-label"
+                                  >
+                                    Available on GeM
+                                  </label>
+                                  <div className="col-3">
+                                    <Select
+                                      name="availableOnGeM"
+                                      options={availonGeM}
+                                      onChange={(opt, e) => {
+                                        setFieldValue("availableOnGeM", opt);
+                                        //setTouched(true);
+                                      }}
+                                      onBlur={handleBlur}
+                                      value={values.availableOnGeM}
+                                    />
+                                    <ErrorMessage name="availableOnGeM">
+                                      {(msg) => (
+                                        <div style={{ color: "red" }}>
+                                          {msg}
+                                        </div>
+                                      )}
+                                    </ErrorMessage>
+                                  </div>
+                                </div>
+                                <div className="form-group row">
+                                  <label
+                                    htmlFor="approvingOfficer"
+                                    className="col-3 col-form-label"
+                                  >
+                                    Approving Officer
+                                  </label>
+                                  <div className="col-3">
+                                    <input
+                                      type="text"
+                                      className="form-control"
+                                      name="approvingOfficer"
+                                      onChange={(event) => {
+                                        setFieldValue(
+                                          "approvingOfficer",
+                                          event.target.value
+                                        );
+                                        //setTouched(true);
+                                      }}
+                                      onBlur={handleBlur}
+                                      value={values.approvingOfficer}
+                                    />
+                                    <ErrorMessage name="approvingOfficer">
+                                      {(msg) => (
+                                        <div style={{ color: "red" }}>
+                                          {msg}
+                                        </div>
+                                      )}
+                                    </ErrorMessage>
+                                  </div>
+                                  <label
+                                    htmlFor="availabilityReport"
+                                    className="col-3 col-form-label"
+                                  >
+                                    Availability Report Created
+                                  </label>
+                                  <div className="col-3">
+                                    <Select
+                                      name="availabilityReport"
+                                      options={availabilityReportCreated}
+                                      onChange={(opt, e) => {
+                                        setFieldValue(
+                                          "availabilityReport",
+                                          opt
+                                        );
+                                        //setTouched(true);
+                                      }}
+                                      onBlur={handleBlur}
+                                      value={values.availabilityReport}
+                                    />
+                                    <ErrorMessage name="availabilityReport">
+                                      {(msg) => (
+                                        <div style={{ color: "red" }}>
+                                          {msg}
+                                        </div>
+                                      )}
+                                    </ErrorMessage>
+                                  </div>
+                                </div>
+                              </>
+                            ) : (
+                              <></>
+                            )}
                           </div>
                           <Card.Footer>
                             <button type="submit" className="btn btn-info">
@@ -474,7 +556,10 @@ const AddNew = () => {
                             <button
                               type="submit"
                               className="btn btn-default float-right"
-                              onClick={handleReset}
+                              onClick={(e) => {
+                                handleReset(e);
+                                setFileName("");
+                              }}
                             >
                               Reset
                             </button>
