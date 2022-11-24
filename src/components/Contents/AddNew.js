@@ -25,6 +25,24 @@ const FormSelect = ({ name, options }) => {
   );
 };
 
+const FileSelect = ({ name, options }) => {
+  const [field, meta, helpers] = useField(name);
+  return (
+    <>
+      <input
+        name={name}
+        type="file"
+        onChange={(event) => {
+          helpers.setFieldValue("loaCopy", event.currentTarget.files[0]);
+        }}
+        onBlur={() => helpers.setTouched(true)}
+        className="form-control"
+      />
+      <ErrorMessage name={name} />
+    </>
+  );
+};
+
 const AddNew = () => {
   // Options for select box
   const procurementNatureOptions = [
@@ -88,7 +106,7 @@ const AddNew = () => {
           </div>
         </section>
 
-        <section className="content">
+        <section className="content" id="scrollingCard">
           <div className="container-fluid">
             <div className="row">
               <div className="col-12">
@@ -109,7 +127,7 @@ const AddNew = () => {
                       <Formik
                         initialValues={{
                           packageName: "",
-                          loaCopy: "",
+                          loaCopy: null,
                           dateAwarded: "",
                           amount: "",
                           natureOfProcurement: "",
@@ -173,6 +191,7 @@ const AddNew = () => {
                           handleSubmit,
                           isSubmitting,
                           handleReset,
+                          setFieldValue,
                           /* and other goodies */
                         }) => (
                           <form
@@ -209,19 +228,10 @@ const AddNew = () => {
                                   LOA
                                 </label>
                                 <div className="col-3">
-                                  <div class="custom-file">
-                                    <input
-                                      type="file"
-                                      class="custom-file-input"
+                                  <div className="custom-file">
+                                    <FileSelect
                                       name="loaCopy"
-                                      onChange={handleChange}
-                                      onBlur={handleBlur}
-                                      value={values.loaCopy}
                                     />
-                                    <label
-                                      class="custom-file-label"
-                                      for="loaCopy"
-                                    ></label>
                                   </div>
                                   {/*<input
                                     type="file"

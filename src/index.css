@@ -58,3 +58,8 @@
     border-color: #5898c3;
     box-shadow: none;
 }
+
+#scrollingCard {
+  overflow: scroll;
+  white-space: nowrap; 
+}
