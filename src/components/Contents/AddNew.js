@@ -163,14 +163,14 @@ const AddNew = () => {
           <div className="container-fluid">
             <div className="row">
               <div className="col-12">
-                <Card style={{ width: "60rem" }}>
+                <Card style={{ width: "75rem" }}>
                   <Card.Header>
                     <Card.Title></Card.Title>
                   </Card.Header>
 
                   <div
                     className="card card-info shadow bg-white pt-1 pb-1 pl-1 pr-1 rounded"
-                    style={{ width: "60rem" }}
+                    style={{ width: "75rem" }}
                   >
                     <Card.Header>
                       <Card.Title>Add Contract Data</Card.Title>
@@ -263,7 +263,6 @@ const AddNew = () => {
                                         setFileName(
                                           event.currentTarget.files[0].name
                                         );
-                                        //setTouched(true);
                                       }}
                                       onBlur={handleBlur}
                                       className="form-control"
@@ -276,25 +275,7 @@ const AddNew = () => {
                                       {fileName ? fileName : ""}
                                     </label>
                                   </div>
-                                  {/*<div className="input-group-append">
-                                    <span className="input-group-text">Upload</span>
-                                  </div>*/}
                                 </div>
-                                {/* <input
-                                  name="loaCopy"
-                                  type="file"
-                                  onChange={(event) => {
-                                    console.log(event.currentTarget.files[0].name);
-                                    setFieldValue(
-                                      "loaCopy",
-                                      event.currentTarget.files[0]
-                                    );
-                                    //setTouched(true);
-                                  }}
-                                  onBlur={handleBlur}
-                                  //value={values.loaCopy}
-                                  className="form-control"
-                                />*/}
                                 <ErrorMessage name="loaCopy">
                                   {(msg) => (
                                     <div style={{ color: "red" }}>{msg}</div>
@@ -546,7 +527,37 @@ const AddNew = () => {
                                 </div>
                               </>
                             ) : (
-                              <></>
+                              <>
+                              
+                                {/*<div className="form-group row">
+                                  <label
+                                    htmlFor="reasonNotGeM"
+                                    className="col-3 col-form-label"
+                                  >
+                                    Reason for Not Through GeM
+                                  </label>
+                                  <div className="col-3">
+                                    <Select
+                                      name="reasonNotGeM"
+                                      options={reasonNotThroughGeM}
+                                      onChange={(opt, e) => {
+                                        setFieldValue("reasonNotGeM", opt);
+                                        //setTouched(true);
+                                      }}
+                                      onBlur={handleBlur}
+                                      value={values.reasonNotGeM}
+                                      defaultValue={{value:"notApplicable", label:"Not Applicable"}}
+                                    />
+                                    <ErrorMessage name="reasonNotGeM">
+                                      {(msg) => (
+                                        <div style={{ color: "red" }}>
+                                          {msg}
+                                        </div>
+                                      )}
+                                    </ErrorMessage>
+                                  </div>
+                                </div>*/}
+                              </>
                             )}
                           </div>
                           <Card.Footer>
