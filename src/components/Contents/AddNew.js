@@ -101,13 +101,11 @@ const AddNew = () => {
   const [fileName, setFileName] = useState("");
   const FILE_SIZE = 2048 * 1024;
   const SUPPORTED_FORMATS = ["application/pdf"];
+
+  //const [showNotGemPart, setShowNotGemPart] = useState(false);
+
   const validationSchema = Yup.object({
-    packageName: Yup.string()
-      .matches(
-        /^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/,
-        "Enter Valid Package Name!"
-      )
-      .required("Required!"),
+    packageName: Yup.string().required("Required!"),
     loaCopy: Yup.mixed()
       .required("File is Required!")
       .test(
@@ -127,15 +125,55 @@ const AddNew = () => {
     natureOfProcurement: Yup.object().required("Required!"),
     throughGeM: Yup.object().required("Required!"),
     gemMode: Yup.object().required("Required!"),
-    reasonNotGeM: Yup.object().required("Required!"),
-    availableOnGeM: Yup.object().required("Required!"),
-    approvingOfficer: Yup.string()
-      .matches(
-        /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/gi,
-        "Enter a Valid Name!"
-      )
-      .required("Required!"),
-    availabilityReport: Yup.object().required("Required!"),
+    reasonNotGeM: Yup.object().when("throughGeM", {
+      is: (val) => {
+        if (val) {
+          console.log(val);
+          return val.value === "no";
+        } else {
+          return true;
+        }
+      },
+      then: Yup.object().required("Required!"),
+    }),
+    availableOnGeM: Yup.object().when("throughGeM", {
+      is: (val) => {
+        if (val) {
+          console.log(val);
+          return val.value === "no";
+        } else {
+          return true;
+        }
+      },
+      then: Yup.object().required("Required!"),
+    }),
+    approvingOfficer: Yup.string().when("throughGeM", {
+      is: (val) => {
+        if (val) {
+          console.log(val);
+          return val.value === "no";
+        } else {
+          return true;
+        }
+      },
+      then: Yup.string()
+        .matches(
+          /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/gi,
+          "Enter a Valid Name!"
+        )
+        .required("Required!"),
+    }),
+    availabilityReport: Yup.object().when("throughGeM", {
+      is: (val) => {
+        if (val) {
+          console.log(val);
+          return val.value === "no";
+        } else {
+          return true;
+        }
+      },
+      then: Yup.object().required("Required!"),
+    }),
   });
 
   return (
@@ -528,7 +566,6 @@ const AddNew = () => {
                               </>
                             ) : (
                               <>
-                              
                                 {/*<div className="form-group row">
                                   <label
                                     htmlFor="reasonNotGeM"

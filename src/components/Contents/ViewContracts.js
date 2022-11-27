@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import BootstrapTable from "react-bootstrap-table-next";
 import paginationFactory from "react-bootstrap-table2-paginator";
@@ -8,11 +8,14 @@ import ToolkitProvider, {
   Search,
   CSVExport,
 } from "react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 
 const ViewContracts = () => {
   // Data for table
   const data = [
     {
+      id: "1",
       packageName: "Desktop Procurement",
       dateAwarded: "2022-12-23T18:25:43.511Z",
       valueWithGST: "100000",
@@ -25,6 +28,7 @@ const ViewContracts = () => {
       availabilityReport: "NA",
     },
     {
+      id: "2",
       packageName: "Desktop Procurement",
       dateAwarded: "2022-12-23T18:25:43.511Z",
       valueWithGST: "100000",
@@ -37,6 +41,7 @@ const ViewContracts = () => {
       availabilityReport: "Yes",
     },
     {
+      id: "3",
       packageName: "Desktop Procurement",
       dateAwarded: "2022-12-23T18:25:43.511Z",
       valueWithGST: "100000",
@@ -49,6 +54,7 @@ const ViewContracts = () => {
       availabilityReport: "NA",
     },
     {
+      id: "4",
       packageName: "Desktop Procurement",
       dateAwarded: "2022-12-23T18:25:43.511Z",
       valueWithGST: "100000",
@@ -61,6 +67,7 @@ const ViewContracts = () => {
       availabilityReport: "Yes",
     },
     {
+      id: "5",
       packageName: "Desktop Procurement",
       dateAwarded: "2022-12-23T18:25:43.511Z",
       valueWithGST: "100000",
@@ -73,6 +80,7 @@ const ViewContracts = () => {
       availabilityReport: "NA",
     },
     {
+      id: "6",
       packageName: "Desktop Procurement",
       dateAwarded: "2022-12-23T18:25:43.511Z",
       valueWithGST: "100000",
@@ -85,6 +93,7 @@ const ViewContracts = () => {
       availabilityReport: "Yes",
     },
     {
+      id: "7",
       packageName: "Desktop Procurement",
       dateAwarded: "2022-12-23T18:25:43.511Z",
       valueWithGST: "100000",
@@ -97,6 +106,7 @@ const ViewContracts = () => {
       availabilityReport: "NA",
     },
     {
+      id: "8",
       packageName: "Desktop Procurement",
       dateAwarded: "2022-12-23T18:25:43.511Z",
       valueWithGST: "100000",
@@ -109,6 +119,7 @@ const ViewContracts = () => {
       availabilityReport: "Yes",
     },
     {
+      id: "9",
       packageName: "Desktop Procurement",
       dateAwarded: "2022-12-23T18:25:43.511Z",
       valueWithGST: "100000",
@@ -121,10 +132,36 @@ const ViewContracts = () => {
       availabilityReport: "NA",
     },
     {
+      id: "10",
       packageName: "Desktop Procurement",
       dateAwarded: "2022-12-23T18:25:43.511Z",
       valueWithGST: "100000",
       procurementNature: "Civil",
+      throughGeM: "Yes",
+      gemMode: "bidding",
+      notGeMReason: "NA",
+      itemOnGeM: "Yes",
+      notGeMApprovingOfficer: "NA",
+      availabilityReport: "NA",
+    },
+    {
+      id: "11",
+      packageName: "Desktop Procurement",
+      dateAwarded: "2022-12-23T18:25:43.511Z",
+      valueWithGST: "100000",
+      procurementNature: "Civil",
+      throughGeM: "Yes",
+      gemMode: "bidding",
+      notGeMReason: "NA",
+      itemOnGeM: "Yes",
+      notGeMApprovingOfficer: "NA",
+      availabilityReport: "NA",
+    },
+    /*{
+      packageName: "Desktop Procurement",
+      dateAwarded: "2022-12-23T18:25:43.511Z",
+      valueWithGST: "100000",
+      procurementNature: "Civil",
       throughGeM: "No",
       gemMode: "NA",
       notGeMReason: "Urgent",
@@ -2219,24 +2256,30 @@ const ViewContracts = () => {
       itemOnGeM: "Yes",
       notGeMApprovingOfficer: "ankit",
       availabilityReport: "Yes",
-    },
+    },*/
   ];
 
+  // Adding s_no to data
+  const doubled = data.map((item, idx) => (item.s_no = idx + 1));
+
   // Link to edit table data
-  {
-    /* const linkFollow = (cell, row, rowIndex, formatExtraData) => {
-    return <Link to="/edit">{row.Engine}</Link>;
-  };*/
-  }
+  const linkFollow = (cell, row, rowIndex, formatExtraData) => {
+    return <Link to="/edit">{row.packageName}</Link>;
+  };
+
+  //For delete modal
+  const [showModal, setModalShow] = useState(false);
+  const handleClose = () => {setRowToDelete({});setModalShow(false);}
+  const handleShow = () => setModalShow(true);
+
+  //Data to be deleted
+  const [rowToDelete, setRowToDelete] = useState({});
 
   // Columns for table
   const columns = [
     {
       dataField: "s_no",
       text: "S/No.",
-      formatter: (cell, row, rowIndex, formatExtraData) => {
-        return rowIndex + 1;
-      },
       headerStyle: { minWidth: "50px", backgroundColor: "#A7C7E7" },
       style: { width: "fit-content" },
     },
@@ -2247,9 +2290,6 @@ const ViewContracts = () => {
       headerStyle: { minWidth: "250px", backgroundColor: "#A7C7E7" },
       //formatter: linkFollow,
       sort: true,
-      //headerStyle: (colum, colIndex) => {
-      //  return { width: "100px", textAlign: "center" };
-      //},
     },
     {
       dataField: "dateAwarded",
@@ -2318,7 +2358,38 @@ const ViewContracts = () => {
       sort: true,
       searchable: false,
     },
+    {
+      dataField: "action",
+      text: "Action",
+      headerAlign: "center",
+      headerStyle: { minWidth: "100px", backgroundColor: "#A7C7E7" },
+      align: "center",
+      formatter: (cellContent, row) => {
+        return (
+          <>
+            <button
+              className="btn btn-danger btn-xs"
+              onClick={() => {
+                setModalShow(true);
+                setRowToDelete(row);
+              }}
+            >
+              <i className="fa fa-trash" aria-hidden="true"></i>
+            </button>
+          </>
+        );
+      },
+    },
   ];
+
+  // Delete function
+  const handleDelete = (row) => {
+    console.log(row);
+    // Todo - delete API call
+
+    setRowToDelete({});
+    setModalShow(false);
+  };
 
   // Date formatter
   const moment = require("moment");
@@ -2428,54 +2499,6 @@ const ViewContracts = () => {
                           >
                             <div className="row">
                               <div className="col-sm-12 col-md-6">
-                                {/*<div className="dt-buttons btn-group flex-wrap">
-                                  {" "}
-                                  <button
-                                    className="btn btn-secondary buttons-copy buttons-html5"
-                                    tabIndex="0"
-                                    aria-controls="example1"
-                                    type="button"
-                                  >
-                                    <span>Copy</span>
-                                  </button>{" "}
-                                  
-                                  <button
-                                    className="btn btn-secondary buttons-excel buttons-html5"
-                                    tabIndex="0"
-                                    aria-controls="example1"
-                                    type="button"
-                                  >
-                                    <span>Excel</span>
-                                  </button>{" "}
-                                  <button
-                                    className="btn btn-secondary buttons-pdf buttons-html5"
-                                    tabIndex="0"
-                                    aria-controls="example1"
-                                    type="button"
-                                  >
-                                    <span>PDF</span>
-                                  </button>{" "}
-                                  <button
-                                    className="btn btn-secondary buttons-print"
-                                    tabIndex="0"
-                                    aria-controls="example1"
-                                    type="button"
-                                  >
-                                    <span>Print</span>
-                                  </button>{" "}
-                                  <div className="btn-group">
-                                    <button
-                                      className="btn btn-secondary buttons-collection dropdown-toggle buttons-colvis"
-                                      tabIndex="0"
-                                      aria-controls="example1"
-                                      type="button"
-                                      aria-haspopup="true"
-                                    >
-                                      <span>Column visibility</span>
-                                      <span className="dt-down-arrow"></span>
-                                    </button>
-                                  </div>{" "}
-                                </div>*/}
                                 <ExportCSVButton
                                   {...props.csvProps}
                                   className="btn btn-secondary buttons-csv buttons-html5"
@@ -2497,8 +2520,7 @@ const ViewContracts = () => {
                                     className="form-control form-control-sm"
                                     placeholder=""
                                     aria-controls="example1"
-                                  >
-                                  </SearchBar>
+                                  ></SearchBar>
                                 </div>
                               </div>
                             </div>
@@ -2507,7 +2529,6 @@ const ViewContracts = () => {
                               {...props.baseProps}
                               bootstrap4
                               wrapperClasses="table-responsive"
-                              keyField="id"
                               data={data}
                               columns={columns}
                               pagination={paginationFactory(options)}
@@ -2515,10 +2536,35 @@ const ViewContracts = () => {
                               hover
                               condensed
                               defaultSorted={defaultSorted}
+                              keyField="id"
                             />
                           </div>
                         )}
                       </ToolkitProvider>
+                      <Modal
+                        show={showModal}
+                        onHide={handleClose}
+                        backdrop="static"
+                        centered
+                        keyboard="False"
+                        size='sm'
+                      >
+                        <Modal.Body>Do you want to delete?</Modal.Body>
+                        <Modal.Footer justifyContent="space-between">
+                          <Button variant="secondary" onClick={handleClose}>
+                            No
+                          </Button>
+                          <Button
+                            variant="danger"
+                            onClick={() => {
+                              handleDelete(rowToDelete);
+                            }}
+                            align="right"
+                          >
+                            Yes...Delete It!
+                          </Button>
+                        </Modal.Footer>
+                      </Modal>
                     </div>
                   </div>
                 </div>

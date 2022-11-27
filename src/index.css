@@ -63,3 +63,7 @@
   overflow: scroll;
   white-space: nowrap; 
 }
+
+.modal-footer {
+  justify-content: space-between;
+}
