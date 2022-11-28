@@ -10,6 +10,7 @@ import ToolkitProvider, {
 } from "react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
+import filterFactory, { dateFilter } from 'react-bootstrap-table2-filter';
 
 const ViewContracts = () => {
   // Data for table
@@ -2298,6 +2299,7 @@ const ViewContracts = () => {
       formatter: dateFormatter,
       headerStyle: { minWidth: "100px", backgroundColor: "#A7C7E7" },
       sort: true,
+      filter: dateFilter()
     },
     {
       dataField: "valueWithGST",
@@ -2537,6 +2539,7 @@ const ViewContracts = () => {
                               condensed
                               defaultSorted={defaultSorted}
                               keyField="id"
+                              filter={ filterFactory() }
                             />
                           </div>
                         )}

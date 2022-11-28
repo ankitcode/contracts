@@ -5,10 +5,6 @@ import { Field, Formik, Form, useField, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Select from "react-select";
 import Card from "react-bootstrap/Card";
-import { Dropdown } from "bootstrap";
-import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import { Resizable } from "react-resizable";
 
 const FormSelect = ({ name, options }) => {
   const [field, meta, helpers] = useField(name);
@@ -73,7 +69,6 @@ const AddNew = () => {
   ];
 
   const reasonNotThroughGeM = [
-    { value: "notApplicable", label: "Not Applicable" },
     { value: "urgent", label: "Urgent" },
     { value: "rateContract", label: "Rate Contract" },
     { value: "pac", label: "PAC/OEM Category" },
@@ -87,13 +82,11 @@ const AddNew = () => {
   ];
 
   const availonGeM = [
-    { value: "notApplicable", label: "Not Applicable" },
     { value: "yes", label: "Yes" },
     { value: "no", label: "No" },
   ];
 
   const availabilityReportCreated = [
-    { value: "notApplicable", label: "Not Applicable" },
     { value: "yes", label: "Yes" },
     { value: "no", label: "No" },
   ];
@@ -566,34 +559,7 @@ const AddNew = () => {
                               </>
                             ) : (
                               <>
-                                {/*<div className="form-group row">
-                                  <label
-                                    htmlFor="reasonNotGeM"
-                                    className="col-3 col-form-label"
-                                  >
-                                    Reason for Not Through GeM
-                                  </label>
-                                  <div className="col-3">
-                                    <Select
-                                      name="reasonNotGeM"
-                                      options={reasonNotThroughGeM}
-                                      onChange={(opt, e) => {
-                                        setFieldValue("reasonNotGeM", opt);
-                                        //setTouched(true);
-                                      }}
-                                      onBlur={handleBlur}
-                                      value={values.reasonNotGeM}
-                                      defaultValue={{value:"notApplicable", label:"Not Applicable"}}
-                                    />
-                                    <ErrorMessage name="reasonNotGeM">
-                                      {(msg) => (
-                                        <div style={{ color: "red" }}>
-                                          {msg}
-                                        </div>
-                                      )}
-                                    </ErrorMessage>
-                                  </div>
-                                </div>*/}
+                                
                               </>
                             )}
                           </div>

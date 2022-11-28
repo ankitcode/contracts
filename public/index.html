@@ -118,7 +118,7 @@
 <!--Added for sidebar menu navigation-->
 <script>
   $(document).ready(function () {
-    $('.nav-item ').click(function () {
+    $('nav-item').click(function () {
 
       if ($(this).hasClass('menu-open')) {
         $(this).removeClass("menu-open");
@@ -127,7 +127,7 @@
         $(this).addClass("menu-open");
         $(this).children().addClass("active");
       }
-      $('.nav-item').children().removeClass('active').not(this);
+      $('nav-item').children().removeClass('active').not(this);
       $(this).children().addClass("active");
 
     });
