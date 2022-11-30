@@ -10,7 +10,7 @@ import ToolkitProvider, {
 } from "react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import filterFactory, { dateFilter } from 'react-bootstrap-table2-filter';
+import filterFactory, { dateFilter, Comparator } from "react-bootstrap-table2-filter";
 
 const ViewContracts = () => {
   // Data for table
@@ -2270,7 +2270,10 @@ const ViewContracts = () => {
 
   //For delete modal
   const [showModal, setModalShow] = useState(false);
-  const handleClose = () => {setRowToDelete({});setModalShow(false);}
+  const handleClose = () => {
+    setRowToDelete({});
+    setModalShow(false);
+  };
   const handleShow = () => setModalShow(true);
 
   //Data to be deleted
@@ -2299,7 +2302,16 @@ const ViewContracts = () => {
       formatter: dateFormatter,
       headerStyle: { minWidth: "100px", backgroundColor: "#A7C7E7" },
       sort: true,
-      filter: dateFilter()
+      filter: dateFilter({
+        withoutEmptyComparatorOption: true,
+        comparators: [Comparator.EQ, Comparator.GT, Comparator.LT],
+        style: { display: "inline" },
+        className: "custom-datefilter-class",
+        comparatorStyle: { backgroundColor: "#9ebfd6" },
+        comparatorClassName: "custom-comparator-class",
+        dateStyle: { backgroundColor: "#9ebfd6", margin: "0px" },
+        dateClassName: "custom-date-class",
+      }),
     },
     {
       dataField: "valueWithGST",
@@ -2539,7 +2551,7 @@ const ViewContracts = () => {
                               condensed
                               defaultSorted={defaultSorted}
                               keyField="id"
-                              filter={ filterFactory() }
+                              filter={filterFactory()}
                             />
                           </div>
                         )}
@@ -2550,7 +2562,7 @@ const ViewContracts = () => {
                         backdrop="static"
                         centered
                         keyboard="False"
-                        size='sm'
+                        size="sm"
                       >
                         <Modal.Body>Do you want to delete?</Modal.Body>
                         <Modal.Footer justifyContent="space-between">
