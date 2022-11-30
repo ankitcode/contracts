@@ -1,7 +1,15 @@
-const mongoose = require("mongoose");
+import { Schema, model } from "mongoose";
 
-const UserSchema = new mongoose.Schema({
-  emp_no: {
+const UserSchema = new Schema({
+  isAdmin: {
+    type: Boolean,
+    default: false,
+  },
+  date: {
+    type: Date,
+    default: Date.now,
+  },
+  empNo: {
     type: Number,
     required: true,
     unique: true,
@@ -10,16 +18,7 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
   post: {
-    type: String,
-    required: true,
-  },
-  region: {
     type: String,
     required: true,
   },
@@ -27,24 +26,6 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  password: {
-    type: String,
-    required: true,
-  },
-  empType: {
-    creator: {
-      type: Boolean,
-      default: false,
-    },
-    approver: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  date: {
-    type: Date,
-    default: Date.now,
-  },
 });
 
-module.exports = mongoose.model("user", UserSchema);
+export default model("user", UserSchema);

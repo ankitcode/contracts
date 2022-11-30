@@ -13,7 +13,7 @@ const fetchuser = (req, res, next) => {
   }
   try {
     const data = jwt.verify(token, JWT_SECRET);
-    req.user = data.user;
+    req.createdBy = data.createdBy;
     next();
   } catch (error) {
     return res.status(401).send({ error: "Please authenticate" });

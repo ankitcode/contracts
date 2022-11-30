@@ -1,6 +1,5 @@
-const connectToMongo = require("./db.js");
-const express = require("express");
-const ldap = require("ldapjs");
+import connectToMongo from "./db.js";
+import express, { json } from "express";
 
 connectToMongo();
 
@@ -8,7 +7,7 @@ const app = express();
 
 const port = 5000;
 
-app.use(express.json());
+app.use(json());
 
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/contracts", require("./routes/contracts"));
