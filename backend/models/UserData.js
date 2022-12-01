@@ -26,6 +26,10 @@ const UserSchema = new Schema({
     type: String,
     required: true,
   },
+  department: {
+    type: String,
+    required: true,
+  },
 });
 
 export default model("user", UserSchema);

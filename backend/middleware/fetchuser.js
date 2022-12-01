@@ -1,4 +1,4 @@
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
 const JWT_SECRET = "$contracts@Portal$";
 
 const fetchuser = (req, res, next) => {
@@ -9,15 +9,17 @@ const fetchuser = (req, res, next) => {
   console.log(token);
   
   if (!token) {
-    return res.status(401).send({ error: "Please authenticate" });
+    return res.status(401).send({ status: false, msg: "Please Authenticate!", error: "Please Authenticate!" });
   }
   try {
     const data = jwt.verify(token, JWT_SECRET);
-    req.createdBy = data.createdBy;
+    req.isAdmin = data.user.isAdmin;
+    req.empNo = data.user.empNo;
+    req.password = data.user.password;
     next();
   } catch (error) {
-    return res.status(401).send({ error: "Please authenticate" });
+    return res.status(401).send({ status: false, msg: "Please Authenticate!", error: "Some Error Occurred!" });
   }
 };
 
-module.exports = fetchuser;
+export default fetchuser;
