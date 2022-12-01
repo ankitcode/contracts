@@ -1,6 +1,6 @@
-import { Schema, model } from "mongoose";
+const mongoose = require("mongoose");
 
-const ContractsDataSchema = new Schema({
+const ContractsDataSchema = new mongoose.Schema({
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",
@@ -25,7 +25,7 @@ const ContractsDataSchema = new Schema({
     required: true,
   },
   value: {
-    type: Interger,
+    type: Number,
     required: true,
   },
   procurementNature: {
@@ -87,6 +87,4 @@ const ContractsDataSchema = new Schema({
   },
 });
 
-const ContractsData = mongoose.model("ContractsData", ContractsDataSchema);
-
-module.exports = ContractsData;
+module.exports = mongoose.model("ContractsData", ContractsDataSchema);

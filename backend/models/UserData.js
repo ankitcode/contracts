@@ -1,6 +1,6 @@
-import { Schema, model } from "mongoose";
+const mongoose = require("mongoose");
 
-const UserSchema = new Schema({
+const UserSchema = new mongoose.Schema({
   isAdmin: {
     type: Boolean,
     default: false,
@@ -32,4 +32,4 @@ const UserSchema = new Schema({
   },
 });
 
-export default model("user", UserSchema);
+module.exports= mongoose.model("User", UserSchema);
