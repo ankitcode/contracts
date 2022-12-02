@@ -18,7 +18,7 @@ const ContractsDataSchema = new mongoose.Schema({
     required: true,
   },
   loa: {
-    type: String,
+    type: Object,
   },
   awardedOn: {
     type: Date,
@@ -29,61 +29,31 @@ const ContractsDataSchema = new mongoose.Schema({
     required: true,
   },
   procurementNature: {
-    key: {
-      type: String,
-      required: true,
-    },
-    value: {
-      type: String,
-      required: true,
-    },
+    type: Object,
+    required: true,
   },
   throughGeM: {
-    key: {
-      type: String,
-      required: true,
-    },
-    value: {
-      type: String,
-      required: true,
-    },
+    type: Object,
+    required: true,
   },
   gemMode: {
-    key: {
-      type: String,
-      required: true,
-    },
-    value: {
-      type: String,
-      required: true,
-    },
+    type: Object,
+    required: true,
   },
   reasonNotGeM: {
-    key: {
-      type: String,
-    },
-    value: {
-      type: String,
-    },
+    type: Object,
+    required: true,
   },
   availableOnGeM: {
-    key: {
-      type: String,
-    },
-    value: {
-      type: String,
-    },
+    type: Object,
+    required: true,
   },
   approvingOfficer: {
     type: String,
   },
   gemAvailabilityReport: {
-    key: {
-      type: String,
-    },
-    value: {
-      type: String,
-    },
+    type: Object,
+    required: true,
   },
 });
 
