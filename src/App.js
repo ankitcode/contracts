@@ -8,6 +8,7 @@ import Home from "./components/Contents/Home";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AddNew from "./components/Contents/AddNew";
 import { useEffect } from 'react';
+import Login from "./components/Login";
 
 function App() {
   useEffect(() => {
@@ -27,6 +28,7 @@ function App() {
           <Route path="/home" element=<Home /> />
           <Route path="/addNew" element=<AddNew /> />
           <Route path="/viewContracts" element=<ViewContracts /> />
+          <Route path="/login" element=<Login /> />
         </Routes>
       </Router>
     </div>

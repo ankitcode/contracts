@@ -1,52 +1,10 @@
 import React from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Field, Formik, Form, useField, ErrorMessage } from "formik";
+import { Formik, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Select from "react-select";
 import Card from "react-bootstrap/Card";
-
-const FormSelect = ({ name, options }) => {
-  const [field, meta, helpers] = useField(name);
-  return (
-    <>
-      <Select
-        type="select"
-        name={name}
-        options={options}
-        onChange={(value) => {
-          console.log(helpers);
-          //console.log(helpers);
-          helpers.setValue(value);
-          helpers.setTouched(true);
-          console.log(field);
-        }}
-        //onBlur={() => }
-        value={field.value}
-      />
-      <ErrorMessage name={name} />
-    </>
-  );
-};
-
-const FileSelect = ({ name, options }) => {
-  const [field, meta, helpers] = useField(name);
-  return (
-    <>
-      <Field
-        name={name}
-        type="file"
-        onChange={(event) => {
-          console.log(event.currentTarget.files[0]);
-          helpers.setFieldValue("loaCopy", event.currentTarget.files[0]);
-          helpers.setTouched(true);
-        }}
-        className="form-control"
-      />
-      <ErrorMessage name={name} />
-    </>
-  );
-};
 
 const AddNew = () => {
   // Options for select box
@@ -81,7 +39,7 @@ const AddNew = () => {
     { value: "otherReason", label: "Other Reason" },
   ];
 
-  const availonGeM = [
+  const availOnGeM = [
     { value: "yes", label: "Yes" },
     { value: "no", label: "No" },
   ];
@@ -480,7 +438,7 @@ const AddNew = () => {
                                   <div className="col-3">
                                     <Select
                                       name="availableOnGeM"
-                                      options={availonGeM}
+                                      options={availOnGeM}
                                       onChange={(opt, e) => {
                                         setFieldValue("availableOnGeM", opt);
                                         //setTouched(true);

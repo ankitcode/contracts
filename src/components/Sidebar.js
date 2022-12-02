@@ -10,7 +10,7 @@ const Sidebar = () => {
         {/* Brand Logo */}
         <Link to="/home" className="brand-link">
           <img
-            src="dist/img/powergrid-logo.png"
+            src="powergrid-logo.png"
             alt="POWERGRID Logo"
             className="brand-image img-square elevation-3"
             style={{ opacity: ".8", top: "10px", position: "relative" }}
@@ -26,6 +26,7 @@ const Sidebar = () => {
             <div className="image">
               <img
                 src="dist/img/user2-160x160.jpg"
+                alt="logged in user"
                 className="img-circle elevation-2"
               />
             </div>
