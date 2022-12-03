@@ -48,20 +48,20 @@
   color: #3498db;
 }
 
-.card-info:not(.card-outline)>.card-header {
+.card-info:not(.card-outline) > .card-header {
   background-color: #5898c3;
 }
 
 .btn.btn-info {
-    color: #fff;
-    background-color: #5898c3;
-    border-color: #5898c3;
-    box-shadow: none;
+  color: #fff;
+  background-color: #5898c3;
+  border-color: #5898c3;
+  box-shadow: none;
 }
 
 #scrollingCard {
   overflow: scroll;
-  white-space: nowrap; 
+  white-space: nowrap;
 }
 
 .modal-footer {
@@ -91,11 +91,16 @@
 }
 
 .userDetail {
-  color:rgb(255 255 255 / 70%);
+  color: rgb(255 255 255 / 70%);
 }
 
 .btn-primary.logoutBtn {
+  margin-top: 2px;
   border: none;
   color: #212529a8;
   background-color: rgb(255 255 255 / 80%);
+}
+
+.fa-1x.logoutBtnIcon {
+  font-size: 1.1em;
 }

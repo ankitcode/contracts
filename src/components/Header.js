@@ -67,7 +67,7 @@ const Header = () => {
           </li>
           <li className="nav-item">
             <Button onClick={handleLogOut} className="logoutBtn">
-              <i className="fas fa-sign-out-alt" /> 
+              <i className="logoutBtnIcon fas fa-sign-out-alt fa-1x" /> 
             </Button>
           </li>
           <li className="nav-item">
