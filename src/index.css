@@ -67,3 +67,35 @@
 .modal-footer {
   justify-content: space-between;
 }
+
+.form-control-sm {
+  height: calc(1.8125rem + 0.6rem);
+}
+
+.btn-primary.addUserBtn {
+  border: none;
+  color: #26803a;
+  background-color: rgb(255 255 255 / 80%);
+}
+
+.btn-danger.deleteUserBtn {
+  border: none;
+  color: #a02828;
+  background-color: rgb(255 255 255 / 10%);
+}
+
+.btn-danger.deleteContract {
+  border: none;
+  color: #a02828;
+  background-color: rgb(255 255 255 / 10%);
+}
+
+.userDetail {
+  color:rgb(255 255 255 / 70%);
+}
+
+.btn-primary.logoutBtn {
+  border: none;
+  color: #212529a8;
+  background-color: rgb(255 255 255 / 80%);
+}

@@ -2286,6 +2286,7 @@ const ViewContracts = () => {
       text: "S/No.",
       headerStyle: { minWidth: "50px", backgroundColor: "#A7C7E7" },
       style: { width: "fit-content" },
+      sort: false,
     },
     {
       dataField: "packageName",
@@ -2382,7 +2383,7 @@ const ViewContracts = () => {
         return (
           <>
             <button
-              className="btn btn-danger btn-xs"
+              className="btn btn-danger btn-xs deleteContract"
               onClick={() => {
                 setModalShow(true);
                 setRowToDelete(row);

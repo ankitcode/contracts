@@ -9,6 +9,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AddNew from "./components/Contents/AddNew";
 import { useEffect } from 'react';
 import Login from "./components/Login";
+import ManageUsers from "./components/Contents/ManageUsers";
 
 function App() {
   useEffect(() => {
@@ -29,6 +30,7 @@ function App() {
           <Route path="/addNew" element=<AddNew /> />
           <Route path="/viewContracts" element=<ViewContracts /> />
           <Route path="/login" element=<Login /> />
+          <Route path="/manageUsers" element=<ManageUsers /> />
         </Routes>
       </Router>
     </div>

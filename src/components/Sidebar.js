@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const Sidebar = () => {
-  
   return (
     <>
       {/* Main Sidebar Container */}
@@ -10,30 +9,21 @@ const Sidebar = () => {
         {/* Brand Logo */}
         <Link to="/home" className="brand-link">
           <img
-            src="powergrid-logo.png"
+            src="dist/img/powergrid.png"
             alt="POWERGRID Logo"
-            className="brand-image img-square elevation-3"
-            style={{ opacity: ".8", top: "10px", position: "relative" }}
+            className="brand-image img-square elevation-1"
+            style={{ opacity: "1", top: "1px", position: "relative" }}
+            align="center"
           />
-          <span className="brand-text font-weight-light">
-            WR-II RHQ Contracts
-          </span>
         </Link>
         {/* Sidebar */}
         <div className="sidebar">
           {/* Sidebar user panel (optional) */}
           <div className="user-panel mt-3 pb-3 mb-3 d-flex">
-            <div className="image">
-              <img
-                src="dist/img/user2-160x160.jpg"
-                alt="logged in user"
-                className="img-circle elevation-2"
-              />
-            </div>
-            <div className="info">
-              <a href="#" className="d-block">
-                Ankit
-              </a>
+            <div className="container-fluid">
+              <div className="row">
+                <h6 className="info userDetail">Hello! Ankit</h6>
+              </div>
             </div>
           </div>
           {/* SidebarSearch Form */}
@@ -122,10 +112,10 @@ const Sidebar = () => {
                   {/*Added two list items for adding contract and 
                   viewing added contracts and icons */}
                   <li className="nav-item">
-                    <a href="#" className="nav-link">
+                    <Link to="/manageUsers" className="nav-link">
                       <i className="fas fa-solid fa-user nav-icon" />
                       <p>Users</p>
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </li>
@@ -135,7 +125,7 @@ const Sidebar = () => {
                 <a href="#" className="nav-link">
                   <i className="fas fa-file nav-icon" />
                   <p>
-                    Report
+                    Reports
                     <i className="fas fa-angle-left right" />
                     {/*<span className="badge badge-info right">6</span>*/}
                   </p>
