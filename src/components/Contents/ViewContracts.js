@@ -12,10 +12,6 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import filterFactory, { dateFilter, Comparator } from "react-bootstrap-table2-filter";
 
-import Header from "../Header";
-import Footer from "../Footer";
-import Sidebar from "../Sidebar";
-
 const ViewContracts = () => {
   // Data for table
   const data = [
@@ -2470,9 +2466,6 @@ const ViewContracts = () => {
 
   return (
     <>
-    <Header />
-        <Sidebar />
-        <Footer />
       <div className="content-wrapper">
         <section className="content-header">
           <div className="container-fluid">

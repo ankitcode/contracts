@@ -1,35 +1,38 @@
-import ViewContracts from "./components/Contents/ViewContracts";
-import Home from "./components/Contents/Home";
+import ViewContracts from "./Components/Contents/ViewContracts";
+import Home from "./Components/Contents/Home";
 
 //Import for router, routes and route
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import AddNew from "./components/Contents/AddNew";
+import AddNew from "./Components/Contents/AddNew";
 import { useState, useEffect } from "react";
-import Login from "./components/Login";
-import ManageUsers from "./components/Contents/ManageUsers";
+import Login from "./Components/Login";
+import ManageUsers from "./Components/Contents/ManageUsers";
 
 import { useSelector } from "react-redux";
 import ProtectedRoute from "./ProtectedRoutes/ProtectedRoute";
+import Header from "./Components/Header";
+import Footer from "./Components/Footer";
+import Sidebar from "./Components/Sidebar";
 
 function App() {
-  //console.log("I'm at App!");
-  //const [isAuthenticated, setIsAuthenticated] = useState(false);
   useEffect(() => {
     const trees = window.$('[data-widget="treeview"]');
     trees.Treeview("init");
-    //if (localStorage.getItem("isAuthentication")) {
-    //setIsAuthenticated(true);
-    //} else {
-    //setIsAuthenticated(false);
-    //}
   }, []);
 
   const { isAuthenticated } = useSelector((state) => state.root);
-  
+
   return (
     <div className="wrapper">
       {/* Add components on page */}
       <Router>
+        {isAuthenticated ? (
+          <>
+            <Header />
+            <Sidebar />
+            <Footer />
+          </>
+        ) : null}
         {/*Define routes */}
         <Routes>
           <Route
@@ -45,53 +48,45 @@ function App() {
             }
           />
           <Route
-            exact path="/"
+            exact
+            path="/"
             element={
-              <ProtectedRoute
-                isAuthenticated={isAuthenticated}
-              >
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
                 <Home />
               </ProtectedRoute>
             }
           />
           <Route
-            exact path="/home"
+            exact
+            path="/home"
             element={
-              <ProtectedRoute
-                isAuthenticated={isAuthenticated}
-                adminRoute={false}
-                isAdmin={false}
-              >
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
                 <Home />
               </ProtectedRoute>
             }
           />
           <Route
-            exact path="/addNew"
+            exact
+            path="/addNew"
             element={
-              <ProtectedRoute
-                isAuthenticated={isAuthenticated}
-                adminRoute={false}
-                isAdmin={false}
-              >
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
                 <AddNew />
               </ProtectedRoute>
             }
           />
           <Route
-            exact path="/viewContracts"
+            exact
+            path="/viewContracts"
             element={
-              <ProtectedRoute
-                isAuthenticated={isAuthenticated}
-                adminRoute={false}
-                isAdmin={false}
-              >
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
                 <ViewContracts />
               </ProtectedRoute>
             }
           />
-          
-          <Route path="/login" element=<Login /> />
+          <Route
+            path="/login"
+            element={isAuthenticated ? <Home /> : <Login />}
+          />
         </Routes>
       </Router>
     </div>

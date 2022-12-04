@@ -52,7 +52,7 @@ const Sidebar = () => {
               {/* Add icons to the links using the .nav-icon class
          with font-awesome or any other icon font library */}
               <li className="nav-item menu-open">
-                <a href="/#" className="nav-link active">
+                <a href="#" className="nav-link active">
                   <i className="nav-icon fas fa-tachometer-alt" />
                   <p>
                     Dashboard
@@ -71,7 +71,7 @@ const Sidebar = () => {
               </li>
 
               <li className="nav-item">
-                <a href="/#" className="nav-link">
+                <a href="#" className="nav-link">
                   <i className="nav-icon fas fa-file-contract" />
                   <p>
                     Contracts
@@ -99,7 +99,7 @@ const Sidebar = () => {
 
               {/*Added for Admin */}
               <li className="nav-item">
-                <a href="/#" className="nav-link">
+                <a href="#" className="nav-link">
                   <i className="nav-icon fas fa-solid fa-lock" />
                   <p>
                     Admin
@@ -121,7 +121,7 @@ const Sidebar = () => {
 
               {/*Added for Reports */}
               <li className="nav-item">
-                <a href="/#" className="nav-link">
+                <a href="#" className="nav-link">
                   <i className="fas fa-file nav-icon" />
                   <p>
                     Reports
@@ -133,7 +133,7 @@ const Sidebar = () => {
                   {/*Added two list items for adding contract and 
                   viewing added contracts and icons */}
                   {/*<li className="nav-item">
-                    <a href="/#" className="nav-link">
+                    <a href="#" className="nav-link">
                       <i className="fas fa-edit nav-icon" />
                       <p>Users</p>
                     </a>

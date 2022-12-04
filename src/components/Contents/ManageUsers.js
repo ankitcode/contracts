@@ -10,10 +10,6 @@ import Modal from "react-bootstrap/Modal";
 import filterFactory from "react-bootstrap-table2-filter";
 import Select from "react-select";
 
-import Header from "../Header";
-import Footer from "../Footer";
-import Sidebar from "../Sidebar";
-
 const ManageUsers = () => {
   const data = [
     {
@@ -236,9 +232,7 @@ const ManageUsers = () => {
 
   return (
     <>
-      <Header />
-      <Sidebar />
-      <Footer />
+      
       <div className="content-wrapper">
         <section className="content-header">
           <div className="container-fluid">

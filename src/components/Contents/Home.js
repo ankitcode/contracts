@@ -1,16 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import Header from "../Header";
-import Footer from "../Footer";
-import Sidebar from "../Sidebar";
-
 const Home = () => {
   return (
     <>
-      <Header />
-      <Sidebar />
-      <Footer />
+     
       <div className="content-wrapper">
         <section className="content-header">
           <div className="container-fluid">
