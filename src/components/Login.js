@@ -1,10 +1,24 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    //console.log("Login");
+    dispatch({type: "login"});
+   {/* <Navigate to={"/"} />*/}
+   //localStorage.setItem('isAthenticated', true);
+   navigate('/');
+
+  }
   return (
     <>
-      <div className="content-wrapper login-page">
+      <div className="login-page">
         <div className="login-box">
           <div className="card">
             <div className="card-header">
@@ -18,8 +32,8 @@ const Login = () => {
               </div>
             </div>
             <div className="card-body login-card-body">
-              <p className="login-box-msg" ><h3>Welcome to WR-II Contracts App</h3></p>
-              <form action="/" method="post">
+              <h3><p className="login-box-msg" >Welcome to WR-II Contracts App</p></h3>
+              <form > 
                 <div className="input-group mb-3">
                   <input
                     type="text"
@@ -46,7 +60,7 @@ const Login = () => {
                 </div>
                 <div className="row">
                   <div className="col-12">
-                    <button type="submit" className="btn btn-primary btn-block">
+                    <button type="button" onClick={handleLogin} className="btn btn-primary btn-block">
                       Sign In
                     </button>
                   </div>

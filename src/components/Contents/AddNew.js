@@ -6,6 +6,10 @@ import * as Yup from "yup";
 import Select from "react-select";
 import Card from "react-bootstrap/Card";
 
+import Header from "../Header";
+import Footer from "../Footer";
+import Sidebar from "../Sidebar";
+
 const AddNew = () => {
   // Options for select box
   const procurementNatureOptions = [
@@ -129,6 +133,9 @@ const AddNew = () => {
 
   return (
     <>
+      <Header />
+      <Sidebar />
+      <Footer />
       <div className="content-wrapper">
         <section className="content-header">
           <div className="container-fluid">
@@ -516,9 +523,7 @@ const AddNew = () => {
                                 </div>
                               </>
                             ) : (
-                              <>
-                                
-                              </>
+                              <></>
                             )}
                           </div>
                           <Card.Footer>

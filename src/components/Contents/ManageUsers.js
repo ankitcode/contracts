@@ -10,6 +10,10 @@ import Modal from "react-bootstrap/Modal";
 import filterFactory from "react-bootstrap-table2-filter";
 import Select from "react-select";
 
+import Header from "../Header";
+import Footer from "../Footer";
+import Sidebar from "../Sidebar";
+
 const ManageUsers = () => {
   const data = [
     {
@@ -171,7 +175,7 @@ const ManageUsers = () => {
   const defaultSorted = [
     {
       dataField: "s_no",
-      order: "asc"
+      order: "asc",
     },
   ];
 
@@ -226,10 +230,15 @@ const ManageUsers = () => {
 
   const [addUser, setAddUser] = useState({});
 
-  const handleAddUser = () => {console.log(addUser);};
+  const handleAddUser = () => {
+    console.log(addUser);
+  };
 
   return (
     <>
+      <Header />
+      <Sidebar />
+      <Footer />
       <div className="content-wrapper">
         <section className="content-header">
           <div className="container-fluid">
@@ -293,8 +302,11 @@ const ManageUsers = () => {
                               </div>
                               <div className="col-2">
                                 {" "}
-                                <Button className="addUserBtn" onClick={handleAddUser}>
-                                <i className="fas fa-user-plus"></i>
+                                <Button
+                                  className="addUserBtn"
+                                  onClick={handleAddUser}
+                                >
+                                  <i className="fas fa-user-plus"></i>
                                 </Button>{" "}
                               </div>
                               <div className="col-6">

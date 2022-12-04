@@ -1,9 +1,17 @@
-import React from 'react'
+import React from "react";
 import { Link } from "react-router-dom";
+
+import Header from "../Header";
+import Footer from "../Footer";
+import Sidebar from "../Sidebar";
 
 const Home = () => {
   return (
-    <div className="content-wrapper">
+    <>
+      <Header />
+      <Sidebar />
+      <Footer />
+      <div className="content-wrapper">
         <section className="content-header">
           <div className="container-fluid">
             <div className="row mb-2">
@@ -21,8 +29,23 @@ const Home = () => {
             </div>
           </div>
         </section>
-    </div>
-  )
-}
 
-export default Home
+        <section className="content" id="scrollingCard">
+          <div className="container-fluid">
+            
+          <img
+            src="dist/img/under_construction.png"
+            alt="Under Construction"
+            className="brand-image img-square elevation-1"
+            style={{ opacity: "1", top: "1px", position: "relative" }}
+          />
+            
+            
+            </div>
+        </section>
+      </div>
+    </>
+  );
+};
+
+export default Home;

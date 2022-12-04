@@ -1,10 +1,18 @@
 import React from "react";
 import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const handleLogOut = () => {
     console.log("Logout");
+    dispatch({type: "logout"})
+    navigate('/login');
+   //localStorage.removeItem('isAthenticated');
   }
   return (
     <>
@@ -16,7 +24,7 @@ const Header = () => {
             <a
               className="nav-link"
               data-widget="pushmenu"
-              href="#"
+              href="/#"
               role="button"
             >
               <i className="fas fa-bars" />
@@ -35,7 +43,7 @@ const Header = () => {
             <a
               className="nav-link"
               data-widget="navbar-search"
-              href="#"
+              href="/#"
               role="button"
             >
               <i className="fas fa-search" />
@@ -74,7 +82,7 @@ const Header = () => {
             <a
               className="nav-link"
               data-widget="fullscreen"
-              href="#"
+              href="/#"
               role="button"
             >
               <i className="fas fa-expand-arrows-alt" />
