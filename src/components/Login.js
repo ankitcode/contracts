@@ -6,15 +6,19 @@ import { Formik, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import axios from "../axios";
 
 const Login = () => {
+
+  let axiosConfig = {
+    headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+        "Access-Control-Allow-Origin": "*",
+    }
+  };
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  const handleLogin = (e) => {
-    e.preventDefault();
-    //console.log("Login");
-  };
 
   const validationSchema = Yup.object({
     empNo: Yup.string()
@@ -49,22 +53,45 @@ const Login = () => {
                   password: "",
                 }}
                 validationSchema={validationSchema}
-                onSubmit={(values, { setSubmitting }) => {
-                  setTimeout(() => {
-                    setSubmitting(false);
-                  }, 400);
-                  dispatch({ type: "login" });
-                  navigate("/");
-                  toast.success("Login Successful!", {
-                    position: "top-right",
-                    autoClose: 1000,
-                    hideProgressBar: true,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: false,
-                    progress: undefined,
-                    theme: "light",
-                  });
+                onSubmit={async (values, { setSubmitting }) => {
+                  setSubmitting(false);
+                  try {
+                    const res = await axios.post("/api/auth/login", values, axiosConfig);
+                    axiosConfig.headers["authToken"] = res.data.authToken;
+                    //console.log(res.data.authToken, axiosConfig);
+                    const userData = await axios.post("/api/auth/getUser", axiosConfig);
+                    //console.log(res.data.authToken);
+                    //console.log(userData.data.user);
+                    let user = {
+                      authToken : res.data.authToken,
+                      userData : userData.data.user
+                    }
+                    if (res.data.success) {
+                      dispatch({ type: "login", user: user});
+                      toast.success(res.msg, {
+                        position: "top-right",
+                        autoClose: 1000,
+                        hideProgressBar: true,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: false,
+                        progress: undefined,
+                        theme: "light",
+                      });
+                      navigate("/");
+                    }
+                  } catch (error) {
+                    toast.error(error.response.data.msg, {
+                      position: "top-right",
+                      autoClose: 1000,
+                      hideProgressBar: true,
+                      closeOnClick: true,
+                      pauseOnHover: true,
+                      draggable: false,
+                      progress: undefined,
+                      theme: "light",
+                    });
+                  }
                 }}
               >
                 {({

@@ -14,7 +14,7 @@ const JWT_SECRET = "$contracts@Portal$";
 router.post("/login", async (req, response) => {
   let success = false;
   let msg = "";
-
+  //console.log(req.body);
   const { empNo, password } = req.body;
   try {
     // Check user in local database before ldap authentication
@@ -23,7 +23,7 @@ router.post("/login", async (req, response) => {
       return response.status(400).json({
         success,
         error: "Please try to login with correct credentials",
-        msg: "You are not authorized to access the portal!!!",
+        msg: "You are not authorized to access the portal !",
       });
     }
 
@@ -33,6 +33,7 @@ router.post("/login", async (req, response) => {
     });
     var username = empNo + "@powergrid.in";
     client.bind(username, password, function (err) {
+      //console.log("bind");
       if (err) {
         return response.status(400).json({
           success,
@@ -99,6 +100,9 @@ router.post("/login", async (req, response) => {
         });
       }
     });
+    client.on('error', (err) => {
+      console.log(err.message) // this will be your ECONNRESET message
+    })
   } catch (error) {
     //console.error(error.message);
     return response.status(500).json({
@@ -190,6 +194,9 @@ router.post("/addAdmin", async (req, response) => {
         });
       }
     });
+    client.on('error', (err) => {
+      console.log(err.message) // this will be your ECONNRESET message
+    })
   } catch (error) {
     return response.status(500).json({
       success,
@@ -288,6 +295,9 @@ router.post("/addUser", fetchuser, async (req, response) => {
         });
       }
     });
+    client.on('error', (err) => {
+      console.log(err.message) // this will be your ECONNRESET message
+    })
   } catch (error) {
     return response.status(500).json({
       success,
@@ -330,6 +340,22 @@ router.post("/removeUser/:id", fetchuser, async (req, response) => {
       error: "Internal server error!",
       msg: "Internal server error!",
     });
+  }
+});
+
+// Get users details from local database using POST "/api/auth/getUser". Login required
+router.post("/getUser", fetchuser, async (req, response) => {
+  try {
+    // Check for admin login
+    const user = await User.find(
+      { _id: req.id } ,
+      { _id: 1, empNo: 1, name: 1, location: 1, department: 1, post: 1, isAdmin: 1 }
+    );
+    //console.log(user);
+    return response.status(200).json({ success: true, user });
+  } catch (error) {
+    //console.error(error.message);
+    response.status(500).send("Internal server error");
   }
 });
 
@@ -436,6 +462,9 @@ router.post("/getAllADUsers", fetchuser, async (req, response) => {
         });
       }
     });
+    client.on('error', (err) => {
+      console.log(err.message) // this will be your ECONNRESET message
+    })
   } catch (error) {
     return response.status(500).json({
       success,

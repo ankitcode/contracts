@@ -22,7 +22,7 @@ function App() {
   }, []);
 
   const { isAuthenticated } = useSelector((state) => state.root);
-
+  
   return (
     <div className="wrapper">
       {/* Add components on page */}
