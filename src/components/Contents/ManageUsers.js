@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import BootstrapTable from "react-bootstrap-table-next";
 import ToolkitProvider, {
@@ -11,6 +11,12 @@ import filterFactory from "react-bootstrap-table2-filter";
 import Select from "react-select";
 
 const ManageUsers = () => {
+
+  useEffect(() => {
+    const trees = window.$('[data-widget="treeview"]');
+    trees.Treeview("init");
+  }, []);
+
   const data = [
     {
       id: "1",

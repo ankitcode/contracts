@@ -1,7 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
 
 const Home = () => {
+
+  useEffect(() => {
+    const trees = window.$('[data-widget="treeview"]');
+    trees.Treeview("init");
+  }, []);
   return (
     <>
      

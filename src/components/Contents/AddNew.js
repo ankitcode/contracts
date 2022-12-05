@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Formik, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -7,6 +7,10 @@ import Select from "react-select";
 import Card from "react-bootstrap/Card";
 
 const AddNew = () => {
+  useEffect(() => {
+    const trees = window.$('[data-widget="treeview"]');
+    trees.Treeview("init");
+  }, []);
   // Options for select box
   const procurementNatureOptions = [
     { value: "worksCivil", label: "Works or Civil" },

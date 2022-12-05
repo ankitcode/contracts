@@ -13,6 +13,7 @@ import ProtectedRoute from "./ProtectedRoutes/ProtectedRoute";
 import Header from "./Components/Header";
 import Footer from "./Components/Footer";
 import Sidebar from "./Components/Sidebar";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   useEffect(() => {
@@ -89,6 +90,18 @@ function App() {
           />
         </Routes>
       </Router>
+      <ToastContainer
+        position="top-right"
+        autoClose={1000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 }

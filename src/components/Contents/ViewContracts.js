@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import BootstrapTable from "react-bootstrap-table-next";
 import paginationFactory from "react-bootstrap-table2-paginator";
@@ -13,6 +13,11 @@ import Modal from "react-bootstrap/Modal";
 import filterFactory, { dateFilter, Comparator } from "react-bootstrap-table2-filter";
 
 const ViewContracts = () => {
+
+  useEffect(() => {
+    const trees = window.$('[data-widget="treeview"]');
+    trees.Treeview("init");
+  }, []);
   // Data for table
   const data = [
     {
