@@ -29,7 +29,7 @@ router.post("/login", async (req, response) => {
 
     // ldap authentication
     var client = ldap.createClient({
-      url: "ldap://brahma.powergrid.in:389",
+      url: "ldap://brahma.powergrid.in:389", reconnect: true
     });
     var username = empNo + "@powergrid.in";
     client.bind(username, password, function (err) {
@@ -132,7 +132,7 @@ router.post("/addAdmin", async (req, response) => {
     }
 
     var client = ldap.createClient({
-      url: "ldap://brahma.powergrid.in:389",
+      url: "ldap://brahma.powergrid.in:389", reconnect: true
     });
     const ldapUsername = username + "@powergrid.in";
     client.bind(ldapUsername, password, function (err) {
@@ -232,7 +232,7 @@ router.post("/addUser", fetchuser, async (req, response) => {
     }
 
     var client = ldap.createClient({
-      url: "ldap://brahma.powergrid.in:389",
+      url: "ldap://brahma.powergrid.in:389", reconnect: true
     });
     var username = req.empNo + "@powergrid.in";
     client.bind(username, req.password, function (err) {
@@ -361,6 +361,7 @@ router.post("/getUser", fetchuser, async (req, response) => {
 
 // Get all users from local database using POST "/api/auth/getAllAddedUsers". Login required
 router.post("/getAllAddedUsers", fetchuser, async (req, response) => {
+  //console.log(req);
   try {
     // Check for admin login
     if (!req.isAdmin) {
@@ -397,7 +398,7 @@ router.post("/getAllADUsers", fetchuser, async (req, response) => {
     }
 
     var client = ldap.createClient({
-      url: "ldap://brahma.powergrid.in:389",
+      url: "ldap://brahma.powergrid.in:389", reconnect: true
     });
     var username = req.empNo + "@powergrid.in";
     client.bind(username, req.password, function (err) {

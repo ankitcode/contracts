@@ -1,7 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Sidebar = () => {
+
+  const { user } = useSelector((state) => state.root);
+
   return (
     <>
       {/* Main Sidebar Container */}
@@ -21,7 +25,9 @@ const Sidebar = () => {
           <div className="user-panel mt-3 pb-3 mb-3 d-flex">
             <div className="container-fluid">
               <div className="row">
-                <h6 className="info userDetail">Hello! Ankit</h6>
+                <h6 className="info userDetail">Hello! {user.userData[0].name},</h6>
+                
+                <h6 className="info userDetail">{user.userData[0].post}, {user.userData[0].department}</h6>
               </div>
             </div>
           </div>

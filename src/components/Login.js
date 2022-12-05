@@ -9,12 +9,11 @@ import "react-toastify/dist/ReactToastify.css";
 import axios from "../axios";
 
 const Login = () => {
-
   let axiosConfig = {
     headers: {
-        'Content-Type': 'application/json;charset=UTF-8',
-        "Access-Control-Allow-Origin": "*",
-    }
+      "Content-Type": "application/json;charset=UTF-8",
+      "Access-Control-Allow-Origin": "*",
+    },
   };
 
   const dispatch = useDispatch();
@@ -56,19 +55,26 @@ const Login = () => {
                 onSubmit={async (values, { setSubmitting }) => {
                   setSubmitting(false);
                   try {
-                    const res = await axios.post("/api/auth/login", values, axiosConfig);
+                    const res = await axios.post(
+                      "/api/auth/login",
+                      values,
+                      axiosConfig
+                    );
                     axiosConfig.headers["authToken"] = res.data.authToken;
                     //console.log(res.data.authToken, axiosConfig);
-                    const userData = await axios.post("/api/auth/getUser", axiosConfig);
+                    const userData = await axios.post(
+                      "/api/auth/getUser",
+                      axiosConfig
+                    );
                     //console.log(res.data.authToken);
                     //console.log(userData.data.user);
                     let user = {
-                      authToken : res.data.authToken,
-                      userData : userData.data.user
-                    }
+                      authToken: res.data.authToken,
+                      userData: userData.data.user,
+                    };
+                    //console.log(res.data.success, res.msg);
                     if (res.data.success) {
-                      dispatch({ type: "login", user: user});
-                      toast.success(res.msg, {
+                      toast.success(res.data.msg, {
                         position: "top-right",
                         autoClose: 1000,
                         hideProgressBar: true,
@@ -78,6 +84,7 @@ const Login = () => {
                         progress: undefined,
                         theme: "light",
                       });
+                      dispatch({ type: "login", user: user });
                       navigate("/");
                     }
                   } catch (error) {

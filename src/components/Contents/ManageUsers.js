@@ -9,80 +9,37 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import filterFactory from "react-bootstrap-table2-filter";
 import Select from "react-select";
+import axios from "../../axios";
+import { useSelector } from "react-redux";
 
 const ManageUsers = () => {
+  let axiosConfig = {
+    headers: {
+      "Content-Type": "application/json;charset=UTF-8",
+      "Access-Control-Allow-Origin": "*",
+    },
+  };
+  const { user } = useSelector((state) => state.root);
+  const [data, setData] = useState([]);
 
   useEffect(() => {
     const trees = window.$('[data-widget="treeview"]');
     trees.Treeview("init");
+    async function fetchData() {
+      try {
+        axiosConfig.headers["authToken"] = user.authToken;
+        const res = await axios.post(
+          "/api/auth/getAllAddedUsers",
+          axiosConfig
+        );
+        setData(res.data.user);
+        //console.log(res.data.user);
+      }catch(error){
+  
+      }
+    }
+    fetchData();    
   }, []);
-
-  const data = [
-    {
-      id: "1",
-      name: "ankit",
-      empNo: "60003836",
-      post: "Engr",
-      department: "IT",
-      location: "RHQ-Vadodara",
-    },
-    {
-      id: "2",
-      name: "ankit",
-      empNo: "60003836",
-      post: "Engr",
-      department: "IT",
-      location: "RHQ-Vadodara",
-    },
-    {
-      id: "3",
-      name: "ankit",
-      empNo: "60003836",
-      post: "Engr",
-      department: "IT",
-      location: "RHQ-Vadodara",
-    },
-    {
-      id: "4",
-      name: "ankit",
-      empNo: "60003836",
-      post: "Engr",
-      department: "IT",
-      location: "RHQ-Vadodara",
-    },
-    {
-      id: "5",
-      name: "ankit",
-      empNo: "60003836",
-      post: "Engr",
-      department: "IT",
-      location: "RHQ-Vadodara",
-    },
-    {
-      id: "6",
-      name: "ankit",
-      empNo: "60003836",
-      post: "Engr",
-      department: "IT",
-      location: "RHQ-Vadodara",
-    },
-    {
-      id: "7",
-      name: "Dileep",
-      empNo: "60020617",
-      post: "Asst Mgr",
-      department: "IT",
-      location: "RHQ-Vadodara",
-    },
-    {
-      id: "8",
-      name: "Mayank Dhar Shukla",
-      empNo: "60001441",
-      post: "DGM",
-      department: "IT",
-      location: "RHQ-Vadodara",
-    },
-  ];
 
   data.map((item, idx) => (item.s_no = idx + 1));
 
@@ -274,7 +231,7 @@ const ManageUsers = () => {
 
                     <div className="card-body">
                       <ToolkitProvider
-                        keyField="id"
+                        keyField="_id"
                         data={data}
                         columns={columns}
                         search
@@ -336,7 +293,7 @@ const ManageUsers = () => {
                               hover
                               condensed
                               defaultSorted={defaultSorted}
-                              keyField="id"
+                              keyField="_id"
                               filter={filterFactory()}
                             />
                           </div>

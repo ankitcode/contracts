@@ -9,11 +9,12 @@ const Header = () => {
   const navigate = useNavigate();
 
   const handleLogOut = () => {
-    console.log("Logout");
-    dispatch({type: "logout"})
-    navigate('/login');
-   //localStorage.removeItem('isAthenticated');
-  }
+    //console.log("Logout");
+    let user = { userData: [{ isAdmin: false }] };
+    dispatch({ type: "logout", user: user });
+    navigate("/login");
+    //localStorage.removeItem('isAthenticated');
+  };
   return (
     <>
       {/* Navbar */}
@@ -75,7 +76,7 @@ const Header = () => {
           </li>
           <li className="nav-item">
             <Button onClick={handleLogOut} className="logoutBtn">
-              <i className="logoutBtnIcon fas fa-sign-out-alt fa-1x" /> 
+              <i className="logoutBtnIcon fas fa-sign-out-alt fa-1x" />
             </Button>
           </li>
           <li className="nav-item">

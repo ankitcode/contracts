@@ -5,7 +5,7 @@ const fetchuser = (req, res, next) => {
 
   // Get the user from the jwt token and add id to req object
   const token = req.body.headers.authToken;
-  
+  //console.log(token);
   if (!token) {
     return res.status(401).send({ status: false, msg: "Please Authenticate!", error: "Please Authenticate!" });
   }

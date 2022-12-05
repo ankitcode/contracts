@@ -16,13 +16,19 @@ import Sidebar from "./Components/Sidebar";
 import { ToastContainer } from "react-toastify";
 
 function App() {
+
+  const { isAuthenticated, user } = useSelector((state) => state.root);
+  const [isAdmin, setIsAdmin] = useState(false);
+  
+  useEffect(() => {
+    setIsAdmin(user.userData[0].isAdmin);
+  });
+  
   useEffect(() => {
     const trees = window.$('[data-widget="treeview"]');
     trees.Treeview("init");
   }, []);
 
-  const { isAuthenticated } = useSelector((state) => state.root);
-  
   return (
     <div className="wrapper">
       {/* Add components on page */}
@@ -42,7 +48,7 @@ function App() {
               <ProtectedRoute
                 isAuthenticated={isAuthenticated}
                 adminRoute={true}
-                isAdmin={true}
+                isAdmin={isAdmin}
               >
                 <ManageUsers />
               </ProtectedRoute>

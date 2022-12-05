@@ -7,9 +7,9 @@ export const rootReducer = createReducer(
       state.isAuthenticated = true;
       state.user = action.user;
     },
-    logout: (state) => {
+    logout: (state, action) => {
       state.isAuthenticated = false;
-      state.user = {};
+      state.user = action.user;
     },
   }
 );
