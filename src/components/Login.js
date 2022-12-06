@@ -63,7 +63,7 @@ const Login = () => {
                     axiosConfig.headers["authToken"] = res.data.authToken;
                     //console.log(res.data.authToken, axiosConfig);
                     const userData = await axios.post(
-                      "/api/auth/getUser",
+                      "/api/auth/getUser",{},
                       axiosConfig
                     );
                     //console.log(res.data.authToken);

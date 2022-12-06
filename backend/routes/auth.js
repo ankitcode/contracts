@@ -29,7 +29,8 @@ router.post("/login", async (req, response) => {
 
     // ldap authentication
     var client = ldap.createClient({
-      url: "ldap://brahma.powergrid.in:389", reconnect: true
+      url: "ldap://brahma.powergrid.in:389",
+      reconnect: true,
     });
     var username = empNo + "@powergrid.in";
     client.bind(username, password, function (err) {
@@ -100,9 +101,9 @@ router.post("/login", async (req, response) => {
         });
       }
     });
-    client.on('error', (err) => {
-      console.log(err.message) // this will be your ECONNRESET message
-    })
+    client.on("error", (err) => {
+      console.log(err.message); // this will be your ECONNRESET message
+    });
   } catch (error) {
     //console.error(error.message);
     return response.status(500).json({
@@ -132,7 +133,8 @@ router.post("/addAdmin", async (req, response) => {
     }
 
     var client = ldap.createClient({
-      url: "ldap://brahma.powergrid.in:389", reconnect: true
+      url: "ldap://brahma.powergrid.in:389",
+      reconnect: true,
     });
     const ldapUsername = username + "@powergrid.in";
     client.bind(ldapUsername, password, function (err) {
@@ -194,9 +196,9 @@ router.post("/addAdmin", async (req, response) => {
         });
       }
     });
-    client.on('error', (err) => {
-      console.log(err.message) // this will be your ECONNRESET message
-    })
+    client.on("error", (err) => {
+      console.log(err.message); // this will be your ECONNRESET message
+    });
   } catch (error) {
     return response.status(500).json({
       success,
@@ -214,7 +216,7 @@ router.post("/addUser", fetchuser, async (req, response) => {
   try {
     // Check for admin login
     if (!req.isAdmin) {
-      return response.status(400).json({
+      return response.json({
         error: "Admin Authentication Required!",
         success,
         msg: "Admin Authentication Required!",
@@ -222,9 +224,13 @@ router.post("/addUser", fetchuser, async (req, response) => {
     }
 
     // Check whether employee already exists
+    console.log(req.body.empNo);
+    console.log(req.empNo);
+    console.log(req.password);
     let user = await User.findOne({ empNo: req.body.empNo });
+    console.log(user);
     if (user) {
-      return response.status(400).json({
+      return response.json({
         error: "Employee already exists!",
         success,
         msg: "Employee already exists!",
@@ -232,12 +238,13 @@ router.post("/addUser", fetchuser, async (req, response) => {
     }
 
     var client = ldap.createClient({
-      url: "ldap://brahma.powergrid.in:389", reconnect: true
+      url: "ldap://brahma.powergrid.in:389",
+      reconnect: true,
     });
     var username = req.empNo + "@powergrid.in";
     client.bind(username, req.password, function (err) {
       if (err) {
-        return res.status(400).json({
+        return response.json({
           success,
           error: "Incorrect Credentials!",
           msg: "Incorrect Credentials!",
@@ -255,7 +262,7 @@ router.post("/addUser", fetchuser, async (req, response) => {
             client.unbind((err) => {
               assert.ifError(err);
             });
-            return res.status(400).json({
+            return response.json({
               success,
               error: "User not found!",
               msg: "User not found!",
@@ -295,9 +302,9 @@ router.post("/addUser", fetchuser, async (req, response) => {
         });
       }
     });
-    client.on('error', (err) => {
-      console.log(err.message) // this will be your ECONNRESET message
-    })
+    client.on("error", (err) => {
+      console.log(err.message); // this will be your ECONNRESET message
+    });
   } catch (error) {
     return response.status(500).json({
       success,
@@ -308,28 +315,28 @@ router.post("/addUser", fetchuser, async (req, response) => {
 });
 
 // remove a user using POST "/api/auth/removeUser". Authentication required
-router.post("/removeUser/:id", fetchuser, async (req, response) => {
+router.post("/removeUser", fetchuser, async (req, response) => {
   //console.log(req.body);
   let success = false;
   let msg = "";
   try {
     // Check for admin login
     if (!req.isAdmin) {
-      return response.status(400).json({
+      return response.json({
         error: "Admin Authentication Required!",
         success,
         msg: "Admin Authentication Required!",
       });
     }
-    let user = await User.findById(req.params.id);
+    let user = await User.findById(req.body.id);
     if (!user) {
-      return response.status(404).json({
+      return response.json({
         error: "Employee Not Found!",
         success,
         msg: "Employee Not Found!",
       });
     }
-    user = await User.findByIdAndDelete(req.params.id);
+    user = await User.findByIdAndDelete(req.body.id);
     success = true;
     return response
       .status(200)
@@ -348,8 +355,16 @@ router.post("/getUser", fetchuser, async (req, response) => {
   try {
     // Check for admin login
     const user = await User.find(
-      { _id: req.id } ,
-      { _id: 1, empNo: 1, name: 1, location: 1, department: 1, post: 1, isAdmin: 1 }
+      { _id: req.id },
+      {
+        _id: 1,
+        empNo: 1,
+        name: 1,
+        location: 1,
+        department: 1,
+        post: 1,
+        isAdmin: 1,
+      }
     );
     //console.log(user);
     return response.status(200).json({ success: true, user });
@@ -398,7 +413,8 @@ router.post("/getAllADUsers", fetchuser, async (req, response) => {
     }
 
     var client = ldap.createClient({
-      url: "ldap://brahma.powergrid.in:389", reconnect: true
+      url: "ldap://brahma.powergrid.in:389",
+      reconnect: true,
     });
     var username = req.empNo + "@powergrid.in";
     client.bind(username, req.password, function (err) {
@@ -413,7 +429,15 @@ router.post("/getAllADUsers", fetchuser, async (req, response) => {
         const opts = {
           filter: "sAMAccountName=*",
           scope: "sub",
-          attributes: ["l", "st", "title", "name", "department", "company"],
+          attributes: [
+            "l",
+            "st",
+            "title",
+            "name",
+            "department",
+            "company",
+            "sAMAccountName",
+          ],
         };
 
         client.search("OU=WR2,DC=powergrid,DC=in", opts, (err, res) => {
@@ -430,7 +454,18 @@ router.post("/getAllADUsers", fetchuser, async (req, response) => {
           }
           var empData = [];
           res.on("searchEntry", function (data) {
-            if ("title" in data.object) empData.push(data.object);
+            if ("title" in data.object)
+              empData.push({
+                value: data.object.sAMAccountName,
+                label:
+                  data.object.name +
+                  ", " +
+                  data.object.title +
+                  ", " +
+                  data.object.department +
+                  ", " +
+                  data.object.l,
+              });
           });
           res.once("error", function (error) {
             client.unbind((err) => {
@@ -463,9 +498,9 @@ router.post("/getAllADUsers", fetchuser, async (req, response) => {
         });
       }
     });
-    client.on('error', (err) => {
-      console.log(err.message) // this will be your ECONNRESET message
-    })
+    client.on("error", (err) => {
+      console.log(err.message); // this will be your ECONNRESET message
+    });
   } catch (error) {
     return response.status(500).json({
       success,

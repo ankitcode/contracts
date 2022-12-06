@@ -11,6 +11,7 @@ import filterFactory from "react-bootstrap-table2-filter";
 import Select from "react-select";
 import axios from "../../axios";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 const ManageUsers = () => {
   let axiosConfig = {
@@ -21,6 +22,8 @@ const ManageUsers = () => {
   };
   const { user } = useSelector((state) => state.root);
   const [data, setData] = useState([]);
+  const [adduseroptions, setAdduseroptions] = useState([]);
+  const [adduser, setAdduser] = useState([]);
 
   useEffect(() => {
     const trees = window.$('[data-widget="treeview"]');
@@ -30,19 +33,35 @@ const ManageUsers = () => {
         axiosConfig.headers["authToken"] = user.authToken;
         const res = await axios.post(
           "/api/auth/getAllAddedUsers",
+          {},
           axiosConfig
         );
         setData(res.data.user);
         //console.log(res.data.user);
-      }catch(error){
-  
+      } catch (error) {
+        console.log(error);
       }
     }
-    fetchData();    
+    async function fetchAllADUsers() {
+      try {
+        const res = await axios.post(
+          "/api/auth/getAllADUsers",
+          {},
+          axiosConfig
+        );
+        setAdduseroptions(res.data.empData);
+        //console.log(res.data.empData);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchData();
+    fetchAllADUsers();
   }, []);
 
   data.map((item, idx) => (item.s_no = idx + 1));
 
+  //console.log(adduser);
   //For delete modal
   const [showModal, setModalShow] = useState(false);
   const handleClose = () => {
@@ -122,10 +141,49 @@ const ManageUsers = () => {
   ];
 
   // Delete function
-  const handleDelete = (row) => {
-    console.log(row);
-    // Todo - delete API call
-
+  const handleDelete = async (row) => {
+    //console.log(row._id);
+    try {
+      axiosConfig.headers["authToken"] = user.authToken;
+      const res = await axios.post(
+        "/api/auth/removeUser",
+        { id: row._id },
+        axiosConfig
+      );
+      //setData(res.data.user);
+      if (res.data.success) {
+        toast.success(res.data.msg, {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: false,
+          progress: undefined,
+          theme: "light",
+        });
+      } else {
+        toast.error(res.data.msg, {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: false,
+          progress: undefined,
+          theme: "light",
+        });
+      }
+      const response = await axios.post(
+        "/api/auth/getAllAddedUsers",
+        {},
+        axiosConfig
+      );
+      //console.log(response.data.user)
+      setData(response.data.user);
+    } catch (error) {
+      console.log(error);
+    }
     setRowToDelete({});
     setModalShow(false);
   };
@@ -181,21 +239,62 @@ const ManageUsers = () => {
 
   const { SearchBar } = Search;
 
-  const addUserOptions = [
+  {
+    /*const addUserOptions = [
     { value: "60003836", label: "Ankit" },
     { value: "60020617", label: "Dileep Rathore" },
     { value: "60001441", label: "Mayank Shukla" },
   ];
+*/
+  }
 
-  const [addUser, setAddUser] = useState({});
-
-  const handleAddUser = () => {
-    console.log(addUser);
+  const handleAddUser = async () => {
+    if (adduser) {
+      try {
+        axiosConfig.headers["authToken"] = user.authToken;
+        const res = await axios.post(
+          "/api/auth/addUser",
+          { empNo: adduser.value },
+          axiosConfig
+        );
+        //setData(res.data.user);
+        if (res.data.success) {
+          toast.success(res.data.msg, {
+            position: "top-right",
+            autoClose: 1000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: false,
+            progress: undefined,
+            theme: "light",
+          });
+        } else {
+          toast.error(res.data.msg, {
+            position: "top-right",
+            autoClose: 1000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: false,
+            progress: undefined,
+            theme: "light",
+          });
+        }
+        const response = await axios.post(
+          "/api/auth/getAllAddedUsers",
+          {},
+          axiosConfig
+        );
+        setData(response.data.user);
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
 
   return (
     <>
-      
       <div className="content-wrapper">
         <section className="content-header">
           <div className="container-fluid">
@@ -245,12 +344,12 @@ const ManageUsers = () => {
                               <div className="col-4">
                                 <Select
                                   name="addUser"
-                                  options={addUserOptions}
+                                  options={adduseroptions}
                                   onChange={(opt, e) => {
-                                    setAddUser(opt);
+                                    setAdduser(opt);
                                   }}
                                   isClearable={() => {
-                                    setAddUser({});
+                                    setAdduser({});
                                     return true;
                                   }}
                                   blurInputOnSelect="true"
@@ -308,7 +407,7 @@ const ManageUsers = () => {
                         size="sm"
                       >
                         <Modal.Body>Do you want to delete?</Modal.Body>
-                        <Modal.Footer justifyContent="space-between">
+                        <Modal.Footer justifycontent="space-between">
                           <Button variant="secondary" onClick={handleClose}>
                             No
                           </Button>
@@ -319,7 +418,7 @@ const ManageUsers = () => {
                             }}
                             align="right"
                           >
-                            Yes...Delete It!
+                            Delete It
                           </Button>
                         </Modal.Footer>
                       </Modal>

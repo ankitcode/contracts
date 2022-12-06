@@ -19,8 +19,9 @@ function App() {
 
   const { isAuthenticated, user } = useSelector((state) => state.root);
   const [isAdmin, setIsAdmin] = useState(false);
-  
+  //console.log(user, isAdmin);
   useEffect(() => {
+    if("userData" in user)
     setIsAdmin(user.userData[0].isAdmin);
   });
   
