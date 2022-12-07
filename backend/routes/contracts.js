@@ -4,32 +4,31 @@ const router = express.Router();
 const fetchuser = require("../middleware/fetchuser");
 const Contracts = require("../models/ContractData");
 
-// Get contracts data using GET "/api/auth/getContracts". Login required
-router.get("/getContracts", fetchuser, async (req, res) => {
+
+// Get contracts data using GET "/api/contracts/getContracts". Login required
+router.post("/getContracts", fetchuser, async (req, res) => {
   let success = false;
-  let msg = "";
   try {
-    const { id } = req.body;
     if (!res.isAdmin) {
       const contractsData = await Contracts.find({
-        createdBy: id,
+        createdBy: req.id,
       });
       success = true;
-      return res.status(400).json({
+      return res.status(200).json({
         success,
         contractsData,
       });
     } else {
       const contractsData = await Contracts.find();
       success = true;
-      return res.status(400).json({
+      return res.status(200).json({
         success,
         contractsData,
       });
     }
   } catch (error) {
     //console.error(error.message);
-    res.status(500).json({
+    res.json({
       msg: "Internal server error!",
       error: "Internal server error!",
       success,
@@ -46,46 +45,42 @@ const upload = multer({
       callback(null, file.fieldname + "-" + Date.now() + ".pdf");
     },
   }),
-}).single("loa_file");
+}).single("loaCopy");
 
-// Add new contract data using POST "/api/auth/addContractsData". Login required
+// Add new contract data using POST "/api/contracts/addContractsData". Login required
 router.post("/addContractsData", fetchuser, upload, async (req, res) => {
+  //console.log(req.data, req.file);
   let success = false;
-  console.log(req.body);
   try {
     const {
       packageName,
-      awardedOn,
-      value,
-      procurementNature,
+      dateAwarded,
+      amount,
+      natureOfProcurement,
       throughGeM,
       gemMode,
       reasonNotGeM,
       availableOnGeM,
       approvingOfficer,
-      gemAvailabilityReport,
-    } = req.body;
-    console.log(req.file);
+      availabilityReport,
+    } = req.data;
+    //console.log(req.file);
+    //console.log(req.location);
     const contractsData = new Contracts({
       createdBy: req.id,
       location: req.location,
       packageName,
       loa: req.file,
-      awardedOn,
-      value,
-      procurementNature,
+      awardedOn: dateAwarded,
+      value: amount,
+      procurementNature: natureOfProcurement,
       throughGeM,
       gemMode,
       reasonNotGeM,
       availableOnGeM,
       approvingOfficer,
-      gemAvailabilityReport,
+      gemAvailabilityReport: availabilityReport,
     });
-
-    console.log(createdBy,
-      location,
-      packageName,loa,awardedOn,value,procurementNature,throughGeM,
-      gemMode,reasonNotGeM,availableOnGeM,approvingOfficer,gemAvailabilityReport)
 
     const savedContractsData = await contractsData.save();
     success = true;
@@ -95,8 +90,8 @@ router.post("/addContractsData", fetchuser, upload, async (req, res) => {
       savedContractsData,
     });
   } catch (error) {
-    //console.error(error.message);
-    return res.status(500).json({
+    console.error(error.message);
+    return res.json({
       msg: "Internal server error!",
       error: "Internal server error!",
       success,
@@ -104,25 +99,25 @@ router.post("/addContractsData", fetchuser, upload, async (req, res) => {
   }
 });
 
-// Delete Contracts Data using DELETE "/api/auth/deleteContractsData". Login required
-router.delete("/deleteContractsData/:id", fetchuser, async (req, res) => {
+// Delete Contracts Data using DELETE "/api/contracts/deleteContractsData". Login required
+router.post("/deleteContractsData", fetchuser, async (req, res) => {
   let success = false;
   try {
-    let contractsData = await Contracts.findById(req.params.id);
+    let contractsData = await Contracts.findById(req.body.id);
     if (!contractsData) {
-      return res.status(404).json({
+      return res.json({
         msg: "Contract Not Found!",
         error: "Contract Not Found!",
         success,
       });
     }
 
-    contractsData = await Contracts.findByIdAndDelete(req.params.id);
+    contractsData = await Contracts.findByIdAndDelete(req.body.id);
     success = true;
     return res.json({ msg: "Contract Data has been deleted", success });
   } catch (error) {
     //console.error(error.message);
-    res.status(500).json({
+    res.json({
       msg: "Internal server error!",
       error: "Internal server error!",
       success,

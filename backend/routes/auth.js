@@ -224,11 +224,11 @@ router.post("/addUser", fetchuser, async (req, response) => {
     }
 
     // Check whether employee already exists
-    console.log(req.body.empNo);
-    console.log(req.empNo);
-    console.log(req.password);
+    //console.log(req.body.empNo);
+    //console.log(req.empNo);
+    //console.log(req.password);
     let user = await User.findOne({ empNo: req.body.empNo });
-    console.log(user);
+    //console.log(user);
     if (user) {
       return response.json({
         error: "Employee already exists!",

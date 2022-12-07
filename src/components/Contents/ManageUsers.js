@@ -418,7 +418,7 @@ const ManageUsers = () => {
                             }}
                             align="right"
                           >
-                            Delete It
+                            Yes
                           </Button>
                         </Modal.Footer>
                       </Modal>

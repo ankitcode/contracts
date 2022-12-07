@@ -5,8 +5,18 @@ import { Formik, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Select from "react-select";
 import Card from "react-bootstrap/Card";
+import axios from "../../axios";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 const AddNew = () => {
+  let axiosConfig = {
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+    },
+  };
+  const { user } = useSelector((state) => state.root);
+
   useEffect(() => {
     const trees = window.$('[data-widget="treeview"]');
     trees.Treeview("init");
@@ -83,7 +93,7 @@ const AddNew = () => {
     reasonNotGeM: Yup.object().when("throughGeM", {
       is: (val) => {
         if (val) {
-          console.log(val);
+          //console.log(val);
           return val.value === "no";
         } else {
           return true;
@@ -94,7 +104,7 @@ const AddNew = () => {
     availableOnGeM: Yup.object().when("throughGeM", {
       is: (val) => {
         if (val) {
-          console.log(val);
+          //console.log(val);
           return val.value === "no";
         } else {
           return true;
@@ -105,7 +115,7 @@ const AddNew = () => {
     approvingOfficer: Yup.string().when("throughGeM", {
       is: (val) => {
         if (val) {
-          console.log(val);
+          //console.log(val);
           return val.value === "no";
         } else {
           return true;
@@ -121,7 +131,7 @@ const AddNew = () => {
     availabilityReport: Yup.object().when("throughGeM", {
       is: (val) => {
         if (val) {
-          console.log(val);
+          //console.log(val);
           return val.value === "no";
         } else {
           return true;
@@ -184,11 +194,56 @@ const AddNew = () => {
                         availabilityReport: "",
                       }}
                       validationSchema={validationSchema}
-                      onSubmit={(values, { setSubmitting }) => {
-                        setTimeout(() => {
-                          alert(JSON.stringify(values, null, 2));
-                          setSubmitting(false);
-                        }, 400);
+                      onSubmit={async (values, { setSubmitting }) => {
+                        //alert(JSON.stringify(values, null, 2));
+                        //console.log(user.authToken);
+                        setSubmitting(false);
+                        try {
+                          //console.log(values);
+                          const formData = new FormData();
+                          formData.append("loaCopy", values.loaCopy);
+                          delete values["loaCopy"];
+                          //console.log(values);
+                          //console.log(formData.get("loaCopy"));
+                          //console.log(JSON.stringify(values));
+                          formData.append("data", JSON.stringify(values));
+                          
+                          //formData.append("name", values.);
+                          //console.log(formData.get('file'));
+                          axiosConfig.headers["authToken"] = user.authToken;
+                          const res = await axios.post(
+                            "/api/contracts/addContractsData",
+                            formData,
+                            axiosConfig
+                          );
+                          //setData(res.data.user);
+                          //console.log(res.data.success, res.data.msg);
+                          if (res.data.success) {
+                            toast.success(res.data.msg, {
+                              position: "top-right",
+                              autoClose: 1000,
+                              hideProgressBar: true,
+                              closeOnClick: true,
+                              pauseOnHover: true,
+                              draggable: false,
+                              progress: undefined,
+                              theme: "light",
+                            });
+                          } else {
+                            toast.error(res.data.msg, {
+                              position: "top-right",
+                              autoClose: 1000,
+                              hideProgressBar: true,
+                              closeOnClick: true,
+                              pauseOnHover: true,
+                              draggable: false,
+                              progress: undefined,
+                              theme: "light",
+                            });
+                          }
+                        } catch (error) {
+                          console.log(error);
+                        }
                       }}
                     >
                       {({
@@ -246,9 +301,9 @@ const AddNew = () => {
                                       name="loaCopy"
                                       type="file"
                                       onChange={(event) => {
-                                        console.log(
-                                          event.currentTarget.files[0]
-                                        );
+                                        //console.log(
+                                          //event.currentTarget.files[0]
+                                        //);
                                         setFieldValue(
                                           "loaCopy",
                                           event.currentTarget.files[0]
