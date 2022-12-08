@@ -6,7 +6,7 @@ const Footer = () => {
       {/* Main Footer */}
       <footer className="main-footer">
         <strong>
-          Copyright © 2022 <a href="#">Ankit, Engr-IT </a>.
+          Copyright © 2022 <a href="https://www.powergrid.in/">POWERGRID CORPORATION OF INDIA LTD </a>.
         </strong>
         <div className="float-right d-none d-sm-inline-block"></div>
       </footer>

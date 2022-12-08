@@ -64,7 +64,7 @@ const AddNew = () => {
   ];
 
   const [fileName, setFileName] = useState("");
-  const FILE_SIZE = 2048 * 1024;
+  const FILE_SIZE = 10 * 1024 * 1024;
   const SUPPORTED_FORMATS = ["application/pdf"];
 
   //const [showNotGemPart, setShowNotGemPart] = useState(false);
@@ -80,7 +80,7 @@ const AddNew = () => {
       )
       .test(
         "fileSize",
-        "Max file size Allowed is 2 MB !",
+        "Max file size Allowed is 10 MB !",
         (value) => value && value.size <= FILE_SIZE
       ),
     dateAwarded: Yup.string().required("Required!"),
