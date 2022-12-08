@@ -38,7 +38,7 @@ const ViewContracts = () => {
           {},
           axiosConfig
         );
-        //console.log(res.data.contractsData);
+        console.log(res.data.contractsData);
         setData(res.data.contractsData);
       } catch (error) {
         console.log(error);
@@ -53,7 +53,10 @@ const ViewContracts = () => {
 
   // Link to edit table data
   const linkFollow = (cell, row, rowIndex, formatExtraData) => {
-    return <Link to="/edit">{row.packageName}</Link>;
+    //console.log(row.loa.filename);
+    let path = "loaFiles" + "/" + row.loa.filename;
+    //console.log(path);
+    return <a href={path} target="_blank">{row.packageName}</a>;
   };
 
   //For delete modal
@@ -75,7 +78,14 @@ const ViewContracts = () => {
       text: "Package Name",
       headerAlign: "center",
       headerStyle: { minWidth: "250px", backgroundColor: "#A7C7E7" },
-      //formatter: linkFollow,
+      formatter: linkFollow,
+      sort: true,
+    },
+    {
+      dataField: "location",
+      text: "Location",
+      headerAlign: "center",
+      headerStyle: { minWidth: "100px", backgroundColor: "#A7C7E7" },
       sort: true,
     },
     {
