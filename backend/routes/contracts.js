@@ -9,7 +9,8 @@ const Contracts = require("../models/ContractData");
 router.post("/getContracts", fetchuser, async (req, res) => {
   let success = false;
   try {
-    if (!res.isAdmin) {
+    //console.log(req.isAdmin);
+    if (!req.isAdmin) {
       const contractsData = await Contracts.find({
         createdBy: req.id,
       });
@@ -19,6 +20,7 @@ router.post("/getContracts", fetchuser, async (req, res) => {
         contractsData,
       });
     } else {
+      //console.log(req.isAdmin);
       const contractsData = await Contracts.find();
       success = true;
       return res.status(200).json({

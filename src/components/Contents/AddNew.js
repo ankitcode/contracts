@@ -10,6 +10,7 @@ import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 const AddNew = () => {
+
   let axiosConfig = {
     headers: {
       "Access-Control-Allow-Origin": "*",
@@ -197,7 +198,7 @@ const AddNew = () => {
                       onSubmit={async (values, { setSubmitting }) => {
                         //alert(JSON.stringify(values, null, 2));
                         //console.log(user.authToken);
-                        setSubmitting(false);
+                        //console.log({isSubmitting});
                         try {
                           //console.log(values);
                           const formData = new FormData();
@@ -218,6 +219,8 @@ const AddNew = () => {
                           );
                           //setData(res.data.user);
                           //console.log(res.data.success, res.data.msg);
+                          //console.log(res.data.success, res.data.msg);
+
                           if (res.data.success) {
                             toast.success(res.data.msg, {
                               position: "top-right",
@@ -241,9 +244,12 @@ const AddNew = () => {
                               theme: "light",
                             });
                           }
+                          
                         } catch (error) {
                           console.log(error);
                         }
+                        setSubmitting(false);
+
                       }}
                     >
                       {({

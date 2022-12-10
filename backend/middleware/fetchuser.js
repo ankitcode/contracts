@@ -23,6 +23,7 @@ const fetchuser = (req, res, next) => {
   try {
     const data = jwt.verify(token, JWT_SECRET);
     req.id = data.user.id;
+    //console.log(data.user);
     req.isAdmin = data.user.isAdmin;
     req.empNo = data.user.empNo;
     req.password = data.user.password;

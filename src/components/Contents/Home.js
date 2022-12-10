@@ -3,14 +3,12 @@ import { Link } from "react-router-dom";
 import { useEffect } from "react";
 
 const Home = () => {
-
   useEffect(() => {
     const trees = window.$('[data-widget="treeview"]');
     trees.Treeview("init");
   }, []);
   return (
     <>
-     
       <div className="content-wrapper">
         <section className="content-header">
           <div className="container-fluid">
@@ -31,17 +29,21 @@ const Home = () => {
         </section>
 
         <section className="content" id="scrollingCard">
-          <div className="container-fluid">
-            
-          <img
+          <div className="container-fluid" align="center">
+            {/* <img
             src="dist/img/under_construction.png"
             alt="Under Construction"
             className="brand-image img-square elevation-1"
             style={{ opacity: "1", top: "1px", position: "relative" }}
           />
-            
-            
-            </div>
+            */}
+            <img
+              src="dist/img/powergrid_home.png"
+              alt="Under Construction"
+              className="brand-image img-square elevation-1"
+              style={{ opacity: "1", top: "1px", position: "relative" }}
+            />
+          </div>
         </section>
       </div>
     </>
