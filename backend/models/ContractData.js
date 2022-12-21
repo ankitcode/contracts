@@ -1,9 +1,17 @@
+/* Mongoose Schema for storing contracts data */
+
+/*
+ Include mongoose - Object Data Modelling (ODM) library for MongoDB
+ Provides an interface to the database for creating, quering, updating, deleting records, etc. 
+*/
 const mongoose = require("mongoose");
 
+// Define ContractsData Schema
 const ContractsDataSchema = new mongoose.Schema({
+  // Reference UserDataSchema - storing ObjectID of User who added contract data
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "user",
+    ref: "User",
   },
   createdOn: {
     type: Date,
@@ -57,4 +65,5 @@ const ContractsDataSchema = new mongoose.Schema({
   },
 });
 
+// Mongoose model is a wrapper on the Mongoogse schema
 module.exports = mongoose.model("ContractsData", ContractsDataSchema);

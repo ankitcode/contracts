@@ -1,5 +1,12 @@
+/* Mongoose Schema for storing User Details*/
+
+/*
+ Include mongoose - Object Data Modelling (ODM) library for MongoDB
+ Provides an interface to the database for creating, quering, updating, deleting records, etc. 
+*/
 const mongoose = require("mongoose");
 
+// Define User Schema
 const UserSchema = new mongoose.Schema({
   isAdmin: {
     type: Boolean,
@@ -32,4 +39,5 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
+// Mongoose model is a wrapper on the Mongoogse schema
 module.exports= mongoose.model("User", UserSchema);
