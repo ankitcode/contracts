@@ -1,0 +1,27 @@
+{
+  "name": "react-portal-backend",
+  "version": "1.0.0",
+  "description": "backend for contracts portal",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "ankit9@powergrid.in",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.1",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "express-validator": "^6.14.2",
+    "formidable": "^2.1.1",
+    "jsonwebtoken": "^8.5.1",
+    "ldapjs": "^2.3.3",
+    "mongoose": "^6.6.7",
+    "multer": "^1.4.5-lts.1"
+  },
+  "devDependencies": {
+    "@types/multer": "^1.4.7",
+    "nodemon": "^2.0.20"
+  }
+}

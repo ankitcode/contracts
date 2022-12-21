@@ -1,0 +1,110 @@
+.table {
+  overflow: auto;
+  table-layout: auto !important;
+}
+
+.caret {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 2px;
+  vertical-align: middle;
+  border-top: 4px dashed;
+  border-top: 4px solid \9;
+  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
+}
+
+.dropup .caret,
+.navbar-fixed-bottom .dropdown .caret {
+  border-top: 0;
+  border-bottom: 4px dashed;
+  border-bottom: 4px solid \9;
+  content: "";
+}
+
+.pagination {
+  display: -ms-flexbox;
+  display: flex;
+  padding-left: 0;
+  list-style: none;
+  border-radius: 0.25rem;
+  justify-content: flex-end;
+}
+
+.row.react-bootstrap-table-pagination {
+  margin-top: 10px;
+}
+
+.sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link.active,
+.sidebar-light-primary .nav-sidebar > .nav-item > .nav-link.active {
+  background-color: #1e78b3;
+  color: #fff;
+}
+
+.react-bs-table-csv-btn.btn.btn-default.btn.btn-secondary.buttons-csv.buttons-html5 {
+  background-color: #f8f9fa;
+  border-color: rgb(255 255 255);
+  color: #3498db;
+}
+
+.card-info:not(.card-outline) > .card-header {
+  background-color: #5898c3;
+}
+
+.btn.btn-info {
+  color: #fff;
+  background-color: #5898c3;
+  border-color: #5898c3;
+  box-shadow: none;
+}
+
+#scrollingCard {
+  overflow: scroll;
+  white-space: nowrap;
+}
+
+.modal-footer {
+  justify-content: space-between;
+}
+
+.form-control-sm {
+  height: calc(1.8125rem + 0.6rem);
+}
+
+.btn-primary.addUserBtn {
+  border: none;
+  color: #26803a;
+  background-color: rgb(255 255 255 / 80%);
+}
+
+.btn-danger.deleteUserBtn {
+  border: none;
+  color: #a02828;
+  background-color: rgb(255 255 255 / 10%);
+}
+
+.btn-danger.deleteContract {
+  border: none;
+  color: #a02828;
+  background-color: rgb(255 255 255 / 10%);
+}
+
+.userDetail {
+  color: rgb(255 255 255 / 70%);
+}
+
+.btn-primary.logoutBtn {
+  margin-top: 2px;
+  border: none;
+  color: #212529a8;
+  background-color: rgb(255 255 255 / 80%);
+}
+
+.fa-1x.logoutBtnIcon {
+  font-size: 1.1em;
+}
+
+.toBeDone {
+  font-size: 5em;
+}
