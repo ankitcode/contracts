@@ -336,6 +336,9 @@ router.post("/removeUser", fetchuser, async (req, response) => {
         msg: "Employee Not Found!",
       });
     }
+    if(user.isAdmin){
+      return response.json({ success, msg: "Cannot remove admin!", user });  
+    }
     user = await User.findByIdAndDelete(req.body.id);
     success = true;
     return response
