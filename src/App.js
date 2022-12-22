@@ -16,15 +16,9 @@ import Sidebar from "./Components/Sidebar";
 import { ToastContainer } from "react-toastify";
 
 function App() {
-
-  const { isAuthenticated, user } = useSelector((state) => state.root);
-  const [isAdmin, setIsAdmin] = useState(false);
-  //console.log(user, isAdmin);
-  useEffect(() => {
-    if("userData" in user)
-    setIsAdmin(user.userData[0].isAdmin);
-  });
   
+  const { isAuthenticated, isAdmin } = useSelector((state) => state.root);
+
   useEffect(() => {
     const trees = window.$('[data-widget="treeview"]');
     trees.Treeview("init");

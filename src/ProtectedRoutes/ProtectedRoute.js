@@ -3,7 +3,6 @@ import { Navigate, Outlet } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const ProtectedRoute = ({ isAuthenticated, children, adminRoute, isAdmin, redirect = "/login", redirectAdmin = "/" }) => {
-  //console.log(children);
   if (!isAuthenticated) {
     return <Navigate to={redirect} />;
   }
