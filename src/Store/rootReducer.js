@@ -1,5 +1,7 @@
+// Import
 import { createReducer } from "@reduxjs/toolkit";
 
+// Create reducer for redux store
 export const rootReducer = createReducer(
   { isAuthenticated: false, user: {}, isAdmin: false },
   {
@@ -8,9 +10,9 @@ export const rootReducer = createReducer(
       state.user = action.user;
       state.isAdmin = action.user.userData[0].isAdmin;
     },
-    logout: (state, action) => {
+    logout: (state) => {
       state.isAuthenticated = false;
-      state.user = action.user;
+      state.user = {};
       state.isAdmin = false;
     },
   }

@@ -1,3 +1,4 @@
+// Imports
 import React from "react";
 import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
@@ -5,15 +6,15 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+  // redux store reducer dispatch
   const dispatch = useDispatch();
+  // to redirect upon logout
   const navigate = useNavigate();
 
+  // Call upon logout
   const handleLogOut = () => {
-    //console.log("Logout");
-    let user = { userData: [{ isAdmin: false }] };
-    dispatch({ type: "logout", user: user });
+    dispatch({ type: "logout" });
     navigate("/login");
-    //localStorage.removeItem('isAthenticated');
   };
   return (
     <>

@@ -1,3 +1,4 @@
+// Imports
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
@@ -10,7 +11,7 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   //{/*<React.StrictMode>*/}
-  
+  // Implementation of redux persist store
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
     <App />

@@ -1,24 +1,23 @@
-import ViewContracts from "./Components/Contents/ViewContracts";
+// Imports
 import Home from "./Components/Contents/Home";
-
-//Import for router, routes and route
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import ViewContracts from "./Components/Contents/ViewContracts";
 import AddNew from "./Components/Contents/AddNew";
-import { useState, useEffect } from "react";
-import Login from "./Components/Login";
 import ManageUsers from "./Components/Contents/ManageUsers";
-
-import { useSelector } from "react-redux";
-import ProtectedRoute from "./ProtectedRoutes/ProtectedRoute";
+import Login from "./Components/Login";
 import Header from "./Components/Header";
 import Footer from "./Components/Footer";
 import Sidebar from "./Components/Sidebar";
+import ProtectedRoute from "./ProtectedRoutes/ProtectedRoute";
+
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
 import { ToastContainer } from "react-toastify";
 
 function App() {
-  
+  // Getting isAuthenticated and isAdmin for current logged in user from redux store
   const { isAuthenticated, isAdmin } = useSelector((state) => state.root);
-
+  // Initializing treeview for sidebar
   useEffect(() => {
     const trees = window.$('[data-widget="treeview"]');
     trees.Treeview("init");
@@ -91,6 +90,7 @@ function App() {
           />
         </Routes>
       </Router>
+      {/*React toast container component for showing notifications*/}
       <ToastContainer
         position="top-right"
         autoClose={1000}

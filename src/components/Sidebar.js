@@ -1,16 +1,16 @@
+// Imports
 import React from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const Sidebar = () => {
-
+  // Get user from redux store to display user data on sidebar
   const { user } = useSelector((state) => state.root);
-
   return (
     <>
       {/* Main Sidebar Container */}
       <aside className="main-sidebar sidebar-dark-primary elevation-4">
-        {/* Brand Logo */}
+        {/* POWERGRID Logo */}
         <Link to="/home" className="brand-link">
           <img
             src="dist/img/powergrid.png"
@@ -21,13 +21,16 @@ const Sidebar = () => {
         </Link>
         {/* Sidebar */}
         <div className="sidebar">
-          {/* Sidebar user panel (optional) */}
+          {/* Sidebar user panel */}
           <div className="user-panel mt-3 pb-3 mb-3 d-flex">
             <div className="container-fluid">
               <div className="row">
-                <h6 className="info userDetail">Hello! {user.userData[0].name},</h6>
-                
-                <h6 className="info userDetail">{user.userData[0].post}, {user.userData[0].department}</h6>
+                <h6 className="info userDetail">
+                  Hello! {user.userData[0].name},
+                </h6>
+                <h6 className="info userDetail">
+                  {user.userData[0].post}, {user.userData[0].department}
+                </h6>
               </div>
             </div>
           </div>
@@ -75,14 +78,12 @@ const Sidebar = () => {
                   </li>
                 </ul>
               </li>
-
               <li className="nav-item">
                 <a href="#" className="nav-link">
                   <i className="nav-icon fas fa-file-contract" />
                   <p>
                     Contracts
                     <i className="fas fa-angle-left right" />
-                    {/*<span className="badge badge-info right">6</span>*/}
                   </p>
                 </a>
                 <ul className="nav nav-treeview">
@@ -102,7 +103,6 @@ const Sidebar = () => {
                   </li>
                 </ul>
               </li>
-
               {/*Added for Admin */}
               <li className="nav-item">
                 <a href="#" className="nav-link">
@@ -110,12 +110,10 @@ const Sidebar = () => {
                   <p>
                     Admin
                     <i className="fas fa-angle-left right" />
-                    {/*<span className="badge badge-info right">6</span>*/}
                   </p>
                 </a>
                 <ul className="nav nav-treeview">
-                  {/*Added two list items for adding contract and 
-                  viewing added contracts and icons */}
+                  {/*Added for admin to manage users */}
                   <li className="nav-item">
                     <Link to="/manageUsers" className="nav-link">
                       <i className="fas fa-solid fa-user nav-icon" />
@@ -124,7 +122,6 @@ const Sidebar = () => {
                   </li>
                 </ul>
               </li>
-
               {/*Added for Reports */}
               <li className="nav-item">
                 <a href="#" className="nav-link">
@@ -132,19 +129,9 @@ const Sidebar = () => {
                   <p>
                     Reports
                     <i className="fas fa-angle-left right" />
-                    {/*<span className="badge badge-info right">6</span>*/}
                   </p>
                 </a>
-                <ul className="nav nav-treeview">
-                  {/*Added two list items for adding contract and 
-                  viewing added contracts and icons */}
-                  {/*<li className="nav-item">
-                    <a href="#" className="nav-link">
-                      <i className="fas fa-edit nav-icon" />
-                      <p>Users</p>
-                    </a>
-                </li>*/}
-                </ul>
+                <ul className="nav nav-treeview"></ul>
               </li>
             </ul>
           </nav>
