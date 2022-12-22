@@ -9,13 +9,12 @@ const router = express.Router();
 const fetchuser = require("../middleware/fetchuser");
 const Contracts = require("../models/ContractData");
 
-
 // Get contracts data using POST "/api/contracts/getContracts". Login required
 router.post("/getContracts", fetchuser, async (req, res) => {
   let success = false;
   try {
     if (!req.isAdmin) {
-    // If request is not from admin, return contracts added by them only 
+      // If request is not from admin, return contracts added by them only
       const contractsData = await Contracts.find({
         createdBy: req.id,
       });
