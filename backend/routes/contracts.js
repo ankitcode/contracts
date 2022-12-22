@@ -1,3 +1,8 @@
+/*
+APIs for contracts data
+*/
+
+// Imports
 const express = require("express");
 const multer = require("multer");
 const router = express.Router();
@@ -5,12 +10,12 @@ const fetchuser = require("../middleware/fetchuser");
 const Contracts = require("../models/ContractData");
 
 
-// Get contracts data using GET "/api/contracts/getContracts". Login required
+// Get contracts data using POST "/api/contracts/getContracts". Login required
 router.post("/getContracts", fetchuser, async (req, res) => {
   let success = false;
   try {
-    //console.log(req.isAdmin);
     if (!req.isAdmin) {
+    // If request is not from admin, return contracts added by them only 
       const contractsData = await Contracts.find({
         createdBy: req.id,
       });
@@ -20,7 +25,7 @@ router.post("/getContracts", fetchuser, async (req, res) => {
         contractsData,
       });
     } else {
-      //console.log(req.isAdmin);
+      // If request id from admin, return all data
       const contractsData = await Contracts.find();
       success = true;
       return res.status(200).json({
@@ -29,7 +34,6 @@ router.post("/getContracts", fetchuser, async (req, res) => {
       });
     }
   } catch (error) {
-    //console.error(error.message);
     res.json({
       msg: "Internal server error!",
       error: "Internal server error!",
@@ -38,6 +42,7 @@ router.post("/getContracts", fetchuser, async (req, res) => {
   }
 });
 
+// Function for uploading files
 const upload = multer({
   storage: multer.diskStorage({
     destination: function (req, file, callback) {
@@ -51,7 +56,6 @@ const upload = multer({
 
 // Add new contract data using POST "/api/contracts/addContractsData". Login required
 router.post("/addContractsData", fetchuser, upload, async (req, res) => {
-  //console.log(req.data, req.file);
   let success = false;
   try {
     const {
@@ -66,8 +70,7 @@ router.post("/addContractsData", fetchuser, upload, async (req, res) => {
       approvingOfficer,
       availabilityReport,
     } = req.data;
-    //console.log(req.file);
-    //console.log(req.location);
+
     const contractsData = new Contracts({
       createdBy: req.id,
       location: req.location,
@@ -101,7 +104,7 @@ router.post("/addContractsData", fetchuser, upload, async (req, res) => {
   }
 });
 
-// Delete Contracts Data using DELETE "/api/contracts/deleteContractsData". Login required
+// Delete Contracts Data using POST "/api/contracts/deleteContractsData". Login required
 router.post("/deleteContractsData", fetchuser, async (req, res) => {
   let success = false;
   try {
@@ -113,12 +116,10 @@ router.post("/deleteContractsData", fetchuser, async (req, res) => {
         success,
       });
     }
-
     contractsData = await Contracts.findByIdAndDelete(req.body.id);
     success = true;
     return res.json({ msg: "Contract Data has been deleted", success });
   } catch (error) {
-    //console.error(error.message);
     res.json({
       msg: "Internal server error!",
       error: "Internal server error!",
