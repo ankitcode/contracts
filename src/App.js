@@ -1,4 +1,5 @@
 // Imports
+import React from "react";
 import Home from "./Components/Contents/Home";
 import ViewContracts from "./Components/Contents/ViewContracts";
 import AddNew from "./Components/Contents/AddNew";

@@ -24,11 +24,17 @@ import axios from "../../axios";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import EditContract from "./EditContract";
 
 const ViewContracts = () => {
   const { user } = useSelector((state) => state.root);
   // to keep contracts data to be shown on the page
   const [data, setData] = useState([]);
+  // to show edit contract modal
+  const [showEditModal, setEditModal] = useState(false);
+  //Data to be edited
+  const [rowToEdit, setRowToEdit] = useState({});
+  // redirect to edit data
   const { SearchBar } = Search;
   const { ExportCSVButton } = CSVExport;
   //Data to be deleted
@@ -197,6 +203,15 @@ const ViewContracts = () => {
               }}
             >
               <i className="fa fa-trash" aria-hidden="true"></i>
+            </button>
+            <button
+              className="btn btn-danger btn-xs deleteContract"
+              onClick={() => {
+                setEditModal(true);
+                setRowToEdit(row);
+              }}
+            >
+              <i className="fa fa-edit" aria-hidden="true"></i>
             </button>
           </>
         );
@@ -419,6 +434,7 @@ const ViewContracts = () => {
                           </Button>
                         </Modal.Footer>
                       </Modal>
+                      <EditContract show={showEditModal} row={rowToEdit}/>
                     </div>
                   </div>
                 </div>

@@ -8,6 +8,8 @@ const multer = require("multer");
 const router = express.Router();
 const fetchuser = require("../middleware/fetchuser");
 const Contracts = require("../models/ContractData");
+// Import for removing file
+var fs = require("fs");
 
 // Get contracts data using POST "/api/contracts/getContracts". Login required
 router.post("/getContracts", fetchuser, async (req, res) => {
@@ -44,10 +46,10 @@ router.post("/getContracts", fetchuser, async (req, res) => {
 // Function for uploading files
 const upload = multer({
   storage: multer.diskStorage({
-    destination: function (req, file, callback) {
-      callback(null, "../public/loaFiles");
+    destination: function(req, file, callback) {
+      callback(null, "./public/loaFiles");
     },
-    filename: function (req, file, callback) {
+    filename: function(req, file, callback) {
       callback(null, file.fieldname + "-" + Date.now() + ".pdf");
     },
   }),
@@ -115,6 +117,13 @@ router.post("/deleteContractsData", fetchuser, async (req, res) => {
         success,
       });
     }
+    let path = contractsData.loa.path;
+    let filePath = "D:\\Portals\\contracts\\" + path;
+    // to delete loafile
+    fs.stat(filePath, function(err, stats) {
+      console.log(filePath);
+      fs.unlink(filePath, function(err) {});
+    });
     contractsData = await Contracts.findByIdAndDelete(req.body.id);
     success = true;
     return res.json({ msg: "Contract Data has been deleted", success });
