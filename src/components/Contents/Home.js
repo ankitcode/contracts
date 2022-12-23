@@ -1,3 +1,8 @@
+/*
+Dashboard or home page
+*/
+
+// Imports
 import React from "react";
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
@@ -27,16 +32,8 @@ const Home = () => {
             </div>
           </div>
         </section>
-
         <section className="content" id="scrollingCard">
           <div className="container-fluid" align="center">
-            {/* <img
-            src="dist/img/under_construction.png"
-            alt="Under Construction"
-            className="brand-image img-square elevation-1"
-            style={{ opacity: "1", top: "1px", position: "relative" }}
-          />
-            */}
             <img
               src="dist/img/powergrid_home.png"
               alt="Under Construction"

@@ -1,44 +1,61 @@
+/*
+View Contracts component 
+- Allows admin to view all contracts
+- Other users can only see contracts added by them
+- Users can edit contracts added by them
+*/
+// Imports
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import BootstrapTable from "react-bootstrap-table-next";
-import paginationFactory from "react-bootstrap-table2-paginator";
 import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
 import "react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css";
 import ToolkitProvider, {
   Search,
   CSVExport,
 } from "react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit";
+import paginationFactory from "react-bootstrap-table2-paginator";
+import filterFactory, {
+  dateFilter,
+  Comparator,
+} from "react-bootstrap-table2-filter";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import filterFactory, { dateFilter, Comparator } from "react-bootstrap-table2-filter";
-import { useSelector } from "react-redux";
 import axios from "../../axios";
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 const ViewContracts = () => {
+  const { user } = useSelector((state) => state.root);
+  // to keep contracts data to be shown on the page
+  const [data, setData] = useState([]);
+  const { SearchBar } = Search;
+  const { ExportCSVButton } = CSVExport;
+  //Data to be deleted
+  const [rowToDelete, setRowToDelete] = useState({});
+  // For showing and hiding modal
+  const [showModal, setModalShow] = useState(false);
+  // axios configure headers
   let axiosConfig = {
     headers: {
       "Content-Type": "application/json;charset=UTF-8",
       "Access-Control-Allow-Origin": "*",
     },
   };
-  const { user } = useSelector((state) => state.root);
-  const [data, setData] = useState([]);
 
   useEffect(() => {
     const trees = window.$('[data-widget="treeview"]');
     trees.Treeview("init");
+    // get contracts data
     async function fetchData() {
       try {
-        //console.log(user.authToken);
         axiosConfig.headers["authToken"] = user.authToken;
-        //console.log(axiosConfig);
         const res = await axios.post(
           "/api/contracts/getContracts",
           {},
           axiosConfig
         );
-        console.log(res.data.contractsData);
+        // set contracts data
         setData(res.data.contractsData);
       } catch (error) {
         console.log(error);
@@ -47,32 +64,28 @@ const ViewContracts = () => {
     fetchData();
   }, []);
 
-  
-  // Adding s_no to data
-  //const doubled = data.map((item, idx) => (item.s_no = idx + 1));
-
-  // Link to edit table data
-  const linkFollow = (cell, row, rowIndex, formatExtraData) => {
-    //console.log(row.loa.filename);
-    let path = "loaFiles" + "/" + row.loa.filename;
-    //console.log(path);
-    return <a href={path} target="_blank">{row.packageName}</a>;
-  };
-
-  //For delete modal
-  const [showModal, setModalShow] = useState(false);
+  /*-------------------------------Start of Handling table data---------------------------------*/
+  // Handle modal close onhide and on selecting 'No' option
   const handleClose = () => {
     setRowToDelete({});
     setModalShow(false);
   };
-  const handleShow = () => setModalShow(true);
 
-  //Data to be deleted
-  const [rowToDelete, setRowToDelete] = useState({});
+  // Adding s_no to data
+  //const doubled = data.map((item, idx) => (item.s_no = idx + 1));
+
+  // Link to show LOA file on new tab
+  const linkFollow = (cell, row, rowIndex, formatExtraData) => {
+    let path = "loaFiles" + "/" + row.loa.filename;
+    return (
+      <a href={path} target="_blank">
+        {row.packageName}
+      </a>
+    );
+  };
 
   // Columns for table
   const columns = [
-
     {
       dataField: "packageName",
       text: "Package Name",
@@ -95,6 +108,7 @@ const ViewContracts = () => {
       formatter: dateFormatter,
       headerStyle: { minWidth: "100px", backgroundColor: "#A7C7E7" },
       sort: true,
+      // Date filter option
       filter: dateFilter({
         withoutEmptyComparatorOption: true,
         comparators: [Comparator.EQ, Comparator.GT, Comparator.LT],
@@ -174,6 +188,7 @@ const ViewContracts = () => {
       formatter: (cellContent, row) => {
         return (
           <>
+            {/*Adding buttun to delete contract data*/}
             <button
               className="btn btn-danger btn-xs deleteContract"
               onClick={() => {
@@ -188,18 +203,29 @@ const ViewContracts = () => {
       },
     },
   ];
+  // Date formatter
+  const moment = require("moment");
+  function dateFormatter(cell) {
+    return <span>{moment(cell).format("DD-MM-YYYY")}</span>;
+  }
 
-  // Delete function
+  // Default sort on table
+  const defaultSorted = [
+    {
+      dataField: "awardedOn",
+      order: "desc",
+    },
+  ];
+
+  // Delete row data function
   const handleDelete = async (row) => {
     try {
       axiosConfig.headers["authToken"] = user.authToken;
-      
       const res = await axios.post(
         "/api/contracts/deleteContractsData",
         { id: row._id },
         axiosConfig
       );
-      //setData(res.data.user);
       if (res.data.success) {
         toast.success(res.data.msg, {
           position: "top-right",
@@ -228,7 +254,6 @@ const ViewContracts = () => {
         {},
         axiosConfig
       );
-      //console.log(res.data.contractsData);
       setData(response.data.contractsData);
     } catch (error) {
       console.log(error);
@@ -236,34 +261,21 @@ const ViewContracts = () => {
     setRowToDelete({});
     setModalShow(false);
   };
+  /*-------------------------------End of Handling table data---------------------------------*/
 
-  // Date formatter
-  const moment = require("moment");
-  function dateFormatter(cell) {
-    return <span>{moment(cell).format("DD-MM-YYYY")}</span>;
-  }
-
-  // Default sort on table
-  const defaultSorted = [
-    {
-      dataField: "awardedOn",
-      order: "desc",
-    },
-  ];
-
+  /*----------------------------------Start of Pagination---------------------------------------*/
+  // Showing total on pagination
   const customTotal = (from, to, size) => (
     <span className="react-bootstrap-table-pagination-total">
       Showing {from} to {to} of {size} Results
     </span>
   );
 
+  // set options for pagination
   const options = {
     paginationSize: 5,
     pageStartIndex: 1,
-    // alwaysShowAllBtns: true, // Always show next and previous button
-    // withFirstAndLast: false, // Hide the going to First and Last page button
-    // hideSizePerPage: true, // Hide the sizePerPage dropdown always
-    hidePageListOnlyOnePage: true, // Hide the pagination list when only one page
+    hidePageListOnlyOnePage: true,
     firstPageText: "First",
     prePageText: "Back",
     nextPageText: "Next",
@@ -275,7 +287,6 @@ const ViewContracts = () => {
     showTotal: true,
     paginationTotalRenderer: customTotal,
     disablePageTitle: true,
-    //buttonsAlwaysShown: ["Back","Next","Last","First"],
     sizePerPageList: [
       {
         text: "10",
@@ -291,9 +302,7 @@ const ViewContracts = () => {
       },
     ],
   };
-
-  const { SearchBar } = Search;
-  const { ExportCSVButton } = CSVExport;
+  /*----------------------------------End of Pagination---------------------------------------*/
 
   return (
     <>
@@ -324,12 +333,10 @@ const ViewContracts = () => {
                   <div className="card-header">
                     <h3 className="card-title"></h3>
                   </div>
-
                   <div className="card">
                     <div className="card-header">
                       <h3 className="card-title"></h3>
                     </div>
-
                     <div className="card-body">
                       <ToolkitProvider
                         keyField="_id"
