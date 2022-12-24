@@ -10,7 +10,6 @@ import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 const AddNew = () => {
-
   let axiosConfig = {
     headers: {
       "Access-Control-Allow-Origin": "*",
@@ -39,6 +38,17 @@ const AddNew = () => {
     { value: "gemCategories", label: "Categories Available on GeM" },
     { value: "custom", label: "Through Custom Bidding" },
     { value: "boq", label: "BoQ Based Bidding" },
+  ];
+
+  const msmeVendorOptions = [
+    { value: "yes", label: "Yes" },
+    { value: "no", label: "No" },
+  ];
+
+  const msmeTypeOptions = [
+    { value: "notApplicable", label: "Not Applicable" },
+    { value: "women", label: "Women" },
+    { value: "scst", label: "SC/ST" },
   ];
 
   const reasonNotThroughGeM = [
@@ -91,6 +101,8 @@ const AddNew = () => {
     natureOfProcurement: Yup.object().required("Required!"),
     throughGeM: Yup.object().required("Required!"),
     gemMode: Yup.object().required("Required!"),
+    msmeVendor: Yup.object().required("Required!"),
+    msmeType: Yup.object().required("Required!"),
     reasonNotGeM: Yup.object().when("throughGeM", {
       is: (val) => {
         if (val) {
@@ -128,6 +140,28 @@ const AddNew = () => {
           "Enter a Valid Name!"
         )
         .required("Required!"),
+    }),
+    approvalCopy: Yup.mixed().when("throughGeM", {
+      is: (val) => {
+        if (val) {
+          //console.log(val);
+          return val.value === "no";
+        } else {
+          return true;
+        }
+      },
+      then: Yup.mixed()
+        .required("File is Required!")
+        .test(
+          "fileFormat",
+          "Only pdf Allowed!",
+          (value) => value && SUPPORTED_FORMATS.includes(value.type)
+        )
+        .test(
+          "fileSize",
+          "Max file size Allowed is 10 MB !",
+          (value) => value && value.size <= FILE_SIZE
+        ),
     }),
     availabilityReport: Yup.object().when("throughGeM", {
       is: (val) => {
@@ -189,9 +223,12 @@ const AddNew = () => {
                         natureOfProcurement: "",
                         throughGeM: "",
                         gemMode: "",
+                        msmeVendor: "",
+                        msmeType: "",
                         reasonNotGeM: "",
                         availableOnGeM: "",
                         approvingOfficer: "",
+                        approvalCopy: null,
                         availabilityReport: "",
                       }}
                       validationSchema={validationSchema}
@@ -203,12 +240,14 @@ const AddNew = () => {
                           //console.log(values);
                           const formData = new FormData();
                           formData.append("loaCopy", values.loaCopy);
+                          formData.append("approvalCopy", values.approvalCopy);
                           delete values["loaCopy"];
+                          delete values["approvalCopy"];
                           //console.log(values);
                           //console.log(formData.get("loaCopy"));
                           //console.log(JSON.stringify(values));
                           formData.append("data", JSON.stringify(values));
-                          
+
                           //formData.append("name", values.);
                           //console.log(formData.get('file'));
                           axiosConfig.headers["authToken"] = user.authToken;
@@ -244,12 +283,10 @@ const AddNew = () => {
                               theme: "light",
                             });
                           }
-                          
                         } catch (error) {
                           console.log(error);
                         }
                         setSubmitting(false);
-
                       }}
                     >
                       {({
@@ -308,7 +345,7 @@ const AddNew = () => {
                                       type="file"
                                       onChange={(event) => {
                                         //console.log(
-                                          //event.currentTarget.files[0]
+                                        //event.currentTarget.files[0]
                                         //);
                                         setFieldValue(
                                           "loaCopy",
@@ -466,6 +503,61 @@ const AddNew = () => {
                                 height: "10px",
                               }}
                             />
+
+                            <div className="form-group row">
+                              <label
+                                htmlFor="msmeVendor"
+                                className="col-3 col-form-label"
+                              >
+                                MSME Vendor
+                              </label>
+                              <div className="col-3">
+                                <Select
+                                  name="msmeVendor"
+                                  options={msmeVendorOptions}
+                                  onChange={(opt, e) => {
+                                    setFieldValue("msmeVendor", opt);
+                                    //setTouched(true);
+                                  }}
+                                  onBlur={handleBlur}
+                                  value={values.msmeVendor}
+                                />
+                                <ErrorMessage name="msmeVendor">
+                                  {(msg) => (
+                                    <div style={{ color: "red" }}>{msg}</div>
+                                  )}
+                                </ErrorMessage>
+                              </div>
+                              <label
+                                htmlFor="msmeType"
+                                className="col-3 col-form-label"
+                              >
+                                MSME Type
+                              </label>
+                              <div className="col-3">
+                                <Select
+                                  name="msmeType"
+                                  options={msmeTypeOptions}
+                                  onChange={(opt, e) => {
+                                    setFieldValue("msmeType", opt);
+                                    //setTouched(true);
+                                  }}
+                                  onBlur={handleBlur}
+                                  value={values.msmeType}
+                                />
+                                <ErrorMessage name="msmeType">
+                                  {(msg) => (
+                                    <div style={{ color: "red" }}>{msg}</div>
+                                  )}
+                                </ErrorMessage>
+                              </div>
+                            </div>
+
+                            <hr
+                              style={{
+                                height: "10px",
+                              }}
+                            />
                             {values.throughGeM.value === "no" ? (
                               <>
                                 <div className="form-group row">
@@ -550,6 +642,49 @@ const AddNew = () => {
                                       )}
                                     </ErrorMessage>
                                   </div>
+                                  <label className="col-3 col-form-label">
+                                    Approval
+                                  </label>
+                                  <div className="col-3">
+                                    <div className="input-group">
+                                      <div className="custom-file">
+                                        <input
+                                          name="approvalCopy"
+                                          type="file"
+                                          onChange={(event) => {
+                                            //console.log(
+                                            //event.currentTarget.files[0]
+                                            //);
+                                            setFieldValue(
+                                              "approvalCopy",
+                                              event.currentTarget.files[0]
+                                            );
+                                            setFileName(
+                                              event.currentTarget.files[0].name
+                                            );
+                                          }}
+                                          onBlur={handleBlur}
+                                          className="form-control"
+                                          id="approvalCopy"
+                                        />
+                                        <label
+                                          className="custom-file-label"
+                                          htmlFor="approvalCopy"
+                                        >
+                                          {fileName ? fileName : ""}
+                                        </label>
+                                      </div>
+                                    </div>
+                                    <ErrorMessage name="approvalCopy">
+                                      {(msg) => (
+                                        <div style={{ color: "red" }}>
+                                          {msg}
+                                        </div>
+                                      )}
+                                    </ErrorMessage>
+                                  </div>
+                                </div>
+                                <div className="form-group row">
                                   <label
                                     htmlFor="availabilityReport"
                                     className="col-3 col-form-label"
