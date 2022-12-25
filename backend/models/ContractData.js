@@ -48,6 +48,14 @@ const ContractsDataSchema = new mongoose.Schema({
     type: Object,
     required: true,
   },
+  msmeVendor: {
+    type: Object,
+    required: true,
+  },
+  msmeType: {
+    type: Object,
+    required: true,
+  },
   reasonNotGeM: {
     type: Object,
     required: true,
@@ -58,6 +66,9 @@ const ContractsDataSchema = new mongoose.Schema({
   },
   approvingOfficer: {
     type: String,
+  },
+  approval: {
+    type: Object,
   },
   gemAvailabilityReport: {
     type: Object,

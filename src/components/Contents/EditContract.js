@@ -23,6 +23,10 @@ const EditContract = (props) => {
   const { user } = useSelector((state) => state.root);
 
   useEffect(() => {}, []);
+
+  const handleClose = () => {
+    
+  };
   // Options for select box
   const procurementNatureOptions = [
     { value: "worksCivil", label: "Works or Civil" },
@@ -40,6 +44,17 @@ const EditContract = (props) => {
     { value: "gemCategories", label: "Categories Available on GeM" },
     { value: "custom", label: "Through Custom Bidding" },
     { value: "boq", label: "BoQ Based Bidding" },
+  ];
+
+  const msmeVendorOptions = [
+    { value: "yes", label: "Yes" },
+    { value: "no", label: "No" },
+  ];
+
+  const msmeTypeOptions = [
+    { value: "notApplicable", label: "Not Applicable" },
+    { value: "women", label: "Women" },
+    { value: "scst", label: "SC/ST" },
   ];
 
   const reasonNotThroughGeM = [
@@ -92,6 +107,8 @@ const EditContract = (props) => {
     natureOfProcurement: Yup.object().required("Required!"),
     throughGeM: Yup.object().required("Required!"),
     gemMode: Yup.object().required("Required!"),
+    msmeVendor: Yup.object().required("Required!"),
+    msmeType: Yup.object().required("Required!"),
     reasonNotGeM: Yup.object().when("throughGeM", {
       is: (val) => {
         if (val) {
@@ -130,6 +147,28 @@ const EditContract = (props) => {
         )
         .required("Required!"),
     }),
+    approvalCopy: Yup.mixed().when("throughGeM", {
+      is: (val) => {
+        if (val) {
+          //console.log(val);
+          return val.value === "no";
+        } else {
+          return true;
+        }
+      },
+      then: Yup.mixed()
+        .required("File is Required!")
+        .test(
+          "fileFormat",
+          "Only pdf Allowed!",
+          (value) => value && SUPPORTED_FORMATS.includes(value.type)
+        )
+        .test(
+          "fileSize",
+          "Max file size Allowed is 10 MB !",
+          (value) => value && value.size <= FILE_SIZE
+        ),
+    }),
     availabilityReport: Yup.object().when("throughGeM", {
       is: (val) => {
         if (val) {
@@ -143,12 +182,6 @@ const EditContract = (props) => {
     }),
   });
 
-  const [show, setShow] = useState(false);
-
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
-
-
   return (
     <Modal
       show={props.show}
@@ -157,26 +190,25 @@ const EditContract = (props) => {
       centered
       keyboard="False"
     >
-        <Modal.Header closeButton>
-          <Modal.Title>Modal heading</Modal.Title>
-        </Modal.Header>
+      <Modal.Header closeButton>
+        <Modal.Title>Modal heading</Modal.Title>
+      </Modal.Header>
       <Modal.Body>
-        {" "}
         <section className="content" id="scrollingCard">
           <div className="container-fluid">
             <div className="row">
               <div className="col-12">
-                <Card style={{ width: "50rem" }}>
+                <Card style={{ width: "75rem" }}>
                   <Card.Header>
                     <Card.Title></Card.Title>
                   </Card.Header>
 
                   <div
                     className="card card-info shadow bg-white pt-1 pb-1 pl-1 pr-1 rounded"
-                    style={{ width: "50rem" }}
+                    style={{ width: "75rem" }}
                   >
                     <Card.Header>
-                      <Card.Title>Edit Contract Data</Card.Title>
+                      <Card.Title>Add Contract Data</Card.Title>
                     </Card.Header>
 
                     <Formik
@@ -188,9 +220,12 @@ const EditContract = (props) => {
                         natureOfProcurement: "",
                         throughGeM: "",
                         gemMode: "",
+                        msmeVendor: "",
+                        msmeType: "",
                         reasonNotGeM: "",
                         availableOnGeM: "",
                         approvingOfficer: "",
+                        approvalCopy: null,
                         availabilityReport: "",
                       }}
                       validationSchema={validationSchema}
@@ -202,7 +237,9 @@ const EditContract = (props) => {
                           //console.log(values);
                           const formData = new FormData();
                           formData.append("loaCopy", values.loaCopy);
+                          formData.append("approvalCopy", values.approvalCopy);
                           delete values["loaCopy"];
+                          delete values["approvalCopy"];
                           //console.log(values);
                           //console.log(formData.get("loaCopy"));
                           //console.log(JSON.stringify(values));
@@ -463,6 +500,61 @@ const EditContract = (props) => {
                                 height: "10px",
                               }}
                             />
+
+                            <div className="form-group row">
+                              <label
+                                htmlFor="msmeVendor"
+                                className="col-3 col-form-label"
+                              >
+                                MSME Vendor
+                              </label>
+                              <div className="col-3">
+                                <Select
+                                  name="msmeVendor"
+                                  options={msmeVendorOptions}
+                                  onChange={(opt, e) => {
+                                    setFieldValue("msmeVendor", opt);
+                                    //setTouched(true);
+                                  }}
+                                  onBlur={handleBlur}
+                                  value={values.msmeVendor}
+                                />
+                                <ErrorMessage name="msmeVendor">
+                                  {(msg) => (
+                                    <div style={{ color: "red" }}>{msg}</div>
+                                  )}
+                                </ErrorMessage>
+                              </div>
+                              <label
+                                htmlFor="msmeType"
+                                className="col-3 col-form-label"
+                              >
+                                MSME Type
+                              </label>
+                              <div className="col-3">
+                                <Select
+                                  name="msmeType"
+                                  options={msmeTypeOptions}
+                                  onChange={(opt, e) => {
+                                    setFieldValue("msmeType", opt);
+                                    //setTouched(true);
+                                  }}
+                                  onBlur={handleBlur}
+                                  value={values.msmeType}
+                                />
+                                <ErrorMessage name="msmeType">
+                                  {(msg) => (
+                                    <div style={{ color: "red" }}>{msg}</div>
+                                  )}
+                                </ErrorMessage>
+                              </div>
+                            </div>
+
+                            <hr
+                              style={{
+                                height: "10px",
+                              }}
+                            />
                             {values.throughGeM.value === "no" ? (
                               <>
                                 <div className="form-group row">
@@ -547,6 +639,49 @@ const EditContract = (props) => {
                                       )}
                                     </ErrorMessage>
                                   </div>
+                                  <label className="col-3 col-form-label">
+                                    Approval
+                                  </label>
+                                  <div className="col-3">
+                                    <div className="input-group">
+                                      <div className="custom-file">
+                                        <input
+                                          name="approvalCopy"
+                                          type="file"
+                                          onChange={(event) => {
+                                            //console.log(
+                                            //event.currentTarget.files[0]
+                                            //);
+                                            setFieldValue(
+                                              "approvalCopy",
+                                              event.currentTarget.files[0]
+                                            );
+                                            setFileName(
+                                              event.currentTarget.files[0].name
+                                            );
+                                          }}
+                                          onBlur={handleBlur}
+                                          className="form-control"
+                                          id="approvalCopy"
+                                        />
+                                        <label
+                                          className="custom-file-label"
+                                          htmlFor="approvalCopy"
+                                        >
+                                          {fileName ? fileName : ""}
+                                        </label>
+                                      </div>
+                                    </div>
+                                    <ErrorMessage name="approvalCopy">
+                                      {(msg) => (
+                                        <div style={{ color: "red" }}>
+                                          {msg}
+                                        </div>
+                                      )}
+                                    </ErrorMessage>
+                                  </div>
+                                </div>
+                                <div className="form-group row">
                                   <label
                                     htmlFor="availabilityReport"
                                     className="col-3 col-form-label"
