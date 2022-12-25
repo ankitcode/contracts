@@ -1,4 +1,6 @@
 import React from "react";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Formik, ErrorMessage } from "formik";
@@ -9,7 +11,10 @@ import axios from "../../axios";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
-const AddNew = () => {
+const EditContract = (props) => {
+  console.log("edit");
+  console.log(props.row);
+
   let axiosConfig = {
     headers: {
       "Access-Control-Allow-Origin": "*",
@@ -17,10 +22,11 @@ const AddNew = () => {
   };
   const { user } = useSelector((state) => state.root);
 
-  useEffect(() => {
-    const trees = window.$('[data-widget="treeview"]');
-    trees.Treeview("init");
-  }, []);
+  useEffect(() => {}, []);
+
+  const handleClose = () => {
+    
+  };
   // Options for select box
   const procurementNatureOptions = [
     { value: "worksCivil", label: "Works or Civil" },
@@ -177,26 +183,17 @@ const AddNew = () => {
   });
 
   return (
-    <>
-      <div className="content-wrapper">
-        <section className="content-header">
-          <div className="container-fluid">
-            <div className="row mb-2">
-              <div className="col-sm-6">
-                <h1>Add Contracts</h1>
-              </div>
-              <div className="col-sm-6">
-                <ol className="breadcrumb float-sm-right">
-                  <li className="breadcrumb-item">
-                    <Link to="/">Home</Link>
-                  </li>
-                  <li className="breadcrumb-item active">Add Contracts</li>
-                </ol>
-              </div>
-            </div>
-          </div>
-        </section>
-
+    <Modal
+      show={props.show}
+      onHide={handleClose}
+      backdrop="static"
+      centered
+      keyboard="False"
+    >
+      <Modal.Header closeButton>
+        <Modal.Title>Modal heading</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
         <section className="content" id="scrollingCard">
           <div className="container-fluid">
             <div className="row">
@@ -743,9 +740,9 @@ const AddNew = () => {
             </div>
           </div>
         </section>
-      </div>
-    </>
+      </Modal.Body>
+    </Modal>
   );
 };
 
-export default AddNew;
+export default EditContract;

@@ -1,6 +1,10 @@
+/*
+Creating persisted store
+*/
+// Imports
+import storage from "redux-persist/lib/storage";
 import {configureStore, combineReducers} from '@reduxjs/toolkit'
 import { rootReducer } from "./rootReducer";
-import storage from "redux-persist/lib/storage";
 import {
   persistStore,
   persistReducer,
@@ -21,6 +25,7 @@ const persistConfig = {
 const rootreducer = combineReducers({root: rootReducer})
 const persistedReducer = persistReducer(persistConfig, rootreducer);
 
+// Configure redux store for persisted store
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>

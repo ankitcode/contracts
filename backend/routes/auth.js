@@ -1,73 +1,68 @@
+/*
+APIs for login and user details
+*/
+
+// Imports
 const express = require("express");
 const router = express.Router();
 const fetchuser = require("../middleware/fetchuser");
 
 var ldap = require("ldapjs");
-var assert = require("assert");
 
 const User = require("../models/UserData");
 var jwt = require("jsonwebtoken");
 
+// Secret Key for auth-token
 const JWT_SECRET = "$contracts@Portal$";
 
 // login a user using POST "/api/auth/login"
 router.post("/login", async (req, response) => {
   let success = false;
-  let msg = "";
-  //console.log(req.body);
   const { empNo, password } = req.body;
   try {
     // Check user in local database before ldap authentication
     let user = await User.findOne({ empNo });
     if (!user) {
-      return response.status(400).json({
+      return response.json({
         success,
         error: "Please try to login with correct credentials",
         msg: "You are not authorized to access the portal !",
       });
     }
 
-    // ldap authentication
+    // ldap authentication - create ldap client
     var client = ldap.createClient({
+      // ldap server details
       url: "ldap://brahma.powergrid.in:389",
       reconnect: true,
     });
     var username = empNo + "@powergrid.in";
+    // bind ldap
     client.bind(username, password, function (err) {
-      //console.log("bind");
       if (err) {
-        return response.status(400).json({
+        return response.json({
           success,
           error: "Incorrect Credentials!",
           msg: "Incorrect Credentials!",
         });
-        //console.log("Incorrect Credentials!");
       } else {
         const opts = {
           filter: "sAMAccountName=" + empNo,
           scope: "sub",
           attributes: ["l", "st", "title", "name", "department", "company"],
         };
-
+        // search for user details
         client.search("OU=WR2,DC=powergrid,DC=in", opts, (err, res) => {
           if (err) {
-            client.unbind((err) => {
-              assert.ifError(err);
-            });
-            return response.status(400).json({
+            client.unbind();
+            return response.json({
               success,
               error: "User not found!",
               msg: "User not found!",
             });
-            //console.log("Incorrect Credentials!");
           }
           res.on("searchEntry", function (data) {
-            //console.log("Data found", data);
             var empData = data.object;
-            //var empDataJSON = JSON.parse(empData);
-            //console.log(empDataJSON.name, empDataJSON.title, empDataJSON.l);
-            //console.log(empData);
-
             const userData = {
               user: {
                 id: user.id,
@@ -81,32 +76,33 @@ router.post("/login", async (req, response) => {
               department: empData.department,
               placeOfPosting: empData.company,
             };
+            // Create auth-token
             const authToken = jwt.sign(userData, JWT_SECRET);
-            //console.log(userData);
             success = true;
+            client.unbind();
             return response
               .status(200)
               .json({ success, authToken, msg: "Login Successful!" });
           });
-          res.once("error", function (error) {
-            client.unbind((err) => {
-              assert.ifError(err);
-            });
-            return response.status(400).json({
+          res.on("error", function () {
+            client.unbind();
+            return response.json({
               success,
               error: "Some error occured!",
               msg: "Some error occured!",
             });
           });
+          res.on("end", () => {
+            client.unbind();
+          });
         });
       }
     });
-    client.on("error", (err) => {
-      console.log(err.message); // this will be your ECONNRESET message
+    client.on("error", () => {
+      client.unbind();
     });
   } catch (error) {
-    //console.error(error.message);
-    return response.status(500).json({
+    return response.json({
       success,
       error: "Internal server error!",
       msg: "Internal server error!",
@@ -114,14 +110,11 @@ router.post("/login", async (req, response) => {
   }
 });
 
-// add admin using POST "/api/auth/addAdmin". To be done one time only from backend
+// add admin using POST "/api/auth/addAdmin". To be done from backend only
 router.post("/addAdmin", async (req, response) => {
-  //console.log(req.body);
   let success = false;
-  let msg = "";
   try {
     const { username, password } = req.body;
-
     // Check whether admin already exists
     let user = await User.findOne({ empNo: username });
     if (user) {
@@ -132,44 +125,38 @@ router.post("/addAdmin", async (req, response) => {
       });
     }
 
+    // create ldap client
     var client = ldap.createClient({
       url: "ldap://brahma.powergrid.in:389",
       reconnect: true,
     });
     const ldapUsername = username + "@powergrid.in";
+    // bind ldap
     client.bind(ldapUsername, password, function (err) {
       if (err) {
-        return response.status(400).json({
+        return response.json({
           success,
           error: "Incorrect Credentials!",
           msg: "Incorrect Credentials!",
         });
-        //console.log("Incorrect Credentials!");
       } else {
         const opts = {
           filter: "sAMAccountName=" + username,
           scope: "sub",
           attributes: ["l", "st", "title", "name", "department", "company"],
         };
-
+        // search for user in ldap
         client.search("OU=WR2,DC=powergrid,DC=in", opts, (err, res) => {
           if (err) {
-            client.unbind((err) => {
-              assert.ifError(err);
-            });
-            return response.status(400).json({
+            client.unbind();
+            return response.json({
               success,
               error: "User not found!",
               msg: "User not found!",
             });
-            //console.log("Incorrect Credentials!");
           }
           res.on("searchEntry", async function (data) {
-            //console.log("Data found", data.object);
             var empData = data.object;
-            //var empDataJSON = JSON.parse(empData);
-            //console.log(empDataJSON.name, empDataJSON.title, empDataJSON.l);
-            //console.log(empData);
             let user = await User.create({
               empNo: username,
               name: empData.name,
@@ -179,28 +166,30 @@ router.post("/addAdmin", async (req, response) => {
               isAdmin: true,
             });
             success = true;
+            client.unbind();
             return response
               .status(200)
               .json({ success, msg: "Admin Added!", user: user });
           });
-          res.once("error", function (error) {
-            client.unbind((err) => {
-              assert.ifError(err);
-            });
-            return response.status(400).json({
+          res.on("error", function () {
+            client.unbind();
+            return response.json({
               success,
               error: "Some error occured!",
               msg: "Some error occured!",
             });
           });
+          res.on("end", () => {
+            client.unbind();
+          });
         });
       }
     });
-    client.on("error", (err) => {
-      console.log(err.message); // this will be your ECONNRESET message
+    client.on("error", () => {
+      client.unbind();
     });
   } catch (error) {
-    return response.status(500).json({
+    return response.json({
       success,
       error: "Internal server error!",
       msg: "Internal server error!",
@@ -210,9 +199,7 @@ router.post("/addAdmin", async (req, response) => {
 
 // add a user using POST "/api/auth/addUser". Authentication required
 router.post("/addUser", fetchuser, async (req, response) => {
-  //console.log(req.body);
   let success = false;
-  let msg = "";
   try {
     // Check for admin login
     if (!req.isAdmin) {
@@ -222,13 +209,8 @@ router.post("/addUser", fetchuser, async (req, response) => {
         msg: "Admin Authentication Required!",
       });
     }
-
-    // Check whether employee already exists
-    //console.log(req.body.empNo);
-    //console.log(req.empNo);
-    //console.log(req.password);
+    // Check whether user already exists
     let user = await User.findOne({ empNo: req.body.empNo });
-    //console.log(user);
     if (user) {
       return response.json({
         error: "Employee already exists!",
@@ -236,12 +218,13 @@ router.post("/addUser", fetchuser, async (req, response) => {
         msg: "Employee already exists!",
       });
     }
-
+    // Create ldap client
     var client = ldap.createClient({
       url: "ldap://brahma.powergrid.in:389",
       reconnect: true,
     });
     var username = req.empNo + "@powergrid.in";
+    // ldap bind
     client.bind(username, req.password, function (err) {
       if (err) {
         return response.json({
@@ -249,32 +232,24 @@ router.post("/addUser", fetchuser, async (req, response) => {
           error: "Incorrect Credentials!",
           msg: "Incorrect Credentials!",
         });
-        //console.log("Incorrect Credentials!");
       } else {
         const opts = {
           filter: "sAMAccountName=" + req.body.empNo,
           scope: "sub",
           attributes: ["l", "st", "title", "name", "department", "company"],
         };
-
+        // search user details in ldap
         client.search("OU=WR2,DC=powergrid,DC=in", opts, (err, res) => {
           if (err) {
-            client.unbind((err) => {
-              assert.ifError(err);
-            });
+            client.unbind();
             return response.json({
               success,
               error: "User not found!",
               msg: "User not found!",
             });
-            //console.log("Incorrect Credentials!");
           }
           res.on("searchEntry", async function (data) {
-            //console.log("Data found", data);
             var empData = data.object;
-            //var empDataJSON = JSON.parse(empData);
-            //console.log(empDataJSON.name, empDataJSON.title, empDataJSON.l);
-            //console.log(empData);
             user = await User.create({
               empNo: req.body.empNo,
               name: empData.name,
@@ -282,31 +257,31 @@ router.post("/addUser", fetchuser, async (req, response) => {
               department: empData.department,
               post: empData.title,
             });
-            //const authToken = jwt.sign(data, JWT_SECRET);
-            //console.log(authToken);
             success = true;
+            client.unbind();
             return response
               .status(200)
               .json({ success, msg: "Employee Added!", user });
           });
-          res.once("error", function (error) {
-            client.unbind((err) => {
-              assert.ifError(err);
-            });
-            return response.status(400).json({
+          res.on("error", function () {
+            client.unbind();
+            return response.json({
               success,
               error: "Some error occured!",
               msg: "Some error occured!",
             });
           });
+          res.on("end", () => {
+            client.unbind();
+          });
         });
       }
     });
-    client.on("error", (err) => {
-      console.log(err.message); // this will be your ECONNRESET message
+    client.on("error", () => {
+      client.unbind();
     });
   } catch (error) {
-    return response.status(500).json({
+    return response.json({
       success,
       error: "Internal server error!",
       msg: "Internal server error!",
@@ -316,9 +291,7 @@ router.post("/addUser", fetchuser, async (req, response) => {
 
 // remove a user using POST "/api/auth/removeUser". Authentication required
 router.post("/removeUser", fetchuser, async (req, response) => {
-  //console.log(req.body);
   let success = false;
-  let msg = "";
   try {
     // Check for admin login
     if (!req.isAdmin) {
@@ -336,8 +309,9 @@ router.post("/removeUser", fetchuser, async (req, response) => {
         msg: "Employee Not Found!",
       });
     }
-    if(user.isAdmin){
-      return response.json({ success, msg: "Cannot remove admin!", user });  
+    // if admin ? can not remove admin : remove user
+    if (user.isAdmin) {
+      return response.json({ success, msg: "Cannot remove admin!", user });
     }
     user = await User.findByIdAndDelete(req.body.id);
     success = true;
@@ -345,7 +319,7 @@ router.post("/removeUser", fetchuser, async (req, response) => {
       .status(200)
       .json({ success, msg: "Employee has been removed!", user });
   } catch (error) {
-    return response.status(500).json({
+    return response.json({
       success,
       error: "Internal server error!",
       msg: "Internal server error!",
@@ -353,10 +327,9 @@ router.post("/removeUser", fetchuser, async (req, response) => {
   }
 });
 
-// Get users details from local database using POST "/api/auth/getUser". Login required
+// Get user's details from local database using POST "/api/auth/getUser". Login required
 router.post("/getUser", fetchuser, async (req, response) => {
   try {
-    // Check for admin login
     const user = await User.find(
       { _id: req.id },
       {
@@ -369,65 +342,59 @@ router.post("/getUser", fetchuser, async (req, response) => {
         isAdmin: 1,
       }
     );
-    //console.log(user);
     return response.status(200).json({ success: true, user });
   } catch (error) {
-    //console.error(error.message);
-    response.status(500).send("Internal server error");
+    response.send("Internal server error");
   }
 });
 
 // Get all users from local database using POST "/api/auth/getAllAddedUsers". Login required
 router.post("/getAllAddedUsers", fetchuser, async (req, response) => {
-  //console.log(req);
   try {
     // Check for admin login
     if (!req.isAdmin) {
-      return response.status(400).json({
+      return response.json({
         error: "Admin Authentication Required!",
         success,
         msg: "Admin Authentication Required!",
       });
     }
     const user = await User.find(
-      { _id: { $nin: [req.id] } },
+      {},
       { _id: 1, empNo: 1, name: 1, location: 1, department: 1, post: 1 }
     );
-    //console.log(user);
     return response.status(200).json({ success: true, user });
   } catch (error) {
-    //console.error(error.message);
-    response.status(500).send("Internal server error");
+    response.send("Internal server error");
   }
 });
 
 // Get all WR-II AD users using POST "/api/auth/getAllADUsers". Login required
 router.post("/getAllADUsers", fetchuser, async (req, response) => {
   let success = false;
-  let msg = "";
   try {
     // Check for admin login
     if (!req.isAdmin) {
-      return response.status(400).json({
+      return response.json({
         error: "Admin Authentication Required!",
         success,
         msg: "Admin Authentication Required!",
       });
     }
-
+    // Create ldap client
     var client = ldap.createClient({
       url: "ldap://brahma.powergrid.in:389",
       reconnect: true,
     });
     var username = req.empNo + "@powergrid.in";
+    // ldap bind
     client.bind(username, req.password, function (err) {
       if (err) {
-        return response.status(400).json({
+        return response.json({
           success,
           error: "Incorrect Credentials!",
           msg: "Incorrect Credentials!",
         });
-        //console.log("Incorrect Credentials!");
       } else {
         const opts = {
           filter: "sAMAccountName=*",
@@ -442,18 +409,15 @@ router.post("/getAllADUsers", fetchuser, async (req, response) => {
             "sAMAccountName",
           ],
         };
-
+        // search user details in ldap
         client.search("OU=WR2,DC=powergrid,DC=in", opts, (err, res) => {
           if (err) {
-            client.unbind((err) => {
-              assert.ifError(err);
-            });
-            return response.status(400).json({
+            client.unbind();
+            return response.json({
               success,
               error: "User not found!",
               msg: "User not found!",
             });
-            //console.log("Incorrect Credentials!");
           }
           var empData = [];
           res.on("searchEntry", function (data) {
@@ -470,28 +434,24 @@ router.post("/getAllADUsers", fetchuser, async (req, response) => {
                   data.object.l,
               });
           });
-          res.once("error", function (error) {
-            client.unbind((err) => {
-              assert.ifError(err);
-            });
-            return response.status(400).json({
+          res.on("error", function () {
+            client.unbind();
+            return response.json({
               success,
               error: "Some error occured!",
               msg: "Some error occured!",
             });
           });
-
           res.on("end", function (result) {
-            //console.log('status: ' + result.status);
             if (result.status !== 0) {
-              return response.status(400).json({
+              return response.json({
                 success,
                 error: "Some error occured!",
                 msg: "Some error occured!",
               });
             } else {
-              //console.log(empData.length);
               success = true;
+              client.unbind();
               return response.status(200).json({
                 success,
                 empData,
@@ -501,11 +461,11 @@ router.post("/getAllADUsers", fetchuser, async (req, response) => {
         });
       }
     });
-    client.on("error", (err) => {
-      console.log(err.message); // this will be your ECONNRESET message
+    client.on("error", () => {
+      client.unbind();
     });
   } catch (error) {
-    return response.status(500).json({
+    return response.json({
       success,
       error: "Internal server error!",
       msg: "Internal server error!",

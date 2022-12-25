@@ -1,14 +1,20 @@
+// Imports
 import React from "react";
-import { Link } from "react-router-dom";
+import axios from "../axios";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Formik, ErrorMessage } from "formik";
-import * as Yup from "yup";
 import { toast } from "react-toastify";
+import * as Yup from "yup";
 import "react-toastify/dist/ReactToastify.css";
-import axios from "../axios";
 
 const Login = () => {
+  // redux store reducer dispatch
+  const dispatch = useDispatch();
+  // to redirect upon login
+  const navigate = useNavigate();
+
+  // axios headers config
   let axiosConfig = {
     headers: {
       "Content-Type": "application/json;charset=UTF-8",
@@ -16,9 +22,7 @@ const Login = () => {
     },
   };
 
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
+  // Validation for employee number and password on login page
   const validationSchema = Yup.object({
     empNo: Yup.string()
       .matches(/^(600\d{5})$/gi, "Invalid Employee Number")
@@ -55,24 +59,23 @@ const Login = () => {
                 onSubmit={async (values, { setSubmitting }) => {
                   setSubmitting(false);
                   try {
+                    // Call login API
                     const res = await axios.post(
                       "/api/auth/login",
                       values,
                       axiosConfig
                     );
                     axiosConfig.headers["authToken"] = res.data.authToken;
-                    //console.log(res.data.authToken, axiosConfig);
+                    // Get User Data
                     const userData = await axios.post(
-                      "/api/auth/getUser",{},
+                      "/api/auth/getUser",
+                      {},
                       axiosConfig
                     );
-                    //console.log(res.data.authToken);
-                    //console.log(userData.data.user);
                     let user = {
                       authToken: res.data.authToken,
                       userData: userData.data.user,
                     };
-                    //console.log(res.data.success, res.msg);
                     if (res.data.success) {
                       toast.success(res.data.msg, {
                         position: "top-right",
@@ -108,7 +111,6 @@ const Login = () => {
                   handleChange,
                   handleBlur,
                   handleSubmit,
-                  /* and other goodies */
                 }) => (
                   <form onSubmit={handleSubmit}>
                     <div className="input-group mb-3">
