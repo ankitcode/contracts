@@ -460,7 +460,7 @@ const ViewContracts = () => {
                           </Button>
                         </Modal.Footer>
                       </Modal>
-                      <EditContract show={showEditModal} row={rowToEdit} />
+                      <EditContract show={showEditModal} editShow={setEditModal} row={rowToEdit} editRow={setRowToEdit} />
                     </div>
                   </div>
                 </div>

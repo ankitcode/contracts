@@ -12,9 +12,6 @@ import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 const EditContract = (props) => {
-  console.log("edit");
-  console.log(props.row);
-
   let axiosConfig = {
     headers: {
       "Access-Control-Allow-Origin": "*",
@@ -22,10 +19,10 @@ const EditContract = (props) => {
   };
   const { user } = useSelector((state) => state.root);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+  }, []);
 
   const handleClose = () => {
-    
   };
   // Options for select box
   const procurementNatureOptions = [
@@ -80,7 +77,8 @@ const EditContract = (props) => {
     { value: "no", label: "No" },
   ];
 
-  const [fileName, setFileName] = useState("");
+  const [loaFileName, setLoaFileName] = useState("");
+  const [approvalFileName, setApprovalFileName] = useState("");
   const FILE_SIZE = 10 * 1024 * 1024;
   const SUPPORTED_FORMATS = ["application/pdf"];
 
@@ -185,30 +183,26 @@ const EditContract = (props) => {
   return (
     <Modal
       show={props.show}
-      onHide={handleClose}
       backdrop="static"
       centered
       keyboard="False"
     >
-      <Modal.Header closeButton>
-        <Modal.Title>Modal heading</Modal.Title>
-      </Modal.Header>
       <Modal.Body>
         <section className="content" id="scrollingCard">
           <div className="container-fluid">
             <div className="row">
               <div className="col-12">
-                <Card style={{ width: "75rem" }}>
+                <Card style={{ width: "50rem" }}>
                   <Card.Header>
                     <Card.Title></Card.Title>
                   </Card.Header>
 
                   <div
                     className="card card-info shadow bg-white pt-1 pb-1 pl-1 pr-1 rounded"
-                    style={{ width: "75rem" }}
+                    style={{ width: "50rem" }}
                   >
                     <Card.Header>
-                      <Card.Title>Add Contract Data</Card.Title>
+                      <Card.Title>Edit Contract Data</Card.Title>
                     </Card.Header>
 
                     <Formik
@@ -234,7 +228,8 @@ const EditContract = (props) => {
                         //console.log(user.authToken);
                         //console.log({isSubmitting});
                         try {
-                          //console.log(values);
+                          //console.log(values.loaCopy);
+                          //console.log(values.approvalCopy);
                           const formData = new FormData();
                           formData.append("loaCopy", values.loaCopy);
                           formData.append("approvalCopy", values.approvalCopy);
@@ -348,7 +343,8 @@ const EditContract = (props) => {
                                           "loaCopy",
                                           event.currentTarget.files[0]
                                         );
-                                        setFileName(
+                                        //console.log(event.currentTarget.files);
+                                        setLoaFileName(
                                           event.currentTarget.files[0].name
                                         );
                                       }}
@@ -360,7 +356,7 @@ const EditContract = (props) => {
                                       className="custom-file-label"
                                       htmlFor="loaCopy"
                                     >
-                                      {fileName ? fileName : ""}
+                                      {loaFileName ? loaFileName : ""}
                                     </label>
                                   </div>
                                 </div>
@@ -656,7 +652,8 @@ const EditContract = (props) => {
                                               "approvalCopy",
                                               event.currentTarget.files[0]
                                             );
-                                            setFileName(
+                                            //console.log(event.currentTarget.files);
+                                            setApprovalFileName(
                                               event.currentTarget.files[0].name
                                             );
                                           }}
@@ -668,7 +665,9 @@ const EditContract = (props) => {
                                           className="custom-file-label"
                                           htmlFor="approvalCopy"
                                         >
-                                          {fileName ? fileName : ""}
+                                          {approvalFileName
+                                            ? approvalFileName
+                                            : ""}
                                         </label>
                                       </div>
                                     </div>
@@ -724,11 +723,11 @@ const EditContract = (props) => {
                               type="submit"
                               className="btn btn-default float-right"
                               onClick={(e) => {
-                                handleReset(e);
-                                setFileName("");
+                                props.editShow(false);
+                                props.editRow({});
                               }}
                             >
-                              Reset
+                              Cancel
                             </button>
                           </Card.Footer>
                         </form>
