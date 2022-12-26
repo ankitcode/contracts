@@ -108,3 +108,7 @@
 .toBeDone {
   font-size: 5em;
 }
+
+.custom-file-label {
+  z-index: 0;
+}

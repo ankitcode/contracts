@@ -47,13 +47,22 @@ router.post("/getContracts", fetchuser, async (req, res) => {
 const upload = multer({
   storage: multer.diskStorage({
     destination: function(req, file, callback) {
-      callback(null, "./public/loaFiles");
+      if (file.fieldname == "loaCopy") {
+        callback(null, "./public/Files/loaFiles");
+      } else {
+        if (file.fieldname == "approvalCopy") {
+          callback(null, "./public/Files/approvalFiles");
+        }
+      }
     },
     filename: function(req, file, callback) {
       callback(null, file.fieldname + "-" + Date.now() + ".pdf");
     },
   }),
-}).single("loaCopy");
+}).fields([
+  { name: "loaCopy", maxCount: 1 },
+  { name: "approvalCopy", maxCount: 1 },
+]);
 
 // Add new contract data using POST "/api/contracts/addContractsData". Login required
 router.post("/addContractsData", fetchuser, upload, async (req, res) => {
@@ -74,11 +83,18 @@ router.post("/addContractsData", fetchuser, upload, async (req, res) => {
       availabilityReport,
     } = req.data;
 
+    let loaCopy = null;
+    if ("loaCopy" in req.files) loaCopy = req.files["loaCopy"][0].filename;
+
+    let approvalCopy = null;
+    if ("approvalCopy" in req.files)
+      approvalCopy = req.files["approvalCopy"][0].filename;
+
     const contractsData = new Contracts({
       createdBy: req.id,
       location: req.location,
       packageName,
-      loa: req.file,
+      loa: loaCopy,
       awardedOn: dateAwarded,
       value: amount,
       procurementNature: natureOfProcurement,
@@ -89,6 +105,7 @@ router.post("/addContractsData", fetchuser, upload, async (req, res) => {
       reasonNotGeM,
       availableOnGeM,
       approvingOfficer,
+      approval: approvalCopy,
       gemAvailabilityReport: availabilityReport,
     });
 
@@ -109,6 +126,21 @@ router.post("/addContractsData", fetchuser, upload, async (req, res) => {
   }
 });
 
+// Delete multiple files
+function deleteFiles(files, callback) {
+  var i = files.length;
+  files.forEach(function(filepath) {
+    fs.unlink(filepath, function(err) {
+      i--;
+      if (err) {
+        callback(err);
+      } else if (i <= 0) {
+        callback(null);
+      }
+    });
+  });
+}
+
 // Delete Contracts Data using POST "/api/contracts/deleteContractsData". Login required
 router.post("/deleteContractsData", fetchuser, async (req, res) => {
   let success = false;
@@ -121,12 +153,17 @@ router.post("/deleteContractsData", fetchuser, async (req, res) => {
         success,
       });
     }
-    let path = contractsData.loa.path;
-    let filePath = "D:\\Portals\\contracts\\" + path;
-    // to delete loafile
-    fs.stat(filePath, function(err, stats) {
-      console.log(filePath);
-      fs.unlink(filePath, function(err) {});
+    let loaFilename = contractsData.loa;
+    let approvalFilename = contractsData.approval;
+    var files = [
+      "D:\\Portals\\contracts\\public\\Files\\loaFiles\\" + loaFilename,
+      "D:\\Portals\\contracts\\public\\Files\\approvalFiles\\" +
+        approvalFilename,
+    ];
+    deleteFiles(files, function(err) {
+      if (err) {
+      } else {
+      }
     });
     contractsData = await Contracts.findByIdAndDelete(req.body.id);
     success = true;

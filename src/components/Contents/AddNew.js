@@ -74,7 +74,8 @@ const AddNew = () => {
     { value: "no", label: "No" },
   ];
 
-  const [fileName, setFileName] = useState("");
+  const [loaFileName, setLoaFileName] = useState("");
+  const [approvalFileName, setApprovalFileName] = useState("");
   const FILE_SIZE = 10 * 1024 * 1024;
   const SUPPORTED_FORMATS = ["application/pdf"];
 
@@ -237,7 +238,8 @@ const AddNew = () => {
                         //console.log(user.authToken);
                         //console.log({isSubmitting});
                         try {
-                          //console.log(values);
+                          //console.log(values.loaCopy);
+                          //console.log(values.approvalCopy);
                           const formData = new FormData();
                           formData.append("loaCopy", values.loaCopy);
                           formData.append("approvalCopy", values.approvalCopy);
@@ -351,7 +353,8 @@ const AddNew = () => {
                                           "loaCopy",
                                           event.currentTarget.files[0]
                                         );
-                                        setFileName(
+                                        //console.log(event.currentTarget.files);
+                                        setLoaFileName(
                                           event.currentTarget.files[0].name
                                         );
                                       }}
@@ -363,7 +366,7 @@ const AddNew = () => {
                                       className="custom-file-label"
                                       htmlFor="loaCopy"
                                     >
-                                      {fileName ? fileName : ""}
+                                      {loaFileName ? loaFileName : ""}
                                     </label>
                                   </div>
                                 </div>
@@ -659,7 +662,8 @@ const AddNew = () => {
                                               "approvalCopy",
                                               event.currentTarget.files[0]
                                             );
-                                            setFileName(
+                                            //console.log(event.currentTarget.files);
+                                            setApprovalFileName(
                                               event.currentTarget.files[0].name
                                             );
                                           }}
@@ -671,7 +675,7 @@ const AddNew = () => {
                                           className="custom-file-label"
                                           htmlFor="approvalCopy"
                                         >
-                                          {fileName ? fileName : ""}
+                                          {approvalFileName ? approvalFileName : ""}
                                         </label>
                                       </div>
                                     </div>
@@ -728,7 +732,7 @@ const AddNew = () => {
                               className="btn btn-default float-right"
                               onClick={(e) => {
                                 handleReset(e);
-                                setFileName("");
+                                setLoaFileName("");
                               }}
                             >
                               Reset
