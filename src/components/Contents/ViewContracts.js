@@ -62,7 +62,6 @@ const ViewContracts = () => {
           axiosConfig
         );
         // set contracts data
-        console.log(res.data.contractsData);
         setData(res.data.contractsData);
       } catch (error) {
         console.log(error);
@@ -460,7 +459,12 @@ const ViewContracts = () => {
                           </Button>
                         </Modal.Footer>
                       </Modal>
-                      <EditContract show={showEditModal} editShow={setEditModal} row={rowToEdit} editRow={setRowToEdit} />
+                      <EditContract
+                        show={showEditModal}
+                        editShow={setEditModal}
+                        row={rowToEdit}
+                        editRow={setRowToEdit}
+                      />
                     </div>
                   </div>
                 </div>

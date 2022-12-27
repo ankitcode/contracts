@@ -5,6 +5,7 @@
  Provides an interface to the database for creating, quering, updating, deleting records, etc. 
 */
 const mongoose = require("mongoose");
+const { boolean } = require("yup");
 
 // Define ContractsData Schema
 const ContractsDataSchema = new mongoose.Schema({
@@ -73,6 +74,10 @@ const ContractsDataSchema = new mongoose.Schema({
   gemAvailabilityReport: {
     type: Object,
     required: true,
+  },
+  isDeleted: {
+    type: Boolean,
+    default: false,
   },
 });
 

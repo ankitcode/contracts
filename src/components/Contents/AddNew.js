@@ -49,6 +49,7 @@ const AddNew = () => {
     { value: "notApplicable", label: "Not Applicable" },
     { value: "women", label: "Women" },
     { value: "scst", label: "SC/ST" },
+    { value: "womenscst", label: "Women SC/ST" },
   ];
 
   const reasonNotThroughGeM = [
@@ -675,7 +676,9 @@ const AddNew = () => {
                                           className="custom-file-label"
                                           htmlFor="approvalCopy"
                                         >
-                                          {approvalFileName ? approvalFileName : ""}
+                                          {approvalFileName
+                                            ? approvalFileName
+                                            : ""}
                                         </label>
                                       </div>
                                     </div>
@@ -733,6 +736,7 @@ const AddNew = () => {
                               onClick={(e) => {
                                 handleReset(e);
                                 setLoaFileName("");
+                                setApprovalFileName("");
                               }}
                             >
                               Reset

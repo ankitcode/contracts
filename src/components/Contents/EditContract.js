@@ -12,6 +12,10 @@ import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 const EditContract = (props) => {
+  if(props.row.awardedOn){
+    console.log("Row to Edit", (props.row.awardedOn).split("T")[0]);
+  }
+  
   let axiosConfig = {
     headers: {
       "Access-Control-Allow-Origin": "*",
@@ -19,11 +23,9 @@ const EditContract = (props) => {
   };
   const { user } = useSelector((state) => state.root);
 
-  useEffect(() => {
-  }, []);
+  useEffect(() => {}, []);
 
-  const handleClose = () => {
-  };
+  const handleClose = () => {};
   // Options for select box
   const procurementNatureOptions = [
     { value: "worksCivil", label: "Works or Civil" },
@@ -52,6 +54,7 @@ const EditContract = (props) => {
     { value: "notApplicable", label: "Not Applicable" },
     { value: "women", label: "Women" },
     { value: "scst", label: "SC/ST" },
+    { value: "womenscst", label: "Women SC/ST" },
   ];
 
   const reasonNotThroughGeM = [
@@ -76,7 +79,7 @@ const EditContract = (props) => {
     { value: "yes", label: "Yes" },
     { value: "no", label: "No" },
   ];
-
+  
   const [loaFileName, setLoaFileName] = useState("");
   const [approvalFileName, setApprovalFileName] = useState("");
   const FILE_SIZE = 10 * 1024 * 1024;
@@ -181,46 +184,39 @@ const EditContract = (props) => {
   });
 
   return (
-    <Modal
-      show={props.show}
-      backdrop="static"
-      centered
-      keyboard="False"
-    >
+    <Modal show={props.show} backdrop="static" centered keyboard="False">
       <Modal.Body>
         <section className="content" id="scrollingCard">
           <div className="container-fluid">
             <div className="row">
               <div className="col-12">
-                <Card style={{ width: "50rem" }}>
+                <Card style={{ width: "55rem" }}>
                   <Card.Header>
                     <Card.Title></Card.Title>
                   </Card.Header>
-
                   <div
                     className="card card-info shadow bg-white pt-1 pb-1 pl-1 pr-1 rounded"
-                    style={{ width: "50rem" }}
+                    style={{ width: "55rem" }}
                   >
                     <Card.Header>
                       <Card.Title>Edit Contract Data</Card.Title>
                     </Card.Header>
-
                     <Formik
                       initialValues={{
-                        packageName: "",
+                        packageName: props.row.packageName,
                         loaCopy: null,
-                        dateAwarded: "",
-                        amount: "",
-                        natureOfProcurement: "",
-                        throughGeM: "",
-                        gemMode: "",
-                        msmeVendor: "",
-                        msmeType: "",
-                        reasonNotGeM: "",
-                        availableOnGeM: "",
-                        approvingOfficer: "",
+                        dateAwarded: props.row.awardedOn? (props.row.awardedOn).split("T")[0] : "",
+                        amount: props.row.value,
+                        natureOfProcurement: props.row.procurementNature,
+                        throughGeM: props.row.throughGeM,
+                        gemMode: props.row.gemMode,
+                        msmeVendor: props.row.msmeVendor,
+                        msmeType: props.row.msmeType,
+                        reasonNotGeM: props.row.reasonNotGeM,
+                        availableOnGeM: props.row.availableOnGeM,
+                        approvingOfficer: props.row.approvingOfficer,
                         approvalCopy: null,
-                        availabilityReport: "",
+                        availabilityReport: props.row.gemAvailabilityReport,
                       }}
                       validationSchema={validationSchema}
                       onSubmit={async (values, { setSubmitting }) => {
@@ -231,10 +227,10 @@ const EditContract = (props) => {
                           //console.log(values.loaCopy);
                           //console.log(values.approvalCopy);
                           const formData = new FormData();
-                          formData.append("loaCopy", values.loaCopy);
-                          formData.append("approvalCopy", values.approvalCopy);
-                          delete values["loaCopy"];
-                          delete values["approvalCopy"];
+                          //formData.append("loaCopy", values.loaCopy);
+                          //formData.append("approvalCopy", values.approvalCopy);
+                          //delete values["loaCopy"];
+                          //delete values["approvalCopy"];
                           //console.log(values);
                           //console.log(formData.get("loaCopy"));
                           //console.log(JSON.stringify(values));
@@ -242,7 +238,7 @@ const EditContract = (props) => {
 
                           //formData.append("name", values.);
                           //console.log(formData.get('file'));
-                          axiosConfig.headers["authToken"] = user.authToken;
+                          //axiosConfig.headers["authToken"] = user.authToken;
                           const res = await axios.post(
                             "/api/contracts/addContractsData",
                             formData,
@@ -356,7 +352,7 @@ const EditContract = (props) => {
                                       className="custom-file-label"
                                       htmlFor="loaCopy"
                                     >
-                                      {loaFileName ? loaFileName : ""}
+                                      {loaFileName? loaFileName : (props.row.loa ? props.row.loa : "")}
                                     </label>
                                   </div>
                                 </div>
@@ -665,9 +661,7 @@ const EditContract = (props) => {
                                           className="custom-file-label"
                                           htmlFor="approvalCopy"
                                         >
-                                          {approvalFileName
-                                            ? approvalFileName
-                                            : ""}
+                                          {approvalFileName? approvalFileName : (props.row.approval ? props.row.approval : "")}
                                         </label>
                                       </div>
                                     </div>
@@ -723,8 +717,11 @@ const EditContract = (props) => {
                               type="submit"
                               className="btn btn-default float-right"
                               onClick={(e) => {
+                                handleReset(e);
                                 props.editShow(false);
                                 props.editRow({});
+                                setLoaFileName("");
+                                setApprovalFileName("");
                               }}
                             >
                               Cancel
