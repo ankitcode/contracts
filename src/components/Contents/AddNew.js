@@ -235,34 +235,33 @@ const AddNew = () => {
                       }}
                       validationSchema={validationSchema}
                       onSubmit={async (values, { setSubmitting }) => {
-                        //alert(JSON.stringify(values, null, 2));
-                        //console.log(user.authToken);
-                        //console.log({isSubmitting});
                         try {
-                          //console.log(values.loaCopy);
-                          //console.log(values.approvalCopy);
+                          if ("value" in values.throughGeM && values.throughGeM.value == 'yes'){
+                            values.reasonNotGeM = "";
+                            values.availableOnGeM = "";
+                            values.approvingOfficer = "";
+                            values.availabilityReport = "";
+                            values.approvalCopy = null;
+                          }
                           const formData = new FormData();
-                          formData.append("loaCopy", values.loaCopy);
-                          formData.append("approvalCopy", values.approvalCopy);
-                          delete values["loaCopy"];
-                          delete values["approvalCopy"];
-                          //console.log(values);
-                          //console.log(formData.get("loaCopy"));
-                          //console.log(JSON.stringify(values));
+                          if ("loaCopy" in values) {
+                            formData.append("loaCopy", values.loaCopy);
+                            delete values["loaCopy"];
+                          }
+                          if ("approvalCopy" in values) {
+                            formData.append(
+                              "approvalCopy",
+                              values.approvalCopy
+                            );
+                            delete values["approvalCopy"];
+                          }
                           formData.append("data", JSON.stringify(values));
-
-                          //formData.append("name", values.);
-                          //console.log(formData.get('file'));
                           axiosConfig.headers["authToken"] = user.authToken;
                           const res = await axios.post(
                             "/api/contracts/addContractsData",
                             formData,
                             axiosConfig
                           );
-                          //setData(res.data.user);
-                          //console.log(res.data.success, res.data.msg);
-                          //console.log(res.data.success, res.data.msg);
-
                           if (res.data.success) {
                             toast.success(res.data.msg, {
                               position: "top-right",

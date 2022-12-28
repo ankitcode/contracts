@@ -12,10 +12,10 @@ import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 const EditContract = (props) => {
-  if(props.row.awardedOn){
-    console.log("Row to Edit", (props.row.awardedOn).split("T")[0]);
+  if (props.row) {
+    console.log("Row to Edit", props.row);
   }
-  
+
   let axiosConfig = {
     headers: {
       "Access-Control-Allow-Origin": "*",
@@ -25,7 +25,6 @@ const EditContract = (props) => {
 
   useEffect(() => {}, []);
 
-  const handleClose = () => {};
   // Options for select box
   const procurementNatureOptions = [
     { value: "worksCivil", label: "Works or Civil" },
@@ -79,7 +78,7 @@ const EditContract = (props) => {
     { value: "yes", label: "Yes" },
     { value: "no", label: "No" },
   ];
-  
+
   const [loaFileName, setLoaFileName] = useState("");
   const [approvalFileName, setApprovalFileName] = useState("");
   const FILE_SIZE = 10 * 1024 * 1024;
@@ -89,18 +88,23 @@ const EditContract = (props) => {
 
   const validationSchema = Yup.object({
     packageName: Yup.string().required("Required!"),
-    loaCopy: Yup.mixed()
-      .required("File is Required!")
-      .test(
-        "fileFormat",
-        "Only pdf Allowed!",
-        (value) => value && SUPPORTED_FORMATS.includes(value.type)
-      )
-      .test(
-        "fileSize",
-        "Max file size Allowed is 10 MB !",
-        (value) => value && value.size <= FILE_SIZE
-      ),
+    loaCopy: Yup.mixed().when("isLoaCopy", {
+      is: (val) => {
+        return val;
+      },
+      then: Yup.mixed()
+        .required("Required!")
+        .test(
+          "fileFormat",
+          "Only pdf Allowed!",
+          (value) => value && SUPPORTED_FORMATS.includes(value.type)
+        )
+        .test(
+          "fileSize",
+          "Max file size Allowed is 10 MB !",
+          (value) => value && value.size <= FILE_SIZE
+        ),
+    }),
     dateAwarded: Yup.string().required("Required!"),
     amount: Yup.string()
       .matches(/^\d+$/, "Enter only digits!")
@@ -113,7 +117,6 @@ const EditContract = (props) => {
     reasonNotGeM: Yup.object().when("throughGeM", {
       is: (val) => {
         if (val) {
-          //console.log(val);
           return val.value === "no";
         } else {
           return true;
@@ -124,7 +127,6 @@ const EditContract = (props) => {
     availableOnGeM: Yup.object().when("throughGeM", {
       is: (val) => {
         if (val) {
-          //console.log(val);
           return val.value === "no";
         } else {
           return true;
@@ -135,7 +137,6 @@ const EditContract = (props) => {
     approvingOfficer: Yup.string().when("throughGeM", {
       is: (val) => {
         if (val) {
-          //console.log(val);
           return val.value === "no";
         } else {
           return true;
@@ -151,24 +152,28 @@ const EditContract = (props) => {
     approvalCopy: Yup.mixed().when("throughGeM", {
       is: (val) => {
         if (val) {
-          //console.log(val);
           return val.value === "no";
         } else {
           return true;
         }
       },
-      then: Yup.mixed()
-        .required("File is Required!")
-        .test(
-          "fileFormat",
-          "Only pdf Allowed!",
-          (value) => value && SUPPORTED_FORMATS.includes(value.type)
-        )
-        .test(
-          "fileSize",
-          "Max file size Allowed is 10 MB !",
-          (value) => value && value.size <= FILE_SIZE
-        ),
+      then: Yup.mixed().when("isApprovalCopy", {
+        is: (val) => {
+          return val;
+        },
+        then: Yup.mixed()
+          .required("Required!")
+          .test(
+            "fileFormat",
+            "Only pdf Allowed!",
+            (value) => value && SUPPORTED_FORMATS.includes(value.type)
+          )
+          .test(
+            "fileSize",
+            "Max file size Allowed is 10 MB !",
+            (value) => value && value.size <= FILE_SIZE
+          ),
+      })
     }),
     availabilityReport: Yup.object().when("throughGeM", {
       is: (val) => {
@@ -186,7 +191,7 @@ const EditContract = (props) => {
   return (
     <Modal show={props.show} backdrop="static" centered keyboard="False">
       <Modal.Body>
-        <section className="content" id="scrollingCard">
+        <section className="content">
           <div className="container-fluid">
             <div className="row">
               <div className="col-12">
@@ -205,7 +210,10 @@ const EditContract = (props) => {
                       initialValues={{
                         packageName: props.row.packageName,
                         loaCopy: null,
-                        dateAwarded: props.row.awardedOn? (props.row.awardedOn).split("T")[0] : "",
+                        isLoaCopy: false,
+                        dateAwarded: props.row.awardedOn
+                          ? props.row.awardedOn.split("T")[0]
+                          : "",
                         amount: props.row.value,
                         natureOfProcurement: props.row.procurementNature,
                         throughGeM: props.row.throughGeM,
@@ -216,38 +224,39 @@ const EditContract = (props) => {
                         availableOnGeM: props.row.availableOnGeM,
                         approvingOfficer: props.row.approvingOfficer,
                         approvalCopy: null,
+                        isApprovalCopy: !(props.row.approval) ? true : false,
                         availabilityReport: props.row.gemAvailabilityReport,
                       }}
                       validationSchema={validationSchema}
                       onSubmit={async (values, { setSubmitting }) => {
-                        //alert(JSON.stringify(values, null, 2));
-                        //console.log(user.authToken);
-                        //console.log({isSubmitting});
                         try {
-                          //console.log(values.loaCopy);
-                          //console.log(values.approvalCopy);
+                          if (values.throughGeM.value == "yes") {
+                            values.reasonNotGeM = "";
+                            values.availableOnGeM = "";
+                            values.approvingOfficer = "";
+                            values.availabilityReport = "";
+                            values.approvalCopy = null;
+                          }
                           const formData = new FormData();
-                          //formData.append("loaCopy", values.loaCopy);
-                          //formData.append("approvalCopy", values.approvalCopy);
-                          //delete values["loaCopy"];
-                          //delete values["approvalCopy"];
-                          //console.log(values);
-                          //console.log(formData.get("loaCopy"));
-                          //console.log(JSON.stringify(values));
+                          if (values.loaCopy) {
+                            formData.append("loaCopy", values.loaCopy);
+                            delete values["loaCopy"];
+                          }
+                          if (values.approvalCopy) {
+                            formData.append(
+                              "approvalCopy",
+                              values.approvalCopy
+                            );
+                            delete values["approvalCopy"];
+                          }
                           formData.append("data", JSON.stringify(values));
-
-                          //formData.append("name", values.);
-                          //console.log(formData.get('file'));
-                          //axiosConfig.headers["authToken"] = user.authToken;
-                          const res = await axios.post(
-                            "/api/contracts/addContractsData",
+                          axiosConfig.headers["authToken"] = user.authToken;
+                          const res = await axios.put(
+                            "/api/contracts/updateContractsData/" +
+                              props.row._id,
                             formData,
                             axiosConfig
                           );
-                          //setData(res.data.user);
-                          //console.log(res.data.success, res.data.msg);
-                          //console.log(res.data.success, res.data.msg);
-
                           if (res.data.success) {
                             toast.success(res.data.msg, {
                               position: "top-right",
@@ -335,6 +344,7 @@ const EditContract = (props) => {
                                         //console.log(
                                         //event.currentTarget.files[0]
                                         //);
+                                        setFieldValue("isLoaCopy", true);
                                         setFieldValue(
                                           "loaCopy",
                                           event.currentTarget.files[0]
@@ -352,7 +362,11 @@ const EditContract = (props) => {
                                       className="custom-file-label"
                                       htmlFor="loaCopy"
                                     >
-                                      {loaFileName? loaFileName : (props.row.loa ? props.row.loa : "")}
+                                      {loaFileName
+                                        ? loaFileName
+                                        : props.row.loa
+                                        ? props.row.loa.originalname
+                                        : ""}
                                     </label>
                                   </div>
                                 </div>
@@ -645,6 +659,10 @@ const EditContract = (props) => {
                                             //event.currentTarget.files[0]
                                             //);
                                             setFieldValue(
+                                              "isApprovalCopy",
+                                              true
+                                            );
+                                            setFieldValue(
                                               "approvalCopy",
                                               event.currentTarget.files[0]
                                             );
@@ -661,7 +679,11 @@ const EditContract = (props) => {
                                           className="custom-file-label"
                                           htmlFor="approvalCopy"
                                         >
-                                          {approvalFileName? approvalFileName : (props.row.approval ? props.row.approval : "")}
+                                          {approvalFileName
+                                            ? approvalFileName
+                                            : props.row.approval
+                                            ? props.row.approval.originalname
+                                            : ""}
                                         </label>
                                       </div>
                                     </div>
@@ -711,7 +733,7 @@ const EditContract = (props) => {
                           </div>
                           <Card.Footer>
                             <button type="submit" className="btn btn-info">
-                              Save
+                              Update
                             </button>
                             <button
                               type="submit"

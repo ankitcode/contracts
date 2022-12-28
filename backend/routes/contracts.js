@@ -84,11 +84,11 @@ router.post("/addContractsData", fetchuser, upload, async (req, res) => {
     } = req.data;
 
     let loaCopy = null;
-    if ("loaCopy" in req.files) loaCopy = req.files["loaCopy"][0].filename;
+    if ("loaCopy" in req.files) loaCopy = req.files["loaCopy"][0];
 
     let approvalCopy = null;
     if ("approvalCopy" in req.files)
-      approvalCopy = req.files["approvalCopy"][0].filename;
+      approvalCopy = req.files["approvalCopy"][0];
 
     const contractsData = new Contracts({
       createdBy: req.id,
@@ -141,10 +141,76 @@ function deleteFiles(files, callback) {
   });
 }
 
+// Update Contracts Data using PUT "/api/contracts/updateContractsData". Login required
+router.put("/updateContractsData/:id", fetchuser, upload, async (req, res) => {
+  let success = false;
+  try {
+    //console.log(req.params.id);
+    //console.log(req.data);
+    let contracts = await Contracts.findOne({ _id: req.params.id });
+    if (!contracts) {
+      return response.json({
+        error: "Contract data does not exists!",
+        success,
+        msg: "Contract data does not exists!",
+      });
+    }
+    console.log(contracts);
+    let loaCopy = null;
+    if ("loaCopy" in req.files) {
+      loaCopy = req.files["loaCopy"][0];
+      console.log(loaCopy);
+    }
+    let approvalCopy = null;
+    if ("approvalCopy" in req.files){
+      approvalCopy = req.files["approvalCopy"][0];
+    }
+
+    // deleting files on updation if new file uploaded
+    /*let loaFilename = "dummy";
+    if (contractsData.loa) loaFilename = contractsData.loa.filename;
+    let approvalFilename = "dummy";
+    if (contractsData.approval)
+      approvalFilename = contractsData.approval.filename;
+
+    var files = [
+      "D:\\Portals\\contracts\\public\\Files\\loaFiles\\" + loaFilename,
+      "D:\\Portals\\contracts\\public\\Files\\approvalFiles\\" +
+        approvalFilename,
+    ];
+    deleteFiles(files, function(err) {
+      if (err) {
+      } else {
+      }
+    });*/
+
+    return res.json({
+      success,
+      msg: "Updated Contracts Data!",
+    });
+  } catch (error) {
+    console.error(error.message);
+    return res.json({
+      msg: "Internal Server Error!",
+      error: "Internal Server Error!",
+      success,
+    });
+  }
+});
+
 // Delete Contracts Data using POST "/api/contracts/deleteContractsData". Login required
 router.post("/deleteContractsData", fetchuser, async (req, res) => {
   let success = false;
   try {
+    // Check for admin login
+    if (!req.isAdmin) {
+      return response.json({
+        error: "Admin Authentication Required!",
+        success,
+        msg: "Admin Authentication Required!",
+      });
+    }
+
     let contractsData = await Contracts.findById(req.body.id);
     if (!contractsData) {
       return res.json({
@@ -153,8 +219,13 @@ router.post("/deleteContractsData", fetchuser, async (req, res) => {
         success,
       });
     }
-    let loaFilename = contractsData.loa;
-    let approvalFilename = contractsData.approval;
+
+    let loaFilename = "dummy";
+    if (contractsData.loa) loaFilename = contractsData.loa.filename;
+    let approvalFilename = "dummy";
+    if (contractsData.approval)
+      approvalFilename = contractsData.approval.filename;
+
     var files = [
       "D:\\Portals\\contracts\\public\\Files\\loaFiles\\" + loaFilename,
       "D:\\Portals\\contracts\\public\\Files\\approvalFiles\\" +

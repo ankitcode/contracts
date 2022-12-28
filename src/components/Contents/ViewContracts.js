@@ -82,7 +82,9 @@ const ViewContracts = () => {
 
   // Link to show LOA file on new tab
   const linkFollowLoa = (cell, row, rowIndex, formatExtraData) => {
-    let path = "Files/loaFiles" + "/" + row.loa;
+    let path = ""
+    if (row.loa && "filename" in row.loa)
+      path = "Files/loaFiles" + "/" + row.loa.filename;
     return (
       <a href={path} target="_blank">
         {row.packageName}
@@ -92,7 +94,9 @@ const ViewContracts = () => {
 
   // Link to show Non GeM Approval file on new tab
   const linkFollowApproval = (cell, row, rowIndex, formatExtraData) => {
-    let path = "Files/approvalFiles" + "/" + row.approval;
+    let path = "";
+    if (row.approval && "filename" in row.approval)
+      path = "Files/approvalFiles" + "/" + row.approval.filename;
     return (
       <a href={path} target="_blank">
         {row.approvingOfficer}
@@ -106,7 +110,7 @@ const ViewContracts = () => {
       dataField: "packageName",
       text: "Package Name",
       headerAlign: "center",
-      headerStyle: { minWidth: "250px", backgroundColor: "#A7C7E7" },
+      headerStyle: { maxWidth: "250px", backgroundColor: "#A7C7E7" },
       formatter: linkFollowLoa,
       sort: true,
     },
@@ -125,7 +129,7 @@ const ViewContracts = () => {
       headerStyle: { minWidth: "100px", backgroundColor: "#A7C7E7" },
       sort: true,
       // Date filter option
-      filter: dateFilter({
+      /*filter: dateFilter({
         withoutEmptyComparatorOption: true,
         comparators: [Comparator.EQ, Comparator.GT, Comparator.LT],
         style: { display: "inline" },
@@ -134,7 +138,7 @@ const ViewContracts = () => {
         comparatorClassName: "custom-comparator-class",
         dateStyle: { backgroundColor: "#9ebfd6", margin: "0px" },
         dateClassName: "custom-date-class",
-      }),
+      }),*/
     },
     {
       dataField: "value",
@@ -145,7 +149,7 @@ const ViewContracts = () => {
     },
     {
       dataField: "procurementNature.label",
-      text: "Procurement Nature",
+      text: "Nature of Procurement",
       headerAlign: "center",
       headerStyle: { minWidth: "100px", backgroundColor: "#A7C7E7" },
       sort: true,
@@ -204,7 +208,7 @@ const ViewContracts = () => {
     },
     {
       dataField: "gemAvailabilityReport.label",
-      text: "Availability Report",
+      text: "GeM Availability Report",
       headerAlign: "center",
       headerStyle: { minWidth: "100px", backgroundColor: "#A7C7E7" },
       sort: true,
@@ -423,6 +427,7 @@ const ViewContracts = () => {
                               bootstrap4
                               wrapperClasses="table-responsive"
                               data={data}
+                              bodyStyle={ {maxWidth: "250px", wordBreak: 'break-all' } }
                               columns={columns}
                               pagination={paginationFactory(options)}
                               striped
