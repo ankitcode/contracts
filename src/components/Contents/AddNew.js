@@ -289,7 +289,7 @@ const AddNew = () => {
                           console.log(error);
                         }
                         setSubmitting(false);
-                        setTimeout(window.location.reload.bind(window.location), 1000);
+                        setTimeout(window.location.reload.bind(window.location), 800);
                       }}
                     >
                       {({

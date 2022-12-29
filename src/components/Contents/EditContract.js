@@ -278,7 +278,7 @@ const EditContract = (props) => {
                           }
                           setSubmitting(false);
                           props.editShow(false);
-                          setTimeout(window.location.reload.bind(window.location), 1000);
+                          setTimeout(window.location.reload.bind(window.location), 800);
                         } catch (error) {
                           console.log(error);
                         }
