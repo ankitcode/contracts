@@ -8,6 +8,7 @@ import Login from "./Components/Login";
 import Header from "./Components/Header";
 import Footer from "./Components/Footer";
 import Sidebar from "./Components/Sidebar";
+import PageNotFound from "./Components/PageNotFound";
 import ProtectedRoute from "./ProtectedRoutes/ProtectedRoute";
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -88,6 +89,15 @@ function App() {
           <Route
             path="/login"
             element={isAuthenticated ? <Home /> : <Login />}
+          />
+          <Route
+            exact
+            path="*"
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <Home />
+              </ProtectedRoute>
+            }
           />
         </Routes>
       </Router>
