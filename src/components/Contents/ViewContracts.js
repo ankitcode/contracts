@@ -222,9 +222,10 @@ const ViewContracts = () => {
       align: "center",
       formatter: (cellContent, row) => {
         return (
-          <>
+          <div className="form-group row actionViewContracts">
             {/*Adding buttun to delete contract data*/}
             {isAdmin ? (
+              <div className="col-4">
               <button
                 className="btn btn-danger btn-xs deleteContract"
                 onClick={() => {
@@ -234,9 +235,11 @@ const ViewContracts = () => {
               >
                 <i className="fa fa-trash" aria-hidden="true"></i>
               </button>
+              </div>
             ) : (
               <></>
             )}
+            <div className="col-4">
             <button
               className="btn btn-danger btn-xs deleteContract"
               onClick={() => {
@@ -246,7 +249,8 @@ const ViewContracts = () => {
             >
               <i className="fa fa-edit" aria-hidden="true"></i>
             </button>
-          </>
+            </div>
+          </div>
         );
       },
     },
@@ -455,19 +459,28 @@ const ViewContracts = () => {
                         keyboard="False"
                         size="sm"
                       >
-                        <Modal.Body>Do you want to delete?</Modal.Body>
-                        <Modal.Footer justifycontent="space-between">
-                          <Button variant="secondary" onClick={handleClose}>
-                            No
+                        <Modal.Header></Modal.Header>
+                        <Modal.Body>
+                          <div align="center">Do you want to delete?</div>
+                        </Modal.Body>
+                        <Modal.Footer
+                          justifycontent="space-between"
+                          className="deleteModalFooter"
+                        >
+                          <Button
+                            className="deleteBtnConfNo"
+                            onClick={handleClose}
+                          >
+                            <i className="fa-solid fa-xmark"></i>
                           </Button>
                           <Button
-                            variant="danger"
+                            className="deleteBtnConfYes"
                             onClick={() => {
                               handleDelete(rowToDelete);
                             }}
                             align="right"
                           >
-                            Yes
+                            <i class="fa-solid fa-check"></i>
                           </Button>
                         </Modal.Footer>
                       </Modal>

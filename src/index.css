@@ -168,3 +168,11 @@
   background-color:#00000000;
   border-color: #00000000;
 }
+
+.actionViewContracts {
+  justify-content: center;
+}
+
+.table td {
+  vertical-align: middle;
+}
