@@ -16,7 +16,6 @@ const AddNew = () => {
     },
   };
   const { user } = useSelector((state) => state.root);
-
   useEffect(() => {
     const trees = window.$('[data-widget="treeview"]');
     trees.Treeview("init");
@@ -242,6 +241,7 @@ const AddNew = () => {
                             values.approvingOfficer = "";
                             values.availabilityReport = "";
                             values.approvalCopy = null;
+                            setApprovalFileName(null);
                           }
                           const formData = new FormData();
                           if ("loaCopy" in values) {
@@ -289,6 +289,7 @@ const AddNew = () => {
                           console.log(error);
                         }
                         setSubmitting(false);
+                        setTimeout(window.location.reload.bind(window.location), 1000);
                       }}
                     >
                       {({
@@ -353,10 +354,11 @@ const AddNew = () => {
                                           "loaCopy",
                                           event.currentTarget.files[0]
                                         );
-                                        //console.log(event.currentTarget.files);
-                                        setLoaFileName(
-                                          event.currentTarget.files[0].name
-                                        );
+                                        if (event.currentTarget.files[0]) {
+                                          setLoaFileName(
+                                            event.currentTarget.files[0].name
+                                          );
+                                        }
                                       }}
                                       onBlur={handleBlur}
                                       className="form-control"
@@ -662,10 +664,11 @@ const AddNew = () => {
                                               "approvalCopy",
                                               event.currentTarget.files[0]
                                             );
-                                            //console.log(event.currentTarget.files);
-                                            setApprovalFileName(
-                                              event.currentTarget.files[0].name
-                                            );
+                                            if (event.currentTarget.files[0]) {
+                                              setApprovalFileName(
+                                                event.currentTarget.files[0].name
+                                              );
+                                            }
                                           }}
                                           onBlur={handleBlur}
                                           className="form-control"

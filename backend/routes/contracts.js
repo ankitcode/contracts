@@ -145,8 +145,21 @@ function deleteFiles(files, callback) {
 router.put("/updateContractsData/:id", fetchuser, upload, async (req, res) => {
   let success = false;
   try {
-    //console.log(req.params.id);
-    //console.log(req.data);
+    const {
+      packageName,
+      dateAwarded,
+      amount,
+      natureOfProcurement,
+      throughGeM,
+      gemMode,
+      msmeVendor,
+      msmeType,
+      reasonNotGeM,
+      availableOnGeM,
+      approvingOfficer,
+      availabilityReport,
+    } = req.data;
+
     let contracts = await Contracts.findOne({ _id: req.params.id });
     if (!contracts) {
       return response.json({
@@ -155,23 +168,25 @@ router.put("/updateContractsData/:id", fetchuser, upload, async (req, res) => {
         msg: "Contract data does not exists!",
       });
     }
-    console.log(contracts);
-    let loaCopy = null;
+
+    // deleting and updating files on updation if new file uploaded
+    let loaCopy = contracts.loa;
+    let loaFilename = "dummy";
     if ("loaCopy" in req.files) {
       loaCopy = req.files["loaCopy"][0];
-      console.log(loaCopy);
+      if (contracts.loa) loaFilename = contracts.loa.filename;
     }
-    let approvalCopy = null;
-    if ("approvalCopy" in req.files){
+    let approvalCopy = contracts.approval;
+    let approvalFilename = "dummy";
+    if ("approvalCopy" in req.files) {
       approvalCopy = req.files["approvalCopy"][0];
+      if (contracts.approval) approvalFilename = contracts.approval.filename;
     }
 
-    // deleting files on updation if new file uploaded
-    /*let loaFilename = "dummy";
-    if (contractsData.loa) loaFilename = contractsData.loa.filename;
-    let approvalFilename = "dummy";
-    if (contractsData.approval)
-      approvalFilename = contractsData.approval.filename;
+    if (throughGeM.value == 'yes') {
+      approvalCopy = null;
+      if (contracts.approval) approvalFilename = contracts.approval.filename;
+    }
 
     var files = [
       "D:\\Portals\\contracts\\public\\Files\\loaFiles\\" + loaFilename,
@@ -182,11 +197,35 @@ router.put("/updateContractsData/:id", fetchuser, upload, async (req, res) => {
       if (err) {
       } else {
       }
-    });*/
+    });
 
+    // Updating contracts data
+    const updatedContracts = await Contracts.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        packageName,
+        loa: loaCopy,
+        awardedOn: dateAwarded,
+        value: amount,
+        procurementNature: natureOfProcurement,
+        throughGeM,
+        gemMode,
+        msmeVendor,
+        msmeType,
+        reasonNotGeM,
+        availableOnGeM,
+        approvingOfficer,
+        approval: approvalCopy,
+        gemAvailabilityReport: availabilityReport,
+      },
+      { new: true }
+    );
+
+    success = true;
     return res.json({
       success,
       msg: "Updated Contracts Data!",
+      updatedContracts,
     });
   } catch (error) {
     console.error(error.message);

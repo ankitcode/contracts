@@ -27,7 +27,7 @@ import { toast } from "react-toastify";
 import EditContract from "./EditContract";
 
 const ViewContracts = () => {
-  const { user } = useSelector((state) => state.root);
+  const { user, isAdmin } = useSelector((state) => state.root);
   // to keep contracts data to be shown on the page
   const [data, setData] = useState([]);
   // to show edit contract modal
@@ -68,7 +68,7 @@ const ViewContracts = () => {
       }
     }
     fetchData();
-  }, []);
+  }, [showEditModal]);
 
   /*-------------------------------Start of Handling table data---------------------------------*/
   // Handle modal close onhide and on selecting 'No' option
@@ -82,7 +82,7 @@ const ViewContracts = () => {
 
   // Link to show LOA file on new tab
   const linkFollowLoa = (cell, row, rowIndex, formatExtraData) => {
-    let path = ""
+    let path = "";
     if (row.loa && "filename" in row.loa)
       path = "Files/loaFiles" + "/" + row.loa.filename;
     return (
@@ -110,7 +110,7 @@ const ViewContracts = () => {
       dataField: "packageName",
       text: "Package Name",
       headerAlign: "center",
-      headerStyle: { maxWidth: "250px", backgroundColor: "#A7C7E7" },
+      headerStyle: { minWidth: "250px", backgroundColor: "#A7C7E7" },
       formatter: linkFollowLoa,
       sort: true,
     },
@@ -224,15 +224,19 @@ const ViewContracts = () => {
         return (
           <>
             {/*Adding buttun to delete contract data*/}
-            <button
-              className="btn btn-danger btn-xs deleteContract"
-              onClick={() => {
-                setModalShow(true);
-                setRowToDelete(row);
-              }}
-            >
-              <i className="fa fa-trash" aria-hidden="true"></i>
-            </button>
+            {isAdmin ? (
+              <button
+                className="btn btn-danger btn-xs deleteContract"
+                onClick={() => {
+                  setModalShow(true);
+                  setRowToDelete(row);
+                }}
+              >
+                <i className="fa fa-trash" aria-hidden="true"></i>
+              </button>
+            ) : (
+              <></>
+            )}
             <button
               className="btn btn-danger btn-xs deleteContract"
               onClick={() => {
@@ -427,7 +431,10 @@ const ViewContracts = () => {
                               bootstrap4
                               wrapperClasses="table-responsive"
                               data={data}
-                              bodyStyle={ {maxWidth: "250px", wordBreak: 'break-all' } }
+                              bodyStyle={{
+                                maxWidth: "250px",
+                                wordBreak: "break-all",
+                              }}
                               columns={columns}
                               pagination={paginationFactory(options)}
                               striped

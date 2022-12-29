@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 
 const Sidebar = () => {
   // Get user from redux store to display user data on sidebar
-  const { user } = useSelector((state) => state.root);
+  const { user, isAdmin } = useSelector((state) => state.root);
   return (
     <>
       {/* Main Sidebar Container */}
@@ -104,35 +104,41 @@ const Sidebar = () => {
                 </ul>
               </li>
               {/*Added for Admin */}
-              <li className="nav-item">
-                <a href="#" className="nav-link">
-                  <i className="nav-icon fas fa-solid fa-lock" />
-                  <p>
-                    Admin
-                    <i className="fas fa-angle-left right" />
-                  </p>
-                </a>
-                <ul className="nav nav-treeview">
-                  {/*Added for admin to manage users */}
+              {isAdmin ? (
+                <>
                   <li className="nav-item">
-                    <Link to="/manageUsers" className="nav-link">
-                      <i className="fas fa-solid fa-user nav-icon" />
-                      <p>Users</p>
-                    </Link>
+                    <a href="#" className="nav-link">
+                      <i className="nav-icon fas fa-solid fa-lock" />
+                      <p>
+                        Admin
+                        <i className="fas fa-angle-left right" />
+                      </p>
+                    </a>
+                    <ul className="nav nav-treeview">
+                      {/*Added for admin to manage users */}
+                      <li className="nav-item">
+                        <Link to="/manageUsers" className="nav-link">
+                          <i className="fas fa-solid fa-user nav-icon" />
+                          <p>Users</p>
+                        </Link>
+                      </li>
+                    </ul>
                   </li>
-                </ul>
-              </li>
-              {/*Added for Reports */}
-              <li className="nav-item">
-                <a href="#" className="nav-link">
-                  <i className="fas fa-file nav-icon" />
-                  <p>
-                    Reports
-                    <i className="fas fa-angle-left right" />
-                  </p>
-                </a>
-                <ul className="nav nav-treeview"></ul>
-              </li>
+                  {/*Added for Reports */}
+                  <li className="nav-item">
+                    <a href="#" className="nav-link">
+                      <i className="fas fa-file nav-icon" />
+                      <p>
+                        Reports
+                        <i className="fas fa-angle-left right" />
+                      </p>
+                    </a>
+                    <ul className="nav nav-treeview"></ul>
+                  </li>
+                </>
+              ) : (
+                <></>
+              )}
             </ul>
           </nav>
         </div>

@@ -2,7 +2,7 @@ import React from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Formik, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Select from "react-select";
@@ -12,9 +12,6 @@ import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 const EditContract = (props) => {
-  if (props.row) {
-    console.log("Row to Edit", props.row);
-  }
 
   let axiosConfig = {
     headers: {
@@ -22,8 +19,6 @@ const EditContract = (props) => {
     },
   };
   const { user } = useSelector((state) => state.root);
-
-  useEffect(() => {}, []);
 
   // Options for select box
   const procurementNatureOptions = [
@@ -173,7 +168,7 @@ const EditContract = (props) => {
             "Max file size Allowed is 10 MB !",
             (value) => value && value.size <= FILE_SIZE
           ),
-      })
+      }),
     }),
     availabilityReport: Yup.object().when("throughGeM", {
       is: (val) => {
@@ -224,7 +219,7 @@ const EditContract = (props) => {
                         availableOnGeM: props.row.availableOnGeM,
                         approvingOfficer: props.row.approvingOfficer,
                         approvalCopy: null,
-                        isApprovalCopy: !(props.row.approval) ? true : false,
+                        isApprovalCopy: !props.row.approval ? true : false,
                         availabilityReport: props.row.gemAvailabilityReport,
                       }}
                       validationSchema={validationSchema}
@@ -236,6 +231,7 @@ const EditContract = (props) => {
                             values.approvingOfficer = "";
                             values.availabilityReport = "";
                             values.approvalCopy = null;
+                            setApprovalFileName(null);
                           }
                           const formData = new FormData();
                           if (values.loaCopy) {
@@ -280,10 +276,12 @@ const EditContract = (props) => {
                               theme: "light",
                             });
                           }
+                          setSubmitting(false);
+                          props.editShow(false);
+                          setTimeout(window.location.reload.bind(window.location), 1000);
                         } catch (error) {
                           console.log(error);
                         }
-                        setSubmitting(false);
                       }}
                     >
                       {({
@@ -349,10 +347,11 @@ const EditContract = (props) => {
                                           "loaCopy",
                                           event.currentTarget.files[0]
                                         );
-                                        //console.log(event.currentTarget.files);
-                                        setLoaFileName(
-                                          event.currentTarget.files[0].name
-                                        );
+                                        if (event.currentTarget.files[0]) {
+                                          setLoaFileName(
+                                            event.currentTarget.files[0].name
+                                          );
+                                        }
                                       }}
                                       onBlur={handleBlur}
                                       className="form-control"
@@ -666,10 +665,11 @@ const EditContract = (props) => {
                                               "approvalCopy",
                                               event.currentTarget.files[0]
                                             );
-                                            //console.log(event.currentTarget.files);
-                                            setApprovalFileName(
-                                              event.currentTarget.files[0].name
-                                            );
+                                            if (event.currentTarget.files[0]) {
+                                              setApprovalFileName(
+                                                event.currentTarget.files[0].name
+                                              );
+                                            }
                                           }}
                                           onBlur={handleBlur}
                                           className="form-control"

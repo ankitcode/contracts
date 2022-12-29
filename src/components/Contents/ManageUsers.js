@@ -406,19 +406,28 @@ const ManageUsers = () => {
                         keyboard="False"
                         size="sm"
                       >
-                        <Modal.Body>Do you want to delete?</Modal.Body>
-                        <Modal.Footer justifycontent="space-between">
-                          <Button variant="secondary" onClick={handleClose}>
-                            No
+                        <Modal.Header></Modal.Header>
+                        <Modal.Body>
+                          <div align="center">Do you want to delete?</div>
+                        </Modal.Body>
+                        <Modal.Footer
+                          justifycontent="space-between"
+                          className="deleteModalFooter"
+                        >
+                          <Button
+                            className="deleteBtnConfNo"
+                            onClick={handleClose}
+                          >
+                            <i className="fa-solid fa-xmark"></i>
                           </Button>
                           <Button
-                            variant="danger"
+                            className="deleteBtnConfYes"
                             onClick={() => {
                               handleDelete(rowToDelete);
                             }}
                             align="right"
                           >
-                            Yes
+                            <i class="fa-solid fa-check"></i>
                           </Button>
                         </Modal.Footer>
                       </Modal>

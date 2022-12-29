@@ -65,17 +65,7 @@ const Login = () => {
                       values,
                       axiosConfig
                     );
-                    axiosConfig.headers["authToken"] = res.data.authToken;
-                    // Get User Data
-                    const userData = await axios.post(
-                      "/api/auth/getUser",
-                      {},
-                      axiosConfig
-                    );
-                    let user = {
-                      authToken: res.data.authToken,
-                      userData: userData.data.user,
-                    };
+
                     if (res.data.success) {
                       toast.success(res.data.msg, {
                         position: "top-right",
@@ -87,8 +77,30 @@ const Login = () => {
                         progress: undefined,
                         theme: "light",
                       });
+                      axiosConfig.headers["authToken"] = res.data.authToken;
+                      // Get User Data
+                      const userData = await axios.post(
+                        "/api/auth/getUser",
+                        {},
+                        axiosConfig
+                      );
+                      let user = {
+                        authToken: res.data.authToken,
+                        userData: userData.data.user,
+                      };
                       dispatch({ type: "login", user: user });
                       navigate("/");
+                    } else {
+                      toast.error(res.data.msg, {
+                        position: "top-right",
+                        autoClose: 1000,
+                        hideProgressBar: true,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: false,
+                        progress: undefined,
+                        theme: "light",
+                      });
                     }
                   } catch (error) {
                     toast.error(error.response.data.msg, {
