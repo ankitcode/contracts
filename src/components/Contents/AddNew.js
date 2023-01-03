@@ -108,10 +108,12 @@ const AddNew = () => {
       is: (val) => {
         if (val) {
           return val.value === "yes";
+        } else {
+          return true;
         }
       },
       then: Yup.mixed()
-        .required("File is Required!")
+        .required("Required!")
         .test(
           "fileFormat",
           "Only pdf Allowed!",
@@ -392,14 +394,20 @@ const AddNew = () => {
                                         //console.log(
                                         //event.currentTarget.files[0]
                                         //);
-                                        setFieldValue(
-                                          "loaCopy",
-                                          event.currentTarget.files[0]
-                                        );
                                         if (event.currentTarget.files[0]) {
+                                          setFieldValue(
+                                            "loaCopy",
+                                            event.currentTarget.files[0]
+                                          );
                                           setLoaFileName(
                                             event.currentTarget.files[0].name
                                           );
+                                        } else {
+                                          setFieldValue(
+                                            "loaCopy",
+                                            null
+                                          );
+                                          setLoaFileName("");
                                         }
                                       }}
                                       onBlur={handleBlur}
@@ -613,14 +621,20 @@ const AddNew = () => {
                                         //console.log(
                                         //event.currentTarget.files[0]
                                         //);
-                                        setFieldValue(
-                                          "msmeCertificateFile",
-                                          event.currentTarget.files[0]
-                                        );
                                         if (event.currentTarget.files[0]) {
+                                          setFieldValue(
+                                            "msmeCertificateFile",
+                                            event.currentTarget.files[0]
+                                          );
                                           setMsmeCertificateFileName(
                                             event.currentTarget.files[0].name
                                           );
+                                        } else {
+                                          setFieldValue(
+                                            "msmeCertificateFile",
+                                            null
+                                          );
+                                          setMsmeCertificateFileName("");
                                         }
                                       }}
                                       onBlur={handleBlur}
@@ -746,15 +760,20 @@ const AddNew = () => {
                                             //console.log(
                                             //event.currentTarget.files[0]
                                             //);
-                                            setFieldValue(
-                                              "approvalCopy",
-                                              event.currentTarget.files[0]
-                                            );
                                             if (event.currentTarget.files[0]) {
-                                              setApprovalFileName(
+                                              setFieldValue(
+                                                "approvalCopy",
                                                 event.currentTarget.files[0]
-                                                  .name
                                               );
+                                              setApprovalFileName(
+                                                event.currentTarget.files[0].name
+                                              );
+                                            } else {
+                                              setFieldValue(
+                                                "approvalCopy",
+                                                null
+                                              );
+                                              setApprovalFileName("");
                                             }
                                           }}
                                           onBlur={handleBlur}

@@ -108,22 +108,31 @@ const EditContract = (props) => {
     throughGeM: Yup.object().required("Required!"),
     gemMode: Yup.object().required("Required!"),
     msmeVendor: Yup.object().required("Required!"),
-    msmeCertificateFile: Yup.mixed().when("isMSMECertificateFile", {
+    msmeCertificateFile: Yup.mixed().when("msmeVendor", {
       is: (val) => {
-        return val;
+        if (val) {
+          return val.value === "yes";
+        } else {
+          return true;
+        }
       },
-      then: Yup.mixed()
-        .required("File is Required!")
-        .test(
-          "fileFormat",
-          "Only pdf Allowed!",
-          (value) => value && SUPPORTED_FORMATS.includes(value.type)
-        )
-        .test(
-          "fileSize",
-          "Max file size Allowed is 10 MB !",
-          (value) => value && value.size <= FILE_SIZE
-        ),
+      then: Yup.mixed().when("isMSMECertificateFile", {
+        is: (val) => {
+          return val;
+        },
+        then: Yup.mixed()
+          .required("Required!")
+          .test(
+            "fileFormat",
+            "Only pdf Allowed!",
+            (value) => value && SUPPORTED_FORMATS.includes(value.type)
+          )
+          .test(
+            "fileSize",
+            "Max file size Allowed is 10 MB !",
+            (value) => value && value.size <= FILE_SIZE
+          ),
+      }),
     }),
     msmeType: Yup.object().required("Required!"),
     reasonNotGeM: Yup.object().when("throughGeM", {
@@ -232,6 +241,9 @@ const EditContract = (props) => {
                         gemMode: props.row.gemMode,
                         msmeVendor: props.row.msmeVendor,
                         msmeCertificateFile: null,
+                        isMSMECertificateFile: !props.row.msmeCertificate
+                          ? true
+                          : false,
                         msmeType: props.row.msmeType,
                         reasonNotGeM: props.row.reasonNotGeM,
                         availableOnGeM: props.row.availableOnGeM,
@@ -376,14 +388,20 @@ const EditContract = (props) => {
                                         //event.currentTarget.files[0]
                                         //);
                                         setFieldValue("isLoaCopy", true);
-                                        setFieldValue(
-                                          "loaCopy",
-                                          event.currentTarget.files[0]
-                                        );
                                         if (event.currentTarget.files[0]) {
+                                          setFieldValue(
+                                            "loaCopy",
+                                            event.currentTarget.files[0]
+                                          );
                                           setLoaFileName(
                                             event.currentTarget.files[0].name
                                           );
+                                        } else {
+                                          setFieldValue(
+                                            "loaCopy",
+                                            null
+                                          );
+                                          setLoaFileName("");
                                         }
                                       }}
                                       onBlur={handleBlur}
@@ -605,14 +623,20 @@ const EditContract = (props) => {
                                           "isMSMECertificateFile",
                                           true
                                         );
-                                        setFieldValue(
-                                          "msmeCertificateFile",
-                                          event.currentTarget.files[0]
-                                        );
                                         if (event.currentTarget.files[0]) {
+                                          setFieldValue(
+                                            "msmeCertificateFile",
+                                            event.currentTarget.files[0]
+                                          );
                                           setMsmeCertificateFileName(
                                             event.currentTarget.files[0].name
                                           );
+                                        } else {
+                                          setFieldValue(
+                                            "msmeCertificateFile",
+                                            null
+                                          );
+                                          setMsmeCertificateFileName("");
                                         }
                                       }}
                                       onBlur={handleBlur}
@@ -744,15 +768,20 @@ const EditContract = (props) => {
                                               "isApprovalCopy",
                                               true
                                             );
-                                            setFieldValue(
-                                              "approvalCopy",
-                                              event.currentTarget.files[0]
-                                            );
                                             if (event.currentTarget.files[0]) {
-                                              setApprovalFileName(
+                                              setFieldValue(
+                                                "approvalCopy",
                                                 event.currentTarget.files[0]
-                                                  .name
                                               );
+                                              setApprovalFileName(
+                                                event.currentTarget.files[0].name
+                                              );
+                                            } else {
+                                              setFieldValue(
+                                                "approvalCopy",
+                                                null
+                                              );
+                                              setApprovalFileName("");
                                             }
                                           }}
                                           onBlur={handleBlur}
