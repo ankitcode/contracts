@@ -104,6 +104,21 @@ const ViewContracts = () => {
     );
   };
 
+  // Link to show MSME Vendor Certificate on new tab
+  const linkFollowMSME = (cell, row, rowIndex, formatExtraData) => {
+    let path = "";
+    if (row.msmeCertificate && "filename" in row.msmeCertificate) {
+      path = "Files/MSMECertificateFiles" + "/" + row.msmeCertificate.filename;
+      return (
+        <a href={path} target="_blank">
+          {row.msmeVendor.label}
+        </a>
+      );
+    } else {
+      return <>{row.msmeVendor.label}</>;
+    }
+  };
+
   // Columns for table
   const columns = [
     {
@@ -173,6 +188,7 @@ const ViewContracts = () => {
       dataField: "msmeVendor.label",
       text: "MSME Vendor",
       headerAlign: "center",
+      formatter: linkFollowMSME,
       headerStyle: { minWidth: "100px", backgroundColor: "#A7C7E7" },
       sort: true,
     },
@@ -226,29 +242,29 @@ const ViewContracts = () => {
             {/*Adding buttun to delete contract data*/}
             {isAdmin ? (
               <div className="col-4">
-              <button
-                className="btn btn-danger btn-xs deleteContract"
-                onClick={() => {
-                  setModalShow(true);
-                  setRowToDelete(row);
-                }}
-              >
-                <i className="fa fa-trash" aria-hidden="true"></i>
-              </button>
+                <button
+                  className="btn btn-danger btn-xs deleteContract"
+                  onClick={() => {
+                    setModalShow(true);
+                    setRowToDelete(row);
+                  }}
+                >
+                  <i className="fa fa-trash" aria-hidden="true"></i>
+                </button>
               </div>
             ) : (
               <></>
             )}
             <div className="col-4">
-            <button
-              className="btn btn-danger btn-xs deleteContract"
-              onClick={() => {
-                setEditModal(true);
-                setRowToEdit(row);
-              }}
-            >
-              <i className="fa fa-edit" aria-hidden="true"></i>
-            </button>
+              <button
+                className="btn btn-danger btn-xs deleteContract"
+                onClick={() => {
+                  setEditModal(true);
+                  setRowToEdit(row);
+                }}
+              >
+                <i className="fa fa-edit" aria-hidden="true"></i>
+              </button>
             </div>
           </div>
         );

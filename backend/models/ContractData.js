@@ -14,6 +14,9 @@ const ContractsDataSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+  createdByDetails: {
+    type: String,
+  },
   createdOn: {
     type: Date,
     default: Date.now,
@@ -53,6 +56,9 @@ const ContractsDataSchema = new mongoose.Schema({
     type: Object,
     required: true,
   },
+  msmeCertificate: {
+    type: Object,
+  },
   msmeType: {
     type: Object,
     required: true,
@@ -78,6 +84,13 @@ const ContractsDataSchema = new mongoose.Schema({
   isDeleted: {
     type: Boolean,
     default: false,
+  },
+  deletedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+  deletedByDetails: {
+    type: String,
   },
 });
 

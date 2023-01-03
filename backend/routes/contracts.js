@@ -52,6 +52,10 @@ const upload = multer({
       } else {
         if (file.fieldname == "approvalCopy") {
           callback(null, "./public/Files/approvalFiles");
+        } else {
+          if (file.fieldname == "msmeCertificateFile") {
+            callback(null, "./public/Files/MSMECertificateFiles");
+          }
         }
       }
     },
@@ -61,6 +65,7 @@ const upload = multer({
   }),
 }).fields([
   { name: "loaCopy", maxCount: 1 },
+  { name: "msmeCertificateFile", maxCount: 1 },
   { name: "approvalCopy", maxCount: 1 },
 ]);
 
@@ -90,8 +95,13 @@ router.post("/addContractsData", fetchuser, upload, async (req, res) => {
     if ("approvalCopy" in req.files)
       approvalCopy = req.files["approvalCopy"][0];
 
+    let msmeCertificateFile = null;
+    if ("msmeCertificateFile" in req.files)
+      msmeCertificateFile = req.files["msmeCertificateFile"][0];
+
     const contractsData = new Contracts({
       createdBy: req.id,
+      createdByDetails: "",
       location: req.location,
       packageName,
       loa: loaCopy,
@@ -101,6 +111,7 @@ router.post("/addContractsData", fetchuser, upload, async (req, res) => {
       throughGeM,
       gemMode,
       msmeVendor,
+      msmeCertificate: msmeCertificateFile,
       msmeType,
       reasonNotGeM,
       availableOnGeM,
@@ -176,6 +187,13 @@ router.put("/updateContractsData/:id", fetchuser, upload, async (req, res) => {
       loaCopy = req.files["loaCopy"][0];
       if (contracts.loa) loaFilename = contracts.loa.filename;
     }
+    let msmeCertificateFile = contracts.msmeCertificate;
+    let msmeCertificateFileName = "dummy";
+    if ("msmeCertificateFile" in req.files) {
+      msmeCertificateFile = req.files["msmeCertificateFile"][0];
+      if (contracts.msmeCertificate)
+        msmeCertificateFileName = contracts.msmeCertificate.filename;
+    }
     let approvalCopy = contracts.approval;
     let approvalFilename = "dummy";
     if ("approvalCopy" in req.files) {
@@ -183,15 +201,22 @@ router.put("/updateContractsData/:id", fetchuser, upload, async (req, res) => {
       if (contracts.approval) approvalFilename = contracts.approval.filename;
     }
 
-    if (throughGeM.value == 'yes') {
+    if (throughGeM.value == "yes") {
       approvalCopy = null;
       if (contracts.approval) approvalFilename = contracts.approval.filename;
+    }
+
+    if (msmeVendor.value == "no") {
+      msmeCertificateFile = null;
+      if (contracts.msmeCertificate) msmeCertificateFileName = contracts.msmeCertificate.filename;
     }
 
     var files = [
       "D:\\Portals\\contracts\\public\\Files\\loaFiles\\" + loaFilename,
       "D:\\Portals\\contracts\\public\\Files\\approvalFiles\\" +
         approvalFilename,
+      "D:\\Portals\\contracts\\public\\Files\\MSMECertificateFiles\\" +
+        msmeCertificateFileName,
     ];
     deleteFiles(files, function(err) {
       if (err) {
@@ -211,6 +236,7 @@ router.put("/updateContractsData/:id", fetchuser, upload, async (req, res) => {
         throughGeM,
         gemMode,
         msmeVendor,
+        msmeCertificate: msmeCertificateFile,
         msmeType,
         reasonNotGeM,
         availableOnGeM,
@@ -264,11 +290,15 @@ router.post("/deleteContractsData", fetchuser, async (req, res) => {
     let approvalFilename = "dummy";
     if (contractsData.approval)
       approvalFilename = contractsData.approval.filename;
-
+    let msmeCertificateFileName = "dummy";
+    if (contractsData.msmeCertificate)
+      msmeCertificateFileName = contractsData.msmeCertificate.filename;
     var files = [
       "D:\\Portals\\contracts\\public\\Files\\loaFiles\\" + loaFilename,
       "D:\\Portals\\contracts\\public\\Files\\approvalFiles\\" +
         approvalFilename,
+      "D:\\Portals\\contracts\\public\\Files\\MSMECertificateFiles\\" +
+        msmeCertificateFileName,
     ];
     deleteFiles(files, function(err) {
       if (err) {

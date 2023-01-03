@@ -12,7 +12,6 @@ import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 const EditContract = (props) => {
-
   let axiosConfig = {
     headers: {
       "Access-Control-Allow-Origin": "*",
@@ -76,6 +75,7 @@ const EditContract = (props) => {
 
   const [loaFileName, setLoaFileName] = useState("");
   const [approvalFileName, setApprovalFileName] = useState("");
+  const [msmeCertificateFileName, setMsmeCertificateFileName] = useState("");
   const FILE_SIZE = 10 * 1024 * 1024;
   const SUPPORTED_FORMATS = ["application/pdf"];
 
@@ -108,6 +108,23 @@ const EditContract = (props) => {
     throughGeM: Yup.object().required("Required!"),
     gemMode: Yup.object().required("Required!"),
     msmeVendor: Yup.object().required("Required!"),
+    msmeCertificateFile: Yup.mixed().when("isMSMECertificateFile", {
+      is: (val) => {
+        return val;
+      },
+      then: Yup.mixed()
+        .required("File is Required!")
+        .test(
+          "fileFormat",
+          "Only pdf Allowed!",
+          (value) => value && SUPPORTED_FORMATS.includes(value.type)
+        )
+        .test(
+          "fileSize",
+          "Max file size Allowed is 10 MB !",
+          (value) => value && value.size <= FILE_SIZE
+        ),
+    }),
     msmeType: Yup.object().required("Required!"),
     reasonNotGeM: Yup.object().when("throughGeM", {
       is: (val) => {
@@ -214,6 +231,7 @@ const EditContract = (props) => {
                         throughGeM: props.row.throughGeM,
                         gemMode: props.row.gemMode,
                         msmeVendor: props.row.msmeVendor,
+                        msmeCertificateFile: null,
                         msmeType: props.row.msmeType,
                         reasonNotGeM: props.row.reasonNotGeM,
                         availableOnGeM: props.row.availableOnGeM,
@@ -233,10 +251,22 @@ const EditContract = (props) => {
                             values.approvalCopy = null;
                             setApprovalFileName(null);
                           }
+                          if (values.msmeVendor.value == "no") {
+                            values.msmeType = "";
+                            values.msmeCertificateFile = null;
+                            setMsmeCertificateFileName(null);
+                          }
                           const formData = new FormData();
                           if (values.loaCopy) {
                             formData.append("loaCopy", values.loaCopy);
                             delete values["loaCopy"];
+                          }
+                          if ("msmeCertificateFile" in values) {
+                            formData.append(
+                              "msmeCertificateFile",
+                              values.msmeCertificateFile
+                            );
+                            delete values["msmeCertificateFile"];
                           }
                           if (values.approvalCopy) {
                             formData.append(
@@ -278,7 +308,10 @@ const EditContract = (props) => {
                           }
                           setSubmitting(false);
                           props.editShow(false);
-                          setTimeout(window.location.reload.bind(window.location), 800);
+                          setTimeout(
+                            window.location.reload.bind(window.location),
+                            800
+                          );
                         } catch (error) {
                           console.log(error);
                         }
@@ -554,7 +587,57 @@ const EditContract = (props) => {
                                 </ErrorMessage>
                               </div>
                             </div>
-
+                            <div className="form-group row">
+                              <label className="col-3 col-form-label">
+                                MSME Certificate (if MSME)
+                              </label>
+                              <div className="col-3">
+                                <div className="input-group">
+                                  <div className="custom-file">
+                                    <input
+                                      name="msmeCertificateFile"
+                                      type="file"
+                                      onChange={(event) => {
+                                        //console.log(
+                                        //event.currentTarget.files[0]
+                                        //);
+                                        setFieldValue(
+                                          "isMSMECertificateFile",
+                                          true
+                                        );
+                                        setFieldValue(
+                                          "msmeCertificateFile",
+                                          event.currentTarget.files[0]
+                                        );
+                                        if (event.currentTarget.files[0]) {
+                                          setMsmeCertificateFileName(
+                                            event.currentTarget.files[0].name
+                                          );
+                                        }
+                                      }}
+                                      onBlur={handleBlur}
+                                      className="form-control"
+                                      id="msmeCertificateFile"
+                                    />
+                                    <label
+                                      className="custom-file-label"
+                                      htmlFor="msmeCertificateFile"
+                                    >
+                                      {msmeCertificateFileName
+                                        ? msmeCertificateFileName
+                                        : props.row.msmeCertificate
+                                        ? props.row.msmeCertificate.originalname
+                                        : ""}
+                                    </label>
+                                  </div>
+                                </div>
+                                <ErrorMessage name="msmeCertificateFile">
+                                  {(msg) => (
+                                    <div style={{ color: "red" }}>{msg}</div>
+                                  )}
+                                </ErrorMessage>
+                              </div>
+                            </div>
                             <hr
                               style={{
                                 height: "10px",
@@ -667,7 +750,8 @@ const EditContract = (props) => {
                                             );
                                             if (event.currentTarget.files[0]) {
                                               setApprovalFileName(
-                                                event.currentTarget.files[0].name
+                                                event.currentTarget.files[0]
+                                                  .name
                                               );
                                             }
                                           }}
@@ -744,6 +828,7 @@ const EditContract = (props) => {
                                 props.editRow({});
                                 setLoaFileName("");
                                 setApprovalFileName("");
+                                setMsmeCertificateFileName("");
                               }}
                             >
                               Cancel
