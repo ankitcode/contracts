@@ -8,6 +8,7 @@ const multer = require("multer");
 const router = express.Router();
 const fetchuser = require("../middleware/fetchuser");
 const Contracts = require("../models/ContractData");
+const User = require("../models/UserData");
 // Import for removing file
 var fs = require("fs");
 
@@ -88,6 +89,8 @@ router.post("/addContractsData", fetchuser, upload, async (req, res) => {
       availabilityReport,
     } = req.data;
 
+    // User Details
+    let user = await User.findOne({ _id: req.id });
     let loaCopy = null;
     if ("loaCopy" in req.files) loaCopy = req.files["loaCopy"][0];
 
@@ -101,7 +104,7 @@ router.post("/addContractsData", fetchuser, upload, async (req, res) => {
 
     const contractsData = new Contracts({
       createdBy: req.id,
-      createdByDetails: "",
+      createdByDetails: user.name + "," + user.post + "," + user.department + "," + user.location + "," + user.empNo,
       location: req.location,
       packageName,
       loa: loaCopy,
@@ -208,7 +211,8 @@ router.put("/updateContractsData/:id", fetchuser, upload, async (req, res) => {
 
     if (msmeVendor.value == "no") {
       msmeCertificateFile = null;
-      if (contracts.msmeCertificate) msmeCertificateFileName = contracts.msmeCertificate.filename;
+      if (contracts.msmeCertificate)
+        msmeCertificateFileName = contracts.msmeCertificate.filename;
     }
 
     var files = [
