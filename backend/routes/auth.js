@@ -94,12 +94,14 @@ router.post("/login", async (req, response) => {
           });
           res.on("end", () => {
             client.unbind();
+            return;
           });
         });
       }
     });
     client.on("error", () => {
       client.unbind();
+      return;
     });
   } catch (error) {
     return response.json({
@@ -181,12 +183,14 @@ router.post("/addAdmin", async (req, response) => {
           });
           res.on("end", () => {
             client.unbind();
+            return;
           });
         });
       }
     });
     client.on("error", () => {
       client.unbind();
+      return;
     });
   } catch (error) {
     return response.json({
@@ -273,12 +277,14 @@ router.post("/addUser", fetchuser, async (req, response) => {
           });
           res.on("end", () => {
             client.unbind();
+            return;
           });
         });
       }
     });
     client.on("error", () => {
       client.unbind();
+      return;
     });
   } catch (error) {
     return response.json({
@@ -344,7 +350,7 @@ router.post("/getUser", fetchuser, async (req, response) => {
     );
     return response.status(200).json({ success: true, user });
   } catch (error) {
-    response.send("Internal server error");
+    return response.send("Internal server error");
   }
 });
 
@@ -365,7 +371,7 @@ router.post("/getAllAddedUsers", fetchuser, async (req, response) => {
     );
     return response.status(200).json({ success: true, user });
   } catch (error) {
-    response.send("Internal server error");
+    return response.send("Internal server error");
   }
 });
 
@@ -463,6 +469,7 @@ router.post("/getAllADUsers", fetchuser, async (req, response) => {
     });
     client.on("error", () => {
       client.unbind();
+      return;
     });
   } catch (error) {
     return response.json({
