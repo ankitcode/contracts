@@ -23,22 +23,29 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
 
-  <!-- Google Font: Source Sans Pro -->
+  <!-- Google Font: Source Sans Pro   
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback" />
+
+  <link href='fonts/fonts.css' rel='stylesheet'>
+  -->
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="%PUBLIC_URL%/plugins/fontawesome-free/css/all.min.css" />
-  <!-- IonIcons -->
+  <link rel="stylesheet" href="%PUBLIC_URL%/plugins/fontawesome-free-6.2.1-web/css/all.min.css" />
+  <!-- IonIcons 
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" />
+  -->
   <!-- Theme style -->
   <link rel="stylesheet" href="%PUBLIC_URL%/dist/css/adminlte.min.css" />
 
   <!--For select Options-->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"
+  <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"
     integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  -->
+  <link href="%PUBLIC_URL%/plugins/select2/css/select2.min.css" rel="stylesheet" />
 
   <title>WR-II RHQ Contracts</title>
 </head>
@@ -72,51 +79,53 @@
   <!-- OPTIONAL SCRIPTS -->
   <script src="%PUBLIC_URL%/plugins/chart.js/Chart.min.js"></script>
 
+  <!--For select Options-->
+  <script src="%PUBLIC_URL%/plugins/select2/js/select2.min.js"></script>
+
+  <!-- Added jquery function for full length of main sidebar-->
+  <script type="text/javascript">
+    jQuery(document).ready(function ($) {
+      $(".sidebar").height($(document).outerHeight());
+    });
+  </script>
+
+  <!--Added for sidebar menu navigation-->
+  <script>
+    $(document).ready(function () {
+      $('.nav-item').click(function () {
+
+        if ($(this).hasClass('menu-open')) {
+          $(this).removeClass("menu-open");
+          $(this).children().removeClass("active");
+        } else {
+          $(this).addClass("menu-open");
+          $(this).children().addClass("active");
+        }
+        $('.nav-item').children().removeClass('active').not(this);
+        $(this).children().addClass("active");
+
+      });
+    }); 
+  </script>
+
+  <script>
+    $(document).ready(function () {
+      $('nav-item').click(function () {
+
+        if ($(this).hasClass('menu-open')) {
+          $(this).removeClass("menu-open");
+          $(this).children().removeClass("active");
+        } else {
+          $(this).addClass("menu-open");
+          $(this).children().addClass("active");
+        }
+        $('nav-item').children().removeClass('active').not(this);
+        $(this).children().addClass("active");
+
+      });
+    }); 
+  </script>
+
 </body>
-
-<!-- Added jquery function for full length of main sidebar-->
-<script type="text/javascript">
-  jQuery(document).ready(function ($) {
-    $(".sidebar").height($(document).outerHeight());
-  });
-</script>
-
-<!--Added for sidebar menu navigation-->
-<script>
-  $(document).ready(function () {
-    $('.nav-item').click(function () {
-
-      if ($(this).hasClass('menu-open')) {
-        $(this).removeClass("menu-open");
-        $(this).children().removeClass("active");
-      } else {
-        $(this).addClass("menu-open");
-        $(this).children().addClass("active");
-      }
-      $('.nav-item').children().removeClass('active').not(this);
-      $(this).children().addClass("active");
-
-    });
-  }); 
-</script>
-
-<script>
-  $(document).ready(function () {
-    $('nav-item').click(function () {
-
-      if ($(this).hasClass('menu-open')) {
-        $(this).removeClass("menu-open");
-        $(this).children().removeClass("active");
-      } else {
-        $(this).addClass("menu-open");
-        $(this).children().addClass("active");
-      }
-      $('nav-item').children().removeClass('active').not(this);
-      $(this).children().addClass("active");
-
-    });
-  }); 
-</script>
-
 
 </html>

@@ -8,6 +8,7 @@ const multer = require("multer");
 const router = express.Router();
 const fetchuser = require("../middleware/fetchuser");
 const Contracts = require("../models/ContractData");
+const User = require("../models/UserData");
 // Import for removing file
 var fs = require("fs");
 
@@ -47,13 +48,27 @@ router.post("/getContracts", fetchuser, async (req, res) => {
 const upload = multer({
   storage: multer.diskStorage({
     destination: function(req, file, callback) {
-      callback(null, "./public/loaFiles");
+      if (file.fieldname == "loaCopy") {
+        callback(null, "../build/Files/loaFiles");
+      } else {
+        if (file.fieldname == "approvalCopy") {
+          callback(null, "../build/Files/approvalFiles");
+        } else {
+          if (file.fieldname == "msmeCertificateFile") {
+            callback(null, "../build/Files/MSMECertificateFiles");
+          }
+        }
+      }
     },
     filename: function(req, file, callback) {
       callback(null, file.fieldname + "-" + Date.now() + ".pdf");
     },
   }),
-}).single("loaCopy");
+}).fields([
+  { name: "loaCopy", maxCount: 1 },
+  { name: "msmeCertificateFile", maxCount: 1 },
+  { name: "approvalCopy", maxCount: 1 },
+]);
 
 // Add new contract data using POST "/api/contracts/addContractsData". Login required
 router.post("/addContractsData", fetchuser, upload, async (req, res) => {
@@ -74,21 +89,37 @@ router.post("/addContractsData", fetchuser, upload, async (req, res) => {
       availabilityReport,
     } = req.data;
 
+    // User Details
+    let user = await User.findOne({ _id: req.id });
+    let loaCopy = null;
+    if ("loaCopy" in req.files) loaCopy = req.files["loaCopy"][0];
+
+    let approvalCopy = null;
+    if ("approvalCopy" in req.files)
+      approvalCopy = req.files["approvalCopy"][0];
+
+    let msmeCertificateFile = null;
+    if ("msmeCertificateFile" in req.files)
+      msmeCertificateFile = req.files["msmeCertificateFile"][0];
+
     const contractsData = new Contracts({
       createdBy: req.id,
+      createdByDetails: user.name + "," + user.post + "," + user.department + "," + user.location + "," + user.empNo,
       location: req.location,
       packageName,
-      loa: req.file,
+      loa: loaCopy,
       awardedOn: dateAwarded,
       value: amount,
       procurementNature: natureOfProcurement,
       throughGeM,
       gemMode,
       msmeVendor,
+      msmeCertificate: msmeCertificateFile,
       msmeType,
       reasonNotGeM,
       availableOnGeM,
       approvingOfficer,
+      approval: approvalCopy,
       gemAvailabilityReport: availabilityReport,
     });
 
@@ -109,10 +140,146 @@ router.post("/addContractsData", fetchuser, upload, async (req, res) => {
   }
 });
 
+// Delete multiple files
+function deleteFiles(files, callback) {
+  var i = files.length;
+  files.forEach(function(filepath) {
+    fs.unlink(filepath, function(err) {
+      i--;
+      if (err) {
+        callback(err);
+      } else if (i <= 0) {
+        callback(null);
+      }
+    });
+  });
+}
+
+// Update Contracts Data using PUT "/api/contracts/updateContractsData". Login required
+router.put("/updateContractsData/:id", fetchuser, upload, async (req, res) => {
+  let success = false;
+  try {
+    const {
+      packageName,
+      dateAwarded,
+      amount,
+      natureOfProcurement,
+      throughGeM,
+      gemMode,
+      msmeVendor,
+      msmeType,
+      reasonNotGeM,
+      availableOnGeM,
+      approvingOfficer,
+      availabilityReport,
+    } = req.data;
+
+    let contracts = await Contracts.findOne({ _id: req.params.id });
+    if (!contracts) {
+      return response.json({
+        error: "Contract data does not exists!",
+        success,
+        msg: "Contract data does not exists!",
+      });
+    }
+
+    // deleting and updating files on updation if new file uploaded
+    let loaCopy = contracts.loa;
+    let loaFilename = "dummy";
+    if ("loaCopy" in req.files) {
+      loaCopy = req.files["loaCopy"][0];
+      if (contracts.loa) loaFilename = contracts.loa.filename;
+    }
+    let msmeCertificateFile = contracts.msmeCertificate;
+    let msmeCertificateFileName = "dummy";
+    if ("msmeCertificateFile" in req.files) {
+      msmeCertificateFile = req.files["msmeCertificateFile"][0];
+      if (contracts.msmeCertificate)
+        msmeCertificateFileName = contracts.msmeCertificate.filename;
+    }
+    let approvalCopy = contracts.approval;
+    let approvalFilename = "dummy";
+    if ("approvalCopy" in req.files) {
+      approvalCopy = req.files["approvalCopy"][0];
+      if (contracts.approval) approvalFilename = contracts.approval.filename;
+    }
+
+    if (throughGeM.value == "yes") {
+      approvalCopy = null;
+      if (contracts.approval) approvalFilename = contracts.approval.filename;
+    }
+
+    if (msmeVendor.value == "no") {
+      msmeCertificateFile = null;
+      if (contracts.msmeCertificate)
+        msmeCertificateFileName = contracts.msmeCertificate.filename;
+    }
+
+    var files = [
+      "D:\\Portals\\contracts\\build\\Files\\loaFiles\\" + loaFilename,
+      "D:\\Portals\\contracts\\build\\Files\\approvalFiles\\" +
+        approvalFilename,
+      "D:\\Portals\\contracts\\build\\Files\\MSMECertificateFiles\\" +
+        msmeCertificateFileName,
+    ];
+    deleteFiles(files, function(err) {
+      if (err) {
+      } else {
+      }
+    });
+
+    // Updating contracts data
+    const updatedContracts = await Contracts.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        packageName,
+        loa: loaCopy,
+        awardedOn: dateAwarded,
+        value: amount,
+        procurementNature: natureOfProcurement,
+        throughGeM,
+        gemMode,
+        msmeVendor,
+        msmeCertificate: msmeCertificateFile,
+        msmeType,
+        reasonNotGeM,
+        availableOnGeM,
+        approvingOfficer,
+        approval: approvalCopy,
+        gemAvailabilityReport: availabilityReport,
+      },
+      { new: true }
+    );
+
+    success = true;
+    return res.json({
+      success,
+      msg: "Updated Contracts Data!",
+      updatedContracts,
+    });
+  } catch (error) {
+    console.error(error.message);
+    return res.json({
+      msg: "Internal Server Error!",
+      error: "Internal Server Error!",
+      success,
+    });
+  }
+});
+
 // Delete Contracts Data using POST "/api/contracts/deleteContractsData". Login required
 router.post("/deleteContractsData", fetchuser, async (req, res) => {
   let success = false;
   try {
+    // Check for admin login
+    if (!req.isAdmin) {
+      return response.json({
+        error: "Admin Authentication Required!",
+        success,
+        msg: "Admin Authentication Required!",
+      });
+    }
+
     let contractsData = await Contracts.findById(req.body.id);
     if (!contractsData) {
       return res.json({
@@ -121,12 +288,26 @@ router.post("/deleteContractsData", fetchuser, async (req, res) => {
         success,
       });
     }
-    let path = contractsData.loa.path;
-    let filePath = "D:\\Portals\\contracts\\" + path;
-    // to delete loafile
-    fs.stat(filePath, function(err, stats) {
-      console.log(filePath);
-      fs.unlink(filePath, function(err) {});
+
+    let loaFilename = "dummy";
+    if (contractsData.loa) loaFilename = contractsData.loa.filename;
+    let approvalFilename = "dummy";
+    if (contractsData.approval)
+      approvalFilename = contractsData.approval.filename;
+    let msmeCertificateFileName = "dummy";
+    if (contractsData.msmeCertificate)
+      msmeCertificateFileName = contractsData.msmeCertificate.filename;
+    var files = [
+      "D:\\Portals\\contracts\\build\\Files\\loaFiles\\" + loaFilename,
+      "D:\\Portals\\contracts\\build\\Files\\approvalFiles\\" +
+        approvalFilename,
+      "D:\\Portals\\contracts\\build\\Files\\MSMECertificateFiles\\" +
+        msmeCertificateFileName,
+    ];
+    deleteFiles(files, function(err) {
+      if (err) {
+      } else {
+      }
     });
     contractsData = await Contracts.findByIdAndDelete(req.body.id);
     success = true;

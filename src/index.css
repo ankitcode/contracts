@@ -108,3 +108,71 @@
 .toBeDone {
   font-size: 5em;
 }
+
+.custom-file-label {
+  z-index: 0;
+}
+
+.modal-content {
+  width: 190%;
+}
+
+.deleteModalFooter {
+  padding: 0.05rem;
+}
+
+.deleteBtnConfNo {
+  color: #dc3545;
+  background-color:#00000000;
+  border-color: #00000000;
+}
+
+.deleteBtnConfNo:focus {
+  color: #dc3545;
+  background-color:#00000000;
+  border-color: #00000000;
+}
+
+.deleteBtnConfNo:hover {
+  color: #dc3545;
+  background-color:#00000000;
+  border-color: #00000000;
+}
+
+.deleteBtnConfNo:active {
+  color: #dc3545;
+  background-color:#00000000;
+  border-color: #00000000;
+}
+
+.deleteBtnConfYes {
+  color: #206c32;
+  background-color:#00000000;
+  border-color: #00000000;
+}
+
+.deleteBtnConfYes:focus {
+  color: #206c32;
+  background-color:#00000000;
+  border-color: #00000000;
+}
+
+.deleteBtnConfYes:hover {
+  color: #206c32;
+  background-color:#00000000;
+  border-color: #00000000;
+}
+
+.deleteBtnConfYes:active {
+  color: #206c32;
+  background-color:#00000000;
+  border-color: #00000000;
+}
+
+.actionViewContracts {
+  justify-content: center;
+}
+
+.table td {
+  vertical-align: middle;
+}

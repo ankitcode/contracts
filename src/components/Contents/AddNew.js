@@ -16,7 +16,6 @@ const AddNew = () => {
     },
   };
   const { user } = useSelector((state) => state.root);
-
   useEffect(() => {
     const trees = window.$('[data-widget="treeview"]');
     trees.Treeview("init");
@@ -49,6 +48,7 @@ const AddNew = () => {
     { value: "notApplicable", label: "Not Applicable" },
     { value: "women", label: "Women" },
     { value: "scst", label: "SC/ST" },
+    { value: "womenscst", label: "Women SC/ST" },
   ];
 
   const reasonNotThroughGeM = [
@@ -74,7 +74,9 @@ const AddNew = () => {
     { value: "no", label: "No" },
   ];
 
-  const [fileName, setFileName] = useState("");
+  const [loaFileName, setLoaFileName] = useState("");
+  const [approvalFileName, setApprovalFileName] = useState("");
+  const [msmeCertificateFileName, setMsmeCertificateFileName] = useState("");
   const FILE_SIZE = 10 * 1024 * 1024;
   const SUPPORTED_FORMATS = ["application/pdf"];
 
@@ -102,6 +104,27 @@ const AddNew = () => {
     throughGeM: Yup.object().required("Required!"),
     gemMode: Yup.object().required("Required!"),
     msmeVendor: Yup.object().required("Required!"),
+    msmeCertificateFile: Yup.mixed().when("msmeVendor", {
+      is: (val) => {
+        if (val) {
+          return val.value === "yes";
+        } else {
+          return true;
+        }
+      },
+      then: Yup.mixed()
+        .required("Required!")
+        .test(
+          "fileFormat",
+          "Only pdf Allowed!",
+          (value) => value && SUPPORTED_FORMATS.includes(value.type)
+        )
+        .test(
+          "fileSize",
+          "Max file size Allowed is 10 MB !",
+          (value) => value && value.size <= FILE_SIZE
+        ),
+    }),
     msmeType: Yup.object().required("Required!"),
     reasonNotGeM: Yup.object().when("throughGeM", {
       is: (val) => {
@@ -224,6 +247,7 @@ const AddNew = () => {
                         throughGeM: "",
                         gemMode: "",
                         msmeVendor: "",
+                        msmeCertificateFile: null,
                         msmeType: "",
                         reasonNotGeM: "",
                         availableOnGeM: "",
@@ -233,33 +257,52 @@ const AddNew = () => {
                       }}
                       validationSchema={validationSchema}
                       onSubmit={async (values, { setSubmitting }) => {
-                        //alert(JSON.stringify(values, null, 2));
-                        //console.log(user.authToken);
-                        //console.log({isSubmitting});
                         try {
-                          //console.log(values);
+                          if (
+                            "value" in values.throughGeM &&
+                            values.throughGeM.value == "yes"
+                          ) {
+                            values.reasonNotGeM = "";
+                            values.availableOnGeM = "";
+                            values.approvingOfficer = "";
+                            values.availabilityReport = "";
+                            values.approvalCopy = null;
+                            setApprovalFileName(null);
+                          }
+                          if (
+                            "value" in values.msmeVendor &&
+                            values.msmeVendor.value == "no"
+                          ) {
+                            values.msmeType = "";
+                            values.msmeCertificateFile = null;
+                            setMsmeCertificateFileName(null);
+                          }
                           const formData = new FormData();
-                          formData.append("loaCopy", values.loaCopy);
-                          formData.append("approvalCopy", values.approvalCopy);
-                          delete values["loaCopy"];
-                          delete values["approvalCopy"];
-                          //console.log(values);
-                          //console.log(formData.get("loaCopy"));
-                          //console.log(JSON.stringify(values));
+                          if ("loaCopy" in values) {
+                            formData.append("loaCopy", values.loaCopy);
+                            delete values["loaCopy"];
+                          }
+                          if ("msmeCertificateFile" in values) {
+                            formData.append(
+                              "msmeCertificateFile",
+                              values.msmeCertificateFile
+                            );
+                            delete values["msmeCertificateFile"];
+                          }
+                          if ("approvalCopy" in values) {
+                            formData.append(
+                              "approvalCopy",
+                              values.approvalCopy
+                            );
+                            delete values["approvalCopy"];
+                          }
                           formData.append("data", JSON.stringify(values));
-
-                          //formData.append("name", values.);
-                          //console.log(formData.get('file'));
                           axiosConfig.headers["authToken"] = user.authToken;
                           const res = await axios.post(
                             "/api/contracts/addContractsData",
                             formData,
                             axiosConfig
                           );
-                          //setData(res.data.user);
-                          //console.log(res.data.success, res.data.msg);
-                          //console.log(res.data.success, res.data.msg);
-
                           if (res.data.success) {
                             toast.success(res.data.msg, {
                               position: "top-right",
@@ -287,6 +330,10 @@ const AddNew = () => {
                           console.log(error);
                         }
                         setSubmitting(false);
+                        setTimeout(
+                          window.location.reload.bind(window.location),
+                          800
+                        );
                       }}
                     >
                       {({
@@ -347,13 +394,21 @@ const AddNew = () => {
                                         //console.log(
                                         //event.currentTarget.files[0]
                                         //);
-                                        setFieldValue(
-                                          "loaCopy",
-                                          event.currentTarget.files[0]
-                                        );
-                                        setFileName(
-                                          event.currentTarget.files[0].name
-                                        );
+                                        if (event.currentTarget.files[0]) {
+                                          setFieldValue(
+                                            "loaCopy",
+                                            event.currentTarget.files[0]
+                                          );
+                                          setLoaFileName(
+                                            event.currentTarget.files[0].name
+                                          );
+                                        } else {
+                                          setFieldValue(
+                                            "loaCopy",
+                                            null
+                                          );
+                                          setLoaFileName("");
+                                        }
                                       }}
                                       onBlur={handleBlur}
                                       className="form-control"
@@ -363,7 +418,7 @@ const AddNew = () => {
                                       className="custom-file-label"
                                       htmlFor="loaCopy"
                                     >
-                                      {fileName ? fileName : ""}
+                                      {loaFileName ? loaFileName : ""}
                                     </label>
                                   </div>
                                 </div>
@@ -552,7 +607,57 @@ const AddNew = () => {
                                 </ErrorMessage>
                               </div>
                             </div>
-
+                            <div className="form-group row">
+                              <label className="col-3 col-form-label">
+                                MSME Certificate (if MSME)
+                              </label>
+                              <div className="col-3">
+                                <div className="input-group">
+                                  <div className="custom-file">
+                                    <input
+                                      name="msmeCertificateFile"
+                                      type="file"
+                                      onChange={(event) => {
+                                        //console.log(
+                                        //event.currentTarget.files[0]
+                                        //);
+                                        if (event.currentTarget.files[0]) {
+                                          setFieldValue(
+                                            "msmeCertificateFile",
+                                            event.currentTarget.files[0]
+                                          );
+                                          setMsmeCertificateFileName(
+                                            event.currentTarget.files[0].name
+                                          );
+                                        } else {
+                                          setFieldValue(
+                                            "msmeCertificateFile",
+                                            null
+                                          );
+                                          setMsmeCertificateFileName("");
+                                        }
+                                      }}
+                                      onBlur={handleBlur}
+                                      className="form-control"
+                                      id="msmeCertificateFile"
+                                    />
+                                    <label
+                                      className="custom-file-label"
+                                      htmlFor="msmeCertificateFile"
+                                    >
+                                      {msmeCertificateFileName
+                                        ? msmeCertificateFileName
+                                        : ""}
+                                    </label>
+                                  </div>
+                                </div>
+                                <ErrorMessage name="msmeCertificateFile">
+                                  {(msg) => (
+                                    <div style={{ color: "red" }}>{msg}</div>
+                                  )}
+                                </ErrorMessage>
+                              </div>
+                            </div>
                             <hr
                               style={{
                                 height: "10px",
@@ -655,13 +760,21 @@ const AddNew = () => {
                                             //console.log(
                                             //event.currentTarget.files[0]
                                             //);
-                                            setFieldValue(
-                                              "approvalCopy",
-                                              event.currentTarget.files[0]
-                                            );
-                                            setFileName(
-                                              event.currentTarget.files[0].name
-                                            );
+                                            if (event.currentTarget.files[0]) {
+                                              setFieldValue(
+                                                "approvalCopy",
+                                                event.currentTarget.files[0]
+                                              );
+                                              setApprovalFileName(
+                                                event.currentTarget.files[0].name
+                                              );
+                                            } else {
+                                              setFieldValue(
+                                                "approvalCopy",
+                                                null
+                                              );
+                                              setApprovalFileName("");
+                                            }
                                           }}
                                           onBlur={handleBlur}
                                           className="form-control"
@@ -671,7 +784,9 @@ const AddNew = () => {
                                           className="custom-file-label"
                                           htmlFor="approvalCopy"
                                         >
-                                          {fileName ? fileName : ""}
+                                          {approvalFileName
+                                            ? approvalFileName
+                                            : ""}
                                         </label>
                                       </div>
                                     </div>
@@ -728,7 +843,9 @@ const AddNew = () => {
                               className="btn btn-default float-right"
                               onClick={(e) => {
                                 handleReset(e);
-                                setFileName("");
+                                setLoaFileName("");
+                                setApprovalFileName("");
+                                setMsmeCertificateFileName("");
                               }}
                             >
                               Reset

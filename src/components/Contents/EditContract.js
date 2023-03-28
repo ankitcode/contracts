@@ -2,7 +2,7 @@ import React from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Formik, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Select from "react-select";
@@ -12,9 +12,6 @@ import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 const EditContract = (props) => {
-  console.log("edit");
-  console.log(props.row);
-
   let axiosConfig = {
     headers: {
       "Access-Control-Allow-Origin": "*",
@@ -22,11 +19,6 @@ const EditContract = (props) => {
   };
   const { user } = useSelector((state) => state.root);
 
-  useEffect(() => {}, []);
-
-  const handleClose = () => {
-    
-  };
   // Options for select box
   const procurementNatureOptions = [
     { value: "worksCivil", label: "Works or Civil" },
@@ -55,6 +47,7 @@ const EditContract = (props) => {
     { value: "notApplicable", label: "Not Applicable" },
     { value: "women", label: "Women" },
     { value: "scst", label: "SC/ST" },
+    { value: "womenscst", label: "Women SC/ST" },
   ];
 
   const reasonNotThroughGeM = [
@@ -80,7 +73,9 @@ const EditContract = (props) => {
     { value: "no", label: "No" },
   ];
 
-  const [fileName, setFileName] = useState("");
+  const [loaFileName, setLoaFileName] = useState("");
+  const [approvalFileName, setApprovalFileName] = useState("");
+  const [msmeCertificateFileName, setMsmeCertificateFileName] = useState("");
   const FILE_SIZE = 10 * 1024 * 1024;
   const SUPPORTED_FORMATS = ["application/pdf"];
 
@@ -88,18 +83,23 @@ const EditContract = (props) => {
 
   const validationSchema = Yup.object({
     packageName: Yup.string().required("Required!"),
-    loaCopy: Yup.mixed()
-      .required("File is Required!")
-      .test(
-        "fileFormat",
-        "Only pdf Allowed!",
-        (value) => value && SUPPORTED_FORMATS.includes(value.type)
-      )
-      .test(
-        "fileSize",
-        "Max file size Allowed is 10 MB !",
-        (value) => value && value.size <= FILE_SIZE
-      ),
+    loaCopy: Yup.mixed().when("isLoaCopy", {
+      is: (val) => {
+        return val;
+      },
+      then: Yup.mixed()
+        .required("Required!")
+        .test(
+          "fileFormat",
+          "Only pdf Allowed!",
+          (value) => value && SUPPORTED_FORMATS.includes(value.type)
+        )
+        .test(
+          "fileSize",
+          "Max file size Allowed is 10 MB !",
+          (value) => value && value.size <= FILE_SIZE
+        ),
+    }),
     dateAwarded: Yup.string().required("Required!"),
     amount: Yup.string()
       .matches(/^\d+$/, "Enter only digits!")
@@ -108,11 +108,36 @@ const EditContract = (props) => {
     throughGeM: Yup.object().required("Required!"),
     gemMode: Yup.object().required("Required!"),
     msmeVendor: Yup.object().required("Required!"),
+    msmeCertificateFile: Yup.mixed().when("msmeVendor", {
+      is: (val) => {
+        if (val) {
+          return val.value === "yes";
+        } else {
+          return true;
+        }
+      },
+      then: Yup.mixed().when("isMSMECertificateFile", {
+        is: (val) => {
+          return val;
+        },
+        then: Yup.mixed()
+          .required("Required!")
+          .test(
+            "fileFormat",
+            "Only pdf Allowed!",
+            (value) => value && SUPPORTED_FORMATS.includes(value.type)
+          )
+          .test(
+            "fileSize",
+            "Max file size Allowed is 10 MB !",
+            (value) => value && value.size <= FILE_SIZE
+          ),
+      }),
+    }),
     msmeType: Yup.object().required("Required!"),
     reasonNotGeM: Yup.object().when("throughGeM", {
       is: (val) => {
         if (val) {
-          //console.log(val);
           return val.value === "no";
         } else {
           return true;
@@ -123,7 +148,6 @@ const EditContract = (props) => {
     availableOnGeM: Yup.object().when("throughGeM", {
       is: (val) => {
         if (val) {
-          //console.log(val);
           return val.value === "no";
         } else {
           return true;
@@ -134,7 +158,6 @@ const EditContract = (props) => {
     approvingOfficer: Yup.string().when("throughGeM", {
       is: (val) => {
         if (val) {
-          //console.log(val);
           return val.value === "no";
         } else {
           return true;
@@ -150,24 +173,28 @@ const EditContract = (props) => {
     approvalCopy: Yup.mixed().when("throughGeM", {
       is: (val) => {
         if (val) {
-          //console.log(val);
           return val.value === "no";
         } else {
           return true;
         }
       },
-      then: Yup.mixed()
-        .required("File is Required!")
-        .test(
-          "fileFormat",
-          "Only pdf Allowed!",
-          (value) => value && SUPPORTED_FORMATS.includes(value.type)
-        )
-        .test(
-          "fileSize",
-          "Max file size Allowed is 10 MB !",
-          (value) => value && value.size <= FILE_SIZE
-        ),
+      then: Yup.mixed().when("isApprovalCopy", {
+        is: (val) => {
+          return val;
+        },
+        then: Yup.mixed()
+          .required("Required!")
+          .test(
+            "fileFormat",
+            "Only pdf Allowed!",
+            (value) => value && SUPPORTED_FORMATS.includes(value.type)
+          )
+          .test(
+            "fileSize",
+            "Max file size Allowed is 10 MB !",
+            (value) => value && value.size <= FILE_SIZE
+          ),
+      }),
     }),
     availabilityReport: Yup.object().when("throughGeM", {
       is: (val) => {
@@ -183,80 +210,91 @@ const EditContract = (props) => {
   });
 
   return (
-    <Modal
-      show={props.show}
-      onHide={handleClose}
-      backdrop="static"
-      centered
-      keyboard="False"
-    >
-      <Modal.Header closeButton>
-        <Modal.Title>Modal heading</Modal.Title>
-      </Modal.Header>
+    <Modal show={props.show} backdrop="static" centered keyboard="False">
       <Modal.Body>
-        <section className="content" id="scrollingCard">
+        <section className="content">
           <div className="container-fluid">
             <div className="row">
               <div className="col-12">
-                <Card style={{ width: "75rem" }}>
+                <Card style={{ width: "55rem" }}>
                   <Card.Header>
                     <Card.Title></Card.Title>
                   </Card.Header>
-
                   <div
                     className="card card-info shadow bg-white pt-1 pb-1 pl-1 pr-1 rounded"
-                    style={{ width: "75rem" }}
+                    style={{ width: "55rem" }}
                   >
                     <Card.Header>
-                      <Card.Title>Add Contract Data</Card.Title>
+                      <Card.Title>Edit Contract Data</Card.Title>
                     </Card.Header>
-
                     <Formik
                       initialValues={{
-                        packageName: "",
+                        packageName: props.row.packageName,
                         loaCopy: null,
-                        dateAwarded: "",
-                        amount: "",
-                        natureOfProcurement: "",
-                        throughGeM: "",
-                        gemMode: "",
-                        msmeVendor: "",
-                        msmeType: "",
-                        reasonNotGeM: "",
-                        availableOnGeM: "",
-                        approvingOfficer: "",
+                        isLoaCopy: false,
+                        dateAwarded: props.row.awardedOn
+                          ? props.row.awardedOn.split("T")[0]
+                          : "",
+                        amount: props.row.value,
+                        natureOfProcurement: props.row.procurementNature,
+                        throughGeM: props.row.throughGeM,
+                        gemMode: props.row.gemMode,
+                        msmeVendor: props.row.msmeVendor,
+                        msmeCertificateFile: null,
+                        isMSMECertificateFile: !props.row.msmeCertificate
+                          ? true
+                          : false,
+                        msmeType: props.row.msmeType,
+                        reasonNotGeM: props.row.reasonNotGeM,
+                        availableOnGeM: props.row.availableOnGeM,
+                        approvingOfficer: props.row.approvingOfficer,
                         approvalCopy: null,
-                        availabilityReport: "",
+                        isApprovalCopy: !props.row.approval ? true : false,
+                        availabilityReport: props.row.gemAvailabilityReport,
                       }}
                       validationSchema={validationSchema}
                       onSubmit={async (values, { setSubmitting }) => {
-                        //alert(JSON.stringify(values, null, 2));
-                        //console.log(user.authToken);
-                        //console.log({isSubmitting});
                         try {
-                          //console.log(values);
+                          if (values.throughGeM.value == "yes") {
+                            values.reasonNotGeM = "";
+                            values.availableOnGeM = "";
+                            values.approvingOfficer = "";
+                            values.availabilityReport = "";
+                            values.approvalCopy = null;
+                            setApprovalFileName(null);
+                          }
+                          if (values.msmeVendor.value == "no") {
+                            values.msmeType = "";
+                            values.msmeCertificateFile = null;
+                            setMsmeCertificateFileName(null);
+                          }
                           const formData = new FormData();
-                          formData.append("loaCopy", values.loaCopy);
-                          formData.append("approvalCopy", values.approvalCopy);
-                          delete values["loaCopy"];
-                          delete values["approvalCopy"];
-                          //console.log(values);
-                          //console.log(formData.get("loaCopy"));
-                          //console.log(JSON.stringify(values));
+                          if (values.loaCopy) {
+                            formData.append("loaCopy", values.loaCopy);
+                            delete values["loaCopy"];
+                          }
+                          if ("msmeCertificateFile" in values) {
+                            formData.append(
+                              "msmeCertificateFile",
+                              values.msmeCertificateFile
+                            );
+                            delete values["msmeCertificateFile"];
+                          }
+                          if (values.approvalCopy) {
+                            formData.append(
+                              "approvalCopy",
+                              values.approvalCopy
+                            );
+                            delete values["approvalCopy"];
+                          }
                           formData.append("data", JSON.stringify(values));
-
-                          //formData.append("name", values.);
-                          //console.log(formData.get('file'));
                           axiosConfig.headers["authToken"] = user.authToken;
-                          const res = await axios.post(
-                            "/api/contracts/addContractsData",
+                          const res = await axios.put(
+                            "/api/contracts/updateContractsData/" +
+                              props.row._id,
                             formData,
                             axiosConfig
                           );
-                          //setData(res.data.user);
-                          //console.log(res.data.success, res.data.msg);
-                          //console.log(res.data.success, res.data.msg);
-
                           if (res.data.success) {
                             toast.success(res.data.msg, {
                               position: "top-right",
@@ -280,10 +318,15 @@ const EditContract = (props) => {
                               theme: "light",
                             });
                           }
+                          setSubmitting(false);
+                          props.editShow(false);
+                          setTimeout(
+                            window.location.reload.bind(window.location),
+                            800
+                          );
                         } catch (error) {
                           console.log(error);
                         }
-                        setSubmitting(false);
                       }}
                     >
                       {({
@@ -344,13 +387,22 @@ const EditContract = (props) => {
                                         //console.log(
                                         //event.currentTarget.files[0]
                                         //);
-                                        setFieldValue(
-                                          "loaCopy",
-                                          event.currentTarget.files[0]
-                                        );
-                                        setFileName(
-                                          event.currentTarget.files[0].name
-                                        );
+                                        setFieldValue("isLoaCopy", true);
+                                        if (event.currentTarget.files[0]) {
+                                          setFieldValue(
+                                            "loaCopy",
+                                            event.currentTarget.files[0]
+                                          );
+                                          setLoaFileName(
+                                            event.currentTarget.files[0].name
+                                          );
+                                        } else {
+                                          setFieldValue(
+                                            "loaCopy",
+                                            null
+                                          );
+                                          setLoaFileName("");
+                                        }
                                       }}
                                       onBlur={handleBlur}
                                       className="form-control"
@@ -360,7 +412,11 @@ const EditContract = (props) => {
                                       className="custom-file-label"
                                       htmlFor="loaCopy"
                                     >
-                                      {fileName ? fileName : ""}
+                                      {loaFileName
+                                        ? loaFileName
+                                        : props.row.loa
+                                        ? props.row.loa.originalname
+                                        : ""}
                                     </label>
                                   </div>
                                 </div>
@@ -549,7 +605,63 @@ const EditContract = (props) => {
                                 </ErrorMessage>
                               </div>
                             </div>
-
+                            <div className="form-group row">
+                              <label className="col-3 col-form-label">
+                                MSME Certificate (if MSME)
+                              </label>
+                              <div className="col-3">
+                                <div className="input-group">
+                                  <div className="custom-file">
+                                    <input
+                                      name="msmeCertificateFile"
+                                      type="file"
+                                      onChange={(event) => {
+                                        //console.log(
+                                        //event.currentTarget.files[0]
+                                        //);
+                                        setFieldValue(
+                                          "isMSMECertificateFile",
+                                          true
+                                        );
+                                        if (event.currentTarget.files[0]) {
+                                          setFieldValue(
+                                            "msmeCertificateFile",
+                                            event.currentTarget.files[0]
+                                          );
+                                          setMsmeCertificateFileName(
+                                            event.currentTarget.files[0].name
+                                          );
+                                        } else {
+                                          setFieldValue(
+                                            "msmeCertificateFile",
+                                            null
+                                          );
+                                          setMsmeCertificateFileName("");
+                                        }
+                                      }}
+                                      onBlur={handleBlur}
+                                      className="form-control"
+                                      id="msmeCertificateFile"
+                                    />
+                                    <label
+                                      className="custom-file-label"
+                                      htmlFor="msmeCertificateFile"
+                                    >
+                                      {msmeCertificateFileName
+                                        ? msmeCertificateFileName
+                                        : props.row.msmeCertificate
+                                        ? props.row.msmeCertificate.originalname
+                                        : ""}
+                                    </label>
+                                  </div>
+                                </div>
+                                <ErrorMessage name="msmeCertificateFile">
+                                  {(msg) => (
+                                    <div style={{ color: "red" }}>{msg}</div>
+                                  )}
+                                </ErrorMessage>
+                              </div>
+                            </div>
                             <hr
                               style={{
                                 height: "10px",
@@ -653,12 +765,24 @@ const EditContract = (props) => {
                                             //event.currentTarget.files[0]
                                             //);
                                             setFieldValue(
-                                              "approvalCopy",
-                                              event.currentTarget.files[0]
+                                              "isApprovalCopy",
+                                              true
                                             );
-                                            setFileName(
-                                              event.currentTarget.files[0].name
-                                            );
+                                            if (event.currentTarget.files[0]) {
+                                              setFieldValue(
+                                                "approvalCopy",
+                                                event.currentTarget.files[0]
+                                              );
+                                              setApprovalFileName(
+                                                event.currentTarget.files[0].name
+                                              );
+                                            } else {
+                                              setFieldValue(
+                                                "approvalCopy",
+                                                null
+                                              );
+                                              setApprovalFileName("");
+                                            }
                                           }}
                                           onBlur={handleBlur}
                                           className="form-control"
@@ -668,7 +792,11 @@ const EditContract = (props) => {
                                           className="custom-file-label"
                                           htmlFor="approvalCopy"
                                         >
-                                          {fileName ? fileName : ""}
+                                          {approvalFileName
+                                            ? approvalFileName
+                                            : props.row.approval
+                                            ? props.row.approval.originalname
+                                            : ""}
                                         </label>
                                       </div>
                                     </div>
@@ -718,17 +846,21 @@ const EditContract = (props) => {
                           </div>
                           <Card.Footer>
                             <button type="submit" className="btn btn-info">
-                              Save
+                              Update
                             </button>
                             <button
                               type="submit"
                               className="btn btn-default float-right"
                               onClick={(e) => {
                                 handleReset(e);
-                                setFileName("");
+                                props.editShow(false);
+                                props.editRow({});
+                                setLoaFileName("");
+                                setApprovalFileName("");
+                                setMsmeCertificateFileName("");
                               }}
                             >
-                              Reset
+                              Cancel
                             </button>
                           </Card.Footer>
                         </form>

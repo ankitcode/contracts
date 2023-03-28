@@ -27,7 +27,7 @@ import { toast } from "react-toastify";
 import EditContract from "./EditContract";
 
 const ViewContracts = () => {
-  const { user } = useSelector((state) => state.root);
+  const { user, isAdmin } = useSelector((state) => state.root);
   // to keep contracts data to be shown on the page
   const [data, setData] = useState([]);
   // to show edit contract modal
@@ -68,7 +68,7 @@ const ViewContracts = () => {
       }
     }
     fetchData();
-  }, []);
+  }, [showEditModal]);
 
   /*-------------------------------Start of Handling table data---------------------------------*/
   // Handle modal close onhide and on selecting 'No' option
@@ -81,13 +81,42 @@ const ViewContracts = () => {
   //const doubled = data.map((item, idx) => (item.s_no = idx + 1));
 
   // Link to show LOA file on new tab
-  const linkFollow = (cell, row, rowIndex, formatExtraData) => {
-    let path = "loaFiles" + "/" + row.loa.filename;
+  const linkFollowLoa = (cell, row, rowIndex, formatExtraData) => {
+    let path = "";
+    if (row.loa && "filename" in row.loa)
+      path = "Files/loaFiles" + "/" + row.loa.filename;
     return (
       <a href={path} target="_blank">
         {row.packageName}
       </a>
     );
+  };
+
+  // Link to show Non GeM Approval file on new tab
+  const linkFollowApproval = (cell, row, rowIndex, formatExtraData) => {
+    let path = "";
+    if (row.approval && "filename" in row.approval)
+      path = "Files/approvalFiles" + "/" + row.approval.filename;
+    return (
+      <a href={path} target="_blank">
+        {row.approvingOfficer}
+      </a>
+    );
+  };
+
+  // Link to show MSME Vendor Certificate on new tab
+  const linkFollowMSME = (cell, row, rowIndex, formatExtraData) => {
+    let path = "";
+    if (row.msmeCertificate && "filename" in row.msmeCertificate) {
+      path = "Files/MSMECertificateFiles" + "/" + row.msmeCertificate.filename;
+      return (
+        <a href={path} target="_blank">
+          {row.msmeVendor.label}
+        </a>
+      );
+    } else {
+      return <>{row.msmeVendor.label}</>;
+    }
   };
 
   // Columns for table
@@ -97,7 +126,7 @@ const ViewContracts = () => {
       text: "Package Name",
       headerAlign: "center",
       headerStyle: { minWidth: "250px", backgroundColor: "#A7C7E7" },
-      formatter: linkFollow,
+      formatter: linkFollowLoa,
       sort: true,
     },
     {
@@ -115,7 +144,7 @@ const ViewContracts = () => {
       headerStyle: { minWidth: "100px", backgroundColor: "#A7C7E7" },
       sort: true,
       // Date filter option
-      filter: dateFilter({
+      /*filter: dateFilter({
         withoutEmptyComparatorOption: true,
         comparators: [Comparator.EQ, Comparator.GT, Comparator.LT],
         style: { display: "inline" },
@@ -124,7 +153,7 @@ const ViewContracts = () => {
         comparatorClassName: "custom-comparator-class",
         dateStyle: { backgroundColor: "#9ebfd6", margin: "0px" },
         dateClassName: "custom-date-class",
-      }),
+      }),*/
     },
     {
       dataField: "value",
@@ -135,7 +164,7 @@ const ViewContracts = () => {
     },
     {
       dataField: "procurementNature.label",
-      text: "Procurement Nature",
+      text: "Nature of Procurement",
       headerAlign: "center",
       headerStyle: { minWidth: "100px", backgroundColor: "#A7C7E7" },
       sort: true,
@@ -151,6 +180,21 @@ const ViewContracts = () => {
     {
       dataField: "gemMode.label",
       text: "GeM Mode",
+      headerAlign: "center",
+      headerStyle: { minWidth: "100px", backgroundColor: "#A7C7E7" },
+      sort: true,
+    },
+    {
+      dataField: "msmeVendor.label",
+      text: "MSME Vendor",
+      headerAlign: "center",
+      formatter: linkFollowMSME,
+      headerStyle: { minWidth: "100px", backgroundColor: "#A7C7E7" },
+      sort: true,
+    },
+    {
+      dataField: "msmeType.label",
+      text: "MSME Type",
       headerAlign: "center",
       headerStyle: { minWidth: "100px", backgroundColor: "#A7C7E7" },
       sort: true,
@@ -175,11 +219,12 @@ const ViewContracts = () => {
       text: "Approver",
       headerAlign: "center",
       headerStyle: { minWidth: "100px", backgroundColor: "#A7C7E7" },
+      formatter: linkFollowApproval,
       sort: true,
     },
     {
       dataField: "gemAvailabilityReport.label",
-      text: "Availability Report",
+      text: "GeM Availability Report",
       headerAlign: "center",
       headerStyle: { minWidth: "100px", backgroundColor: "#A7C7E7" },
       sort: true,
@@ -193,27 +238,35 @@ const ViewContracts = () => {
       align: "center",
       formatter: (cellContent, row) => {
         return (
-          <>
+          <div className="form-group row actionViewContracts">
             {/*Adding buttun to delete contract data*/}
-            <button
-              className="btn btn-danger btn-xs deleteContract"
-              onClick={() => {
-                setModalShow(true);
-                setRowToDelete(row);
-              }}
-            >
-              <i className="fa fa-trash" aria-hidden="true"></i>
-            </button>
-            <button
-              className="btn btn-danger btn-xs deleteContract"
-              onClick={() => {
-                setEditModal(true);
-                setRowToEdit(row);
-              }}
-            >
-              <i className="fa fa-edit" aria-hidden="true"></i>
-            </button>
-          </>
+            {isAdmin ? (
+              <div className="col-4">
+                <button
+                  className="btn btn-danger btn-xs deleteContract"
+                  onClick={() => {
+                    setModalShow(true);
+                    setRowToDelete(row);
+                  }}
+                >
+                  <i className="fa fa-trash" aria-hidden="true"></i>
+                </button>
+              </div>
+            ) : (
+              <></>
+            )}
+            <div className="col-4">
+              <button
+                className="btn btn-danger btn-xs deleteContract"
+                onClick={() => {
+                  setEditModal(true);
+                  setRowToEdit(row);
+                }}
+              >
+                <i className="fa fa-edit" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
         );
       },
     },
@@ -398,6 +451,10 @@ const ViewContracts = () => {
                               bootstrap4
                               wrapperClasses="table-responsive"
                               data={data}
+                              bodyStyle={{
+                                maxWidth: "250px",
+                                wordBreak: "break-all",
+                              }}
                               columns={columns}
                               pagination={paginationFactory(options)}
                               striped
@@ -418,23 +475,37 @@ const ViewContracts = () => {
                         keyboard="False"
                         size="sm"
                       >
-                        <Modal.Body>Do you want to delete?</Modal.Body>
-                        <Modal.Footer justifycontent="space-between">
-                          <Button variant="secondary" onClick={handleClose}>
-                            No
+                        <Modal.Header></Modal.Header>
+                        <Modal.Body>
+                          <div align="center">Do you want to delete?</div>
+                        </Modal.Body>
+                        <Modal.Footer
+                          justifycontent="space-between"
+                          className="deleteModalFooter"
+                        >
+                          <Button
+                            className="deleteBtnConfNo"
+                            onClick={handleClose}
+                          >
+                            <i className="fa-solid fa-xmark"></i>
                           </Button>
                           <Button
-                            variant="danger"
+                            className="deleteBtnConfYes"
                             onClick={() => {
                               handleDelete(rowToDelete);
                             }}
                             align="right"
                           >
-                            Yes
+                            <i class="fa-solid fa-check"></i>
                           </Button>
                         </Modal.Footer>
                       </Modal>
-                      <EditContract show={showEditModal} row={rowToEdit}/>
+                      <EditContract
+                        show={showEditModal}
+                        editShow={setEditModal}
+                        row={rowToEdit}
+                        editRow={setRowToEdit}
+                      />
                     </div>
                   </div>
                 </div>

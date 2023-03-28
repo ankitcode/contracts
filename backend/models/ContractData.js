@@ -5,6 +5,7 @@
  Provides an interface to the database for creating, quering, updating, deleting records, etc. 
 */
 const mongoose = require("mongoose");
+const { boolean } = require("yup");
 
 // Define ContractsData Schema
 const ContractsDataSchema = new mongoose.Schema({
@@ -12,6 +13,9 @@ const ContractsDataSchema = new mongoose.Schema({
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
+  },
+  createdByDetails: {
+    type: String,
   },
   createdOn: {
     type: Date,
@@ -52,6 +56,9 @@ const ContractsDataSchema = new mongoose.Schema({
     type: Object,
     required: true,
   },
+  msmeCertificate: {
+    type: Object,
+  },
   msmeType: {
     type: Object,
     required: true,
@@ -73,6 +80,17 @@ const ContractsDataSchema = new mongoose.Schema({
   gemAvailabilityReport: {
     type: Object,
     required: true,
+  },
+  isDeleted: {
+    type: Boolean,
+    default: false,
+  },
+  deletedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+  deletedByDetails: {
+    type: String,
   },
 });
 
