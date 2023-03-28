@@ -49,13 +49,13 @@ const upload = multer({
   storage: multer.diskStorage({
     destination: function(req, file, callback) {
       if (file.fieldname == "loaCopy") {
-        callback(null, "./build/Files/loaFiles");
+        callback(null, "../build/Files/loaFiles");
       } else {
         if (file.fieldname == "approvalCopy") {
-          callback(null, "./build/Files/approvalFiles");
+          callback(null, "../build/Files/approvalFiles");
         } else {
           if (file.fieldname == "msmeCertificateFile") {
-            callback(null, "./build/Files/MSMECertificateFiles");
+            callback(null, "../build/Files/MSMECertificateFiles");
           }
         }
       }
