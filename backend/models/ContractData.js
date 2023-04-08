@@ -81,6 +81,26 @@ const ContractsDataSchema = new mongoose.Schema({
     type: Object,
     required: true,
   },
+  tenderingMode: {
+    type: Object,
+    required: true,
+  },
+  poDetails: {
+    type: String,
+    required: true,
+  },
+  vendorDetails: {
+    type: String,
+    required: true,
+  },
+  completionPeriod: {
+    type: String,
+    required: true,
+  },
+  vendorCodeOrPO: {
+    type: String,
+    required: true,
+  },
   isDeleted: {
     type: Boolean,
     default: false,

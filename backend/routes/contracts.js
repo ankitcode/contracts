@@ -87,6 +87,11 @@ router.post("/addContractsData", fetchuser, upload, async (req, res) => {
       availableOnGeM,
       approvingOfficer,
       availabilityReport,
+      tenderingMode,
+      poDetails,
+      vendorDetails,
+      completionPeriod,
+      vendorCodeOrPO,
     } = req.data;
 
     // User Details
@@ -104,7 +109,16 @@ router.post("/addContractsData", fetchuser, upload, async (req, res) => {
 
     const contractsData = new Contracts({
       createdBy: req.id,
-      createdByDetails: user.name + "," + user.post + "," + user.department + "," + user.location + "," + user.empNo,
+      createdByDetails:
+        user.name +
+        "," +
+        user.post +
+        "," +
+        user.department +
+        "," +
+        user.location +
+        "," +
+        user.empNo,
       location: req.location,
       packageName,
       loa: loaCopy,
@@ -121,6 +135,11 @@ router.post("/addContractsData", fetchuser, upload, async (req, res) => {
       approvingOfficer,
       approval: approvalCopy,
       gemAvailabilityReport: availabilityReport,
+      tenderingMode,
+      poDetails,
+      vendorDetails,
+      completionPeriod,
+      vendorCodeOrPO,
     });
 
     const savedContractsData = await contractsData.save();
@@ -172,6 +191,11 @@ router.put("/updateContractsData/:id", fetchuser, upload, async (req, res) => {
       availableOnGeM,
       approvingOfficer,
       availabilityReport,
+      tenderingMode,
+      poDetails,
+      vendorDetails,
+      completionPeriod,
+      vendorCodeOrPO,
     } = req.data;
 
     let contracts = await Contracts.findOne({ _id: req.params.id });
@@ -247,6 +271,11 @@ router.put("/updateContractsData/:id", fetchuser, upload, async (req, res) => {
         approvingOfficer,
         approval: approvalCopy,
         gemAvailabilityReport: availabilityReport,
+        tenderingMode,
+        poDetails,
+        vendorDetails,
+        completionPeriod,
+        vendorCodeOrPO,
       },
       { new: true }
     );

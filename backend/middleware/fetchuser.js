@@ -10,13 +10,7 @@ const formidable = require("formidable");
 // fetchuser function
 const fetchuser = (req, res, next) => {
   try {
-    const form = formidable({ multiples: true });
-    // Parse form to store contracts data in req other than file
-    form.parse(req, (err, fields, files) => {
-      const obj = JSON.parse(fields.data);
-      req.data = obj;
-    });
-    // Getting token from req headers
+    // Get token
     const token = req.headers.authtoken;
     if (!token) {
       // Return if token not found
@@ -34,6 +28,25 @@ const fetchuser = (req, res, next) => {
     req.empNo = data.user.empNo;
     req.password = data.user.password;
     req.location = data.location;
+
+    const form = formidable({ multiples: true });
+    // Parse form to store contracts data other than file in req
+    /*form.parse(req, function(err, fields, files) {
+      if (err) {
+        console.log("some error");
+      }
+      console.log(fields);
+      req.data = JSON.parse(fields.data);
+    });*/
+
+    form
+      .parse(req)
+      .on("field", function(name, field) {
+        if (name == "data" && field) req.data = JSON.parse(field);
+      })
+      .on("end", function() {
+      });
+
     // Continue to next function
     next();
   } catch (error) {

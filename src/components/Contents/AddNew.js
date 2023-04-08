@@ -74,6 +74,12 @@ const AddNew = () => {
     { value: "no", label: "No" },
   ];
 
+  const tenderingModeOptions = [
+    { value: "singleTender", label: "Single Tender" },
+    { value: "limitedTender", label: "Limited Tender" },
+    { value: "openTender", label: "Open Tender" },
+  ];
+
   const [loaFileName, setLoaFileName] = useState("");
   const [approvalFileName, setApprovalFileName] = useState("");
   const [msmeCertificateFileName, setMsmeCertificateFileName] = useState("");
@@ -197,6 +203,13 @@ const AddNew = () => {
       },
       then: Yup.object().required("Required!"),
     }),
+    vendorDetails: Yup.string().required("Required!"),
+    vendorCodeOrPO: Yup.string()
+      .matches(/^\d+$/, "Enter only digits!")
+      .required("Required!"),
+    poDetails: Yup.string().required("Required!"),
+    completionPeriod: Yup.string().required("Required!"),
+    tenderingMode: Yup.object().required("Required!"),
   });
 
   return (
@@ -254,13 +267,20 @@ const AddNew = () => {
                         approvingOfficer: "",
                         approvalCopy: null,
                         availabilityReport: "",
+                        tenderingMode: "",
+                        poDetails: "",
+                        completionPeriod: "",
+                        vendorDetails: "",
+                        vendorCodeOrPO: "",
                       }}
                       validationSchema={validationSchema}
                       onSubmit={async (values, { setSubmitting }) => {
                         try {
                           if (
-                            "value" in values.throughGeM &&
-                            values.throughGeM.value == "yes"
+                            ("value" in values.throughGeM &&
+                              values.throughGeM.value == "yes") ||
+                            ("value" in values.natureOfProcurement &&
+                              values.natureOfProcurement.value == "worksCivil")
                           ) {
                             values.reasonNotGeM = "";
                             values.availableOnGeM = "";
@@ -379,10 +399,31 @@ const AddNew = () => {
                                 </ErrorMessage>
                               </div>
                             </div>
-
                             <div className="form-group row">
+                              <label
+                                htmlFor="poDetails"
+                                className="col-3 col-form-label"
+                              >
+                                LOA / PO Details
+                              </label>
+                              <div className="col-3">
+                                <textarea
+                                  type="textarea"
+                                  className="form-control"
+                                  row={2}
+                                  name="poDetails"
+                                  onChange={handleChange}
+                                  onBlur={handleBlur}
+                                  value={values.poDetails}
+                                />
+                                <ErrorMessage name="poDetails">
+                                  {(msg) => (
+                                    <div style={{ color: "red" }}>{msg}</div>
+                                  )}
+                                </ErrorMessage>
+                              </div>
                               <label className="col-3 col-form-label">
-                                LOA
+                               Copy of LOA
                               </label>
                               <div className="col-3">
                                 <div className="input-group">
@@ -403,10 +444,7 @@ const AddNew = () => {
                                             event.currentTarget.files[0].name
                                           );
                                         } else {
-                                          setFieldValue(
-                                            "loaCopy",
-                                            null
-                                          );
+                                          setFieldValue("loaCopy", null);
                                           setLoaFileName("");
                                         }
                                       }}
@@ -428,6 +466,8 @@ const AddNew = () => {
                                   )}
                                 </ErrorMessage>
                               </div>
+                            </div>
+                            <div className="form-group row">
                               <label
                                 htmlFor="dateAwarded"
                                 className="col-3 col-form-label"
@@ -450,6 +490,33 @@ const AddNew = () => {
                                   value={values.dateAwarded}
                                 />
                                 <ErrorMessage name="dateAwarded">
+                                  {(msg) => (
+                                    <div style={{ color: "red" }}>{msg}</div>
+                                  )}
+                                </ErrorMessage>
+                              </div>
+                              <label
+                                htmlFor="completionPeriod"
+                                className="col-3 col-form-label"
+                              >
+                                Completion Period
+                              </label>
+                              <div className="col-3">
+                                <input
+                                  type="text"
+                                  className="form-control"
+                                  name="completionPeriod"
+                                  onChange={(event) => {
+                                    setFieldValue(
+                                      "completionPeriod",
+                                      event.target.value
+                                    );
+                                    //setTouched(true);
+                                  }}
+                                  onBlur={handleBlur}
+                                  value={values.completionPeriod}
+                                />
+                                <ErrorMessage name="completionPeriod">
                                   {(msg) => (
                                     <div style={{ color: "red" }}>{msg}</div>
                                   )}
@@ -553,12 +620,92 @@ const AddNew = () => {
                                 </ErrorMessage>
                               </div>
                             </div>
+                            <div className="form-group row">
+                              <label
+                                htmlFor="tenderingMode"
+                                className="col-3 col-form-label"
+                              >
+                                Mode of Tendering
+                              </label>
+                              <div className="col-3">
+                                <Select
+                                  name="tenderingMode"
+                                  options={tenderingModeOptions}
+                                  onChange={(opt, e) => {
+                                    setFieldValue("tenderingMode", opt);
+                                    //setTouched(true);
+                                  }}
+                                  onBlur={handleBlur}
+                                  value={values.tenderingMode}
+                                />
+                                <ErrorMessage name="tenderingMode">
+                                  {(msg) => (
+                                    <div style={{ color: "red" }}>{msg}</div>
+                                  )}
+                                </ErrorMessage>
+                              </div>
+                            </div>
                             <hr
                               style={{
                                 height: "10px",
                               }}
                             />
-
+                            <div className="form-group row">
+                              <label
+                                htmlFor="vendorDetails"
+                                className="col-3 col-form-label"
+                              >
+                                Details of the Party / Contractor
+                              </label>
+                              <div className="col-3">
+                                <input
+                                  type="text"
+                                  className="form-control"
+                                  name="vendorDetails"
+                                  onChange={(event) => {
+                                    setFieldValue(
+                                      "vendorDetails",
+                                      event.target.value
+                                    );
+                                    //setTouched(true);
+                                  }}
+                                  onBlur={handleBlur}
+                                  value={values.vendorDetails}
+                                />
+                                <ErrorMessage name="vendorDetails">
+                                  {(msg) => (
+                                    <div style={{ color: "red" }}>{msg}</div>
+                                  )}
+                                </ErrorMessage>
+                              </div>
+                              <label
+                                htmlFor="vendorCodeOrPO"
+                                className="col-3 col-form-label"
+                              >
+                                Vendor Code / SAP PO Number
+                              </label>
+                              <div className="col-3">
+                                <input
+                                  type="text"
+                                  className="form-control"
+                                  name="vendorCodeOrPO"
+                                  onChange={(event) => {
+                                    setFieldValue(
+                                      "vendorCodeOrPO",
+                                      event.target.value
+                                    );
+                                    //setTouched(true);
+                                  }}
+                                  onBlur={handleBlur}
+                                  value={values.vendorCodeOrPO}
+                                />
+                                <ErrorMessage name="vendorCodeOrPO">
+                                  {(msg) => (
+                                    <div style={{ color: "red" }}>{msg}</div>
+                                  )}
+                                </ErrorMessage>
+                              </div>
+                            </div>
                             <div className="form-group row">
                               <label
                                 htmlFor="msmeVendor"
@@ -663,7 +810,8 @@ const AddNew = () => {
                                 height: "10px",
                               }}
                             />
-                            {values.throughGeM.value === "no" ? (
+                            {values.throughGeM.value === "no" &&
+                            values.natureOfProcurement.value != "worksCivil" ? (
                               <>
                                 <div className="form-group row">
                                   <label
@@ -766,7 +914,8 @@ const AddNew = () => {
                                                 event.currentTarget.files[0]
                                               );
                                               setApprovalFileName(
-                                                event.currentTarget.files[0].name
+                                                event.currentTarget.files[0]
+                                                  .name
                                               );
                                             } else {
                                               setFieldValue(
