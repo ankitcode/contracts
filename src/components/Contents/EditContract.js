@@ -821,7 +821,8 @@ const EditContract = (props) => {
                                 height: "10px",
                               }}
                             />
-                            {values.throughGeM.value === "no" ? (
+                            {values.throughGeM.value === "no" &&
+                            values.natureOfProcurement.value != "worksCivil" ? (
                               <>
                                 <div className="form-group row">
                                   <label
